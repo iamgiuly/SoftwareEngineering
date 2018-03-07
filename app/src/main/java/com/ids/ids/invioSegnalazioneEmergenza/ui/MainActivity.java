@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        segnalaEmergenzaButton = findViewById(R.id.segnalaEmergenzaButton);
+        segnalaEmergenzaButton = (Button) findViewById(R.id.segnalaEmergenzaButton);
         segnalaEmergenzaButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
+        messaggioErroreTextView = (TextView) findViewById(R.id.messaggioErroreTextView);
     }
 
     /**
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
      *  - altrimenti viene mostrato un messaggio di errore e l'utente può premere nuovamente il bottone quando si riconnette
      */
     public void listenerBottoneEmergenza(){
-        if(userController.controllaConnessione()){
+        if(this.userController.controllaConnessione()){
             Intent intent = new Intent(this, SegnalazioneEmergenzaActivity.class);
             startActivity(intent);
         }
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void visualizzaMessaggioRiconnetti(){
-        messaggioErroreTextView.setVisibility(View.VISIBLE);
+        this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 
 }
