@@ -1,6 +1,7 @@
 package com.ids.ids.invioSegnalazioneEmergenza.control;
 
 import com.ids.ids.invioSegnalazioneEmergenza.boundary.CommunicationServer;
+import com.ids.ids.invioSegnalazioneEmergenza.entity.Mappa;
 import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     public void gestisciTapNodiSottoIncendio(Nodo nodo){
-
+        this.nodiSelezionati.add(nodo);
     }
 
     // TODO viene mostrata la view con la mappa su cui selezionare i nodi (creare altra Activity?)
@@ -40,6 +41,10 @@ public class UserController {
         else{
             // TODO error
         }
+    }
+
+    public Mappa richiediMappa() {
+        return this.communicationServer.richiediMappa();
     }
 
     public static UserController getInstance(){

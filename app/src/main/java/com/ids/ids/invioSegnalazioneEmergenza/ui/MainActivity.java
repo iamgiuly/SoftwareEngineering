@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void visualizzaMessaggioRiconnetti(){
+    private void visualizzaMessaggioRiconnetti(){
         // TODO
     }
 
@@ -42,21 +42,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             this.visualizzaMessaggioRiconnetti();
-    }
-
-    /**
-     * richiamato quando l'utente fa tap su un nodo,
-     * tale nodo deve essere opportunamente contrassegnato,
-     * oltre ad essere aggiunto ai / rimosso dalla lista dei nodi selezionati
-     * TODO modificare nome in modo da estendere metodo listener
-     */
-    public void tapNodoSottoIncendio(Nodo nodo){
-        this.userController.gestisciTapNodiSottoIncendio(nodo);
-    }
-
-    // TODO modificare nome in modo da estendere metodo listener
-    public void tapBottoneInvioNodi(){
-        this.userController.gestisciTapBottoneInvioNodi();
     }
 
 }

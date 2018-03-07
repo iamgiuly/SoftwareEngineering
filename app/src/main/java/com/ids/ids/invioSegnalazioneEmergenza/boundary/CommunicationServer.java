@@ -1,5 +1,6 @@
 package com.ids.ids.invioSegnalazioneEmergenza.boundary;
 
+import com.ids.ids.invioSegnalazioneEmergenza.entity.Mappa;
 import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
 
 import java.util.ArrayList;
@@ -15,8 +16,8 @@ public class CommunicationServer{
         return true;
     }
 
-    public void richiediMappa(){
-
+    public Mappa richiediMappa(){
+        return null;
     }
 
 }
