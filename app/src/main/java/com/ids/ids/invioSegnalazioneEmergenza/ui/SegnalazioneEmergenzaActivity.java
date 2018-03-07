@@ -35,12 +35,12 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
      * oltre ad essere aggiunto ai / rimosso dalla lista dei nodi selezionati
      * TODO modificare nome in modo da estendere metodo listener
      */
-    public void tapNodoSottoIncendio(Nodo nodo){
+    public void listenerNodoSottoIncendio(Nodo nodo){
         this.userController.gestisciTapNodiSottoIncendio(nodo);
     }
 
     // TODO modificare nome in modo da estendere metodo listener
-    public void tapBottoneInvioNodi(){
+    public void listenerBottoneInvioNodi(){
         this.userController.gestisciTapBottoneInvioNodi();
     }
 

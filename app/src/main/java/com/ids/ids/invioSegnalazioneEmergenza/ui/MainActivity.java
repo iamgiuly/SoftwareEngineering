@@ -5,10 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.ids.ids.R;
 import com.ids.ids.invioSegnalazioneEmergenza.control.UserController;
-import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
 
 /**
  * visualizzata all'apertura dell'applicazione,
@@ -19,29 +19,32 @@ public class MainActivity extends AppCompatActivity {
 
     private UserController userController = UserController.getInstance();
 
+    private Button segnalaEmergenzaButton;
+    private TextView messaggioErroreTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener(){
+        segnalaEmergenzaButton = findViewById(R.id.segnalaEmergenzaButton);
+        segnalaEmergenzaButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                tapBottoneEmergenza();
+                listenerBottoneEmergenza();
             }
         });
+
+        messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
     }
 
     /**
      * richiamato quando l'utente fa tap sul bottone "Segnala Emergenza",
      * viene controllata la connessione:
      *  - se attiva viene avviata l'activity SegnalazioneEmergenzaActivity
-     *  - altrimenti viene mostrato un messaggio di errore
-     *      e l'utente può premere nuovamente il bottone quando si riconnette
-     * TODO modificare nome in modo da estendere metodo listener
+     *  - altrimenti viene mostrato un messaggio di errore e l'utente può premere nuovamente il bottone quando si riconnette
      */
-    public void tapBottoneEmergenza(){
+    public void listenerBottoneEmergenza(){
         if(userController.controllaConnessione()){
             Intent intent = new Intent(this, SegnalazioneEmergenzaActivity.class);
             startActivity(intent);
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void visualizzaMessaggioRiconnetti(){
-        // TODO
+        messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 
 }

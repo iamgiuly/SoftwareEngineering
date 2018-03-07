@@ -1,5 +1,10 @@
 package com.ids.ids.invioSegnalazioneEmergenza.control;
 
+import android.app.Application;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.ids.ids.invioSegnalazioneEmergenza.boundary.CommunicationServer;
 import com.ids.ids.invioSegnalazioneEmergenza.entity.Mappa;
 import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
@@ -7,7 +12,7 @@ import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
 import java.util.ArrayList;
 
 // TODO rendere singleton, lo stesso oggetto deve essere accessibile da tutte le activity con un riferimento ad essa
-public class UserController {
+public class UserController extends Application {
 
     private static UserController instance = null;
 
@@ -19,7 +24,9 @@ public class UserController {
     }
 
     public boolean controllaConnessione(){
-        return true;
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return wifi.isConnected();
     }
 
     public void gestisciTapNodiSottoIncendio(Nodo nodo){

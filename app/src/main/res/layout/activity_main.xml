@@ -8,12 +8,22 @@
     tools:context="com.ids.ids.invioSegnalazioneEmergenza.ui.MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/segnalaEmergenzaButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Segnala Emergenza"
         tools:layout_editor_absoluteX="106dp"
         tools:layout_editor_absoluteY="360dp"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/messaggioErroreTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:text="Connessione assente. Riprovare"
+        tools:layout_editor_absoluteX="93dp"
+        tools:layout_editor_absoluteY="38dp"
+        android:visibility="invisible"
         tools:ignore="MissingConstraints" />
 
 </android.support.constraint.ConstraintLayout>
