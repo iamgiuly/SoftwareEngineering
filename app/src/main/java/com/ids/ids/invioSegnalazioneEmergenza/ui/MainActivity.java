@@ -23,10 +23,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    private void visualizzaMessaggioRiconnetti(){
-        // TODO
-    }
-
     /**
      * richiamato quando l'utente fa tap sul bottone "Segnala Emergenza",
      * viene controllata la connessione:
@@ -44,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
             this.visualizzaMessaggioRiconnetti();
     }
 
+    private void visualizzaMessaggioRiconnetti(){
+        // TODO
+    }
+
 }
-
-
