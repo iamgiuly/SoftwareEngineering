@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        userController.init(getApplicationContext());
+
         segnalaEmergenzaButton = (Button) findViewById(R.id.segnalaEmergenzaButton);
         segnalaEmergenzaButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -54,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void visualizzaMessaggioRiconnetti(){
-        this.messaggioErroreTextView.setVisibility(View.VISIBLE);
+        if(this.messaggioErroreTextView != null)
+            this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 
 }
