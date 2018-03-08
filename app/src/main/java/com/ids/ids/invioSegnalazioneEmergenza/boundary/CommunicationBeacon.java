@@ -5,10 +5,12 @@ public class CommunicationBeacon {
     private static CommunicationBeacon instance = null;
 
     public String getPosizioneUtente(){
+        // TODO dummy
         return "";
     }
 
     public int getPianoUtente(){
+        // TODO dummy
         return 0;
     }
 

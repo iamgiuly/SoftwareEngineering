@@ -13,7 +13,6 @@ import com.ids.ids.invioSegnalazioneEmergenza.entity.NodoDAO;
 
 import java.util.ArrayList;
 
-// TODO rendere singleton, lo stesso oggetto deve essere accessibile da tutte le activity con un riferimento ad essa
 public class UserController extends Application{
 
     private static UserController instance = null;
@@ -22,7 +21,7 @@ public class UserController extends Application{
 
     private CommunicationServer communicationServer = CommunicationServer.getInstance();
     private CommunicationBeacon communicationBeacon = CommunicationBeacon.getInstance();
-    private ArrayList<Nodo> nodiSelezionati;
+    private ArrayList<Nodo> nodiSelezionati = null;
 
     public void init(Context context){
         this.context = context;
@@ -34,26 +33,27 @@ public class UserController extends Application{
         return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
-    public void selezionaNodo(String idNodo){
+    /**
+     *
+     * @param idNodo id del nodo da selezionare o deselezionare
+     * @return true se c'è almeno un nodo selezionato
+     */
+    public boolean selezionaNodo(String idNodo){
         Nodo nodo = NodoDAO.find(idNodo);
+        if(this.nodiSelezionati.contains(nodo)) {
+            this.nodiSelezionati.remove(nodo);
+            return !this.nodiSelezionati.isEmpty();
+        }
         this.nodiSelezionati.add(nodo);
+        return true;
     }
 
-    // TODO viene mostrata la view con la mappa su cui selezionare i nodi (creare altra Activity?)
-    public void gestisciTapBottoneEmergenza(){
-        // TODO ...
-        //this.communicationServer.richiediMappa();
-    }
-
-    // TODO i nodi selezionati vengono inviati al server attraverso una richiesta RESTful
-    public void gestisciTapBottoneInvioNodi(){
-        // TODO ...
-        if(this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati)){
-            // TODO success
-        }
-        else{
-            // TODO error
-        }
+    public boolean inviaNodiSelezionati(){
+        // TODO aggiornare nel db locale?
+        boolean result = this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati);
+        if(result)
+            this.nodiSelezionati.clear();
+        return result;
     }
 
     public Mappa richiediMappa() {

@@ -1,5 +1,6 @@
 package com.ids.ids.invioSegnalazioneEmergenza.boundary;
 
+import com.ids.ids.R;
 import com.ids.ids.invioSegnalazioneEmergenza.entity.Mappa;
 import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
 
@@ -15,11 +16,13 @@ public class CommunicationServer{
      * riceve come risposta l'eventuale successo dell'operazione
      */
     public boolean inviaNodiSottoIncendio(ArrayList<Nodo> nodi){
+        // TODO dummy
         return true;
     }
 
     public Mappa richiediMappa(int piano){
-        return null;
+        // TODO dummy
+        return new Mappa(145, R.drawable.map145, null);
     }
 
     public static CommunicationServer getInstance(){

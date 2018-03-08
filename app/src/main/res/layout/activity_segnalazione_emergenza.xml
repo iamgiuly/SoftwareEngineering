@@ -2,15 +2,15 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.ids.ids.invioSegnalazioneEmergenza.ui.SegnalazioneEmergenzaActivity">
 
     <ImageView
-        android:id="@+id/mapImageView"
+        android:id="@+id/mappaImageView"
         android:layout_width="match_parent"
-        android:layout_height="568dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         app:srcCompat="@drawable/ic_launcher_background"
         tools:ignore="VectorDrawableCompat" />
 

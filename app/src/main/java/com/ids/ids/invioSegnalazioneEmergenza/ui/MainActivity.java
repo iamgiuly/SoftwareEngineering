@@ -15,14 +15,13 @@ import com.ids.ids.invioSegnalazioneEmergenza.control.UserController;
  * a tale bottone viene associato un listener, che al tap su di esso richiama il metodo listenerBottoneEmergenza() il quale:
  *  - rimanda l'utente online alla SegnalazioneEmergenzaActivity
  *  - mostra un messaggio di errore all'utente offline
- * TODO togliamo il bottone "Riconnetti"? Basta un messaggio "Riprovare" e lasciamo "Segnala Emergenza"
  */
 public class MainActivity extends AppCompatActivity {
 
     private UserController userController = UserController.getInstance();
 
     private Button segnalaEmergenzaButton;
-    private TextView messaggioErroreTextView;       //invisibile all'inizio
+    private TextView messaggioErroreTextView;       // invisibile all'inizio
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,

@@ -7,10 +7,11 @@ import java.util.ArrayList;
 public class Mappa {
 
     private int piano;
-    private Image piantina;
+    private int piantina;           //è un'immagine, è intero perché fa riferimento al codice del drawable associato
     private ArrayList<Nodo> nodi;
 
-    public Mappa(Image piantina, ArrayList<Nodo> nodi) {
+    public Mappa(int piano, int piantina, ArrayList<Nodo> nodi) {
+        this.piano = piano;
         this.piantina = piantina;
         this.nodi = nodi;
     }
@@ -22,10 +23,10 @@ public class Mappa {
         this.piano = piano;
     }
 
-    public Image getPiantina(){
+    public int getPiantina(){
         return this.piantina;
     }
-    public void setPiantina(Image piantina){
+    public void setPiantina(int piantina){
         this.piantina = piantina;
     }
 
