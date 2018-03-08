@@ -11,8 +11,10 @@ import com.ids.ids.R;
 import com.ids.ids.invioSegnalazioneEmergenza.control.UserController;
 
 /**
- * visualizzata all'apertura dell'applicazione,
- * mostra il bottone "Segnala Emergenza" o il bottone "Riconnetti" con un messaggio di errore
+ * Questa activity viene mostrata all'apertura dell'applicazione, visualizza il bottone "Segnala Emergenza",
+ * a tale bottone viene associato un listener, che al tap su di esso richiama il metodo listenerBottoneEmergenza() il quale:
+ *  - rimanda l'utente online alla SegnalazioneEmergenzaActivity
+ *  - mostra un messaggio di errore all'utente offline
  * TODO togliamo il bottone "Riconnetti"? Basta un messaggio "Riprovare" e lasciamo "Segnala Emergenza"
  */
 public class MainActivity extends AppCompatActivity {
@@ -20,8 +22,13 @@ public class MainActivity extends AppCompatActivity {
     private UserController userController = UserController.getInstance();
 
     private Button segnalaEmergenzaButton;
-    private TextView messaggioErroreTextView;
+    private TextView messaggioErroreTextView;       //invisibile all'inizio
 
+    /**
+     * Vengono visualizzati gli elementi della UI e settati i listener,
+     * viene inizializzato il Controller dell'utente
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
         userController.init(getApplicationContext());
 
-        segnalaEmergenzaButton = (Button) findViewById(R.id.segnalaEmergenzaButton);
+        segnalaEmergenzaButton = findViewById(R.id.segnalaEmergenzaButton);
         segnalaEmergenzaButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -37,14 +44,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        messaggioErroreTextView = (TextView) findViewById(R.id.messaggioErroreTextView);
+        messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
     }
 
     /**
-     * richiamato quando l'utente fa tap sul bottone "Segnala Emergenza",
-     * viene controllata la connessione:
+     * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
      *  - se attiva viene avviata l'activity SegnalazioneEmergenzaActivity
-     *  - altrimenti viene mostrato un messaggio di errore e l'utente può premere nuovamente il bottone quando si riconnette
+     *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
      */
     public void listenerBottoneEmergenza(){
         if(this.userController.controllaConnessione()){
@@ -52,11 +58,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         else
-            this.visualizzaMessaggioRiconnetti();
-    }
-
-    private void visualizzaMessaggioRiconnetti(){
-        if(this.messaggioErroreTextView != null)
             this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 

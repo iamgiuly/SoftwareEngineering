@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 public class CommunicationServer{
 
+    private static CommunicationServer instance = null;
+
     /**
      * ottiene come parametri gli ID dei nodi da inviare nella segnalazione,
      * invia una richiesta RESTful con questi ID,
@@ -16,8 +18,14 @@ public class CommunicationServer{
         return true;
     }
 
-    public Mappa richiediMappa(){
+    public Mappa richiediMappa(int piano){
         return null;
+    }
+
+    public static CommunicationServer getInstance(){
+        if(instance == null)
+            instance = new CommunicationServer();
+        return instance;
     }
 
 }

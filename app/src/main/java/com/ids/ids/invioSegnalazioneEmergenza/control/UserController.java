@@ -4,12 +4,12 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 
+import com.ids.ids.invioSegnalazioneEmergenza.boundary.CommunicationBeacon;
 import com.ids.ids.invioSegnalazioneEmergenza.boundary.CommunicationServer;
 import com.ids.ids.invioSegnalazioneEmergenza.entity.Mappa;
 import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
+import com.ids.ids.invioSegnalazioneEmergenza.entity.NodoDAO;
 
 import java.util.ArrayList;
 
@@ -20,46 +20,29 @@ public class UserController extends Application{
 
     private Context context;
 
-    private CommunicationServer communicationServer;
+    private CommunicationServer communicationServer = CommunicationServer.getInstance();
+    private CommunicationBeacon communicationBeacon = CommunicationBeacon.getInstance();
     private ArrayList<Nodo> nodiSelezionati;
-
-    public UserController(){
-        this.communicationServer = new CommunicationServer();
-    }
 
     public void init(Context context){
         this.context = context;
     }
 
     public boolean controllaConnessione(){
-        /*ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        return wifi.isConnected();*/
-
-
-        //getSystemService andrebbe richiamato da un'activity... TODO risolvere
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-
-        /*WifiManager wifiMgr = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        if(wifiMgr.isWifiEnabled()){
-            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            if(wifiInfo.getNetworkId() == -1)
-                return false;                   //not connected to an access point
-            return true;                        //connected to an access point
-        }
-        return false;                           //Wi-Fi adapter is OFF*/
     }
 
-    public void gestisciTapNodiSottoIncendio(Nodo nodo){
+    public void selezionaNodo(String idNodo){
+        Nodo nodo = NodoDAO.find(idNodo);
         this.nodiSelezionati.add(nodo);
     }
 
     // TODO viene mostrata la view con la mappa su cui selezionare i nodi (creare altra Activity?)
     public void gestisciTapBottoneEmergenza(){
         // TODO ...
-        this.communicationServer.richiediMappa();
+        //this.communicationServer.richiediMappa();
     }
 
     // TODO i nodi selezionati vengono inviati al server attraverso una richiesta RESTful
@@ -74,7 +57,8 @@ public class UserController extends Application{
     }
 
     public Mappa richiediMappa() {
-        return this.communicationServer.richiediMappa();
+        int piano = this.communicationBeacon.getPianoUtente();
+        return this.communicationServer.richiediMappa(piano);
     }
 
     public static UserController getInstance(){

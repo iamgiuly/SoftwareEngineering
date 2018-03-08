@@ -6,12 +6,20 @@ import java.util.ArrayList;
 
 public class Mappa {
 
+    private int piano;
     private Image piantina;
     private ArrayList<Nodo> nodi;
 
     public Mappa(Image piantina, ArrayList<Nodo> nodi) {
         this.piantina = piantina;
         this.nodi = nodi;
+    }
+
+    public int getPiano(){
+        return this.piano;
+    }
+    public void setPiano(int piano){
+        this.piano = piano;
     }
 
     public Image getPiantina(){
