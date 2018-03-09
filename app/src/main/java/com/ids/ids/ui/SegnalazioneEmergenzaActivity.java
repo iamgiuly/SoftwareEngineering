@@ -1,29 +1,22 @@
-package com.ids.ids.invioSegnalazioneEmergenza.ui;
+package com.ids.ids.ui;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ids.ids.R;
-import com.ids.ids.invioSegnalazioneEmergenza.control.UserController;
-import com.ids.ids.invioSegnalazioneEmergenza.entity.Mappa;
-import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
+import com.ids.ids.control.UserController;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.Nodo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

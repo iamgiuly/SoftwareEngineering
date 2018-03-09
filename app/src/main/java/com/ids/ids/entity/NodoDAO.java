@@ -1,4 +1,4 @@
-package com.ids.ids.invioSegnalazioneEmergenza.entity;
+package com.ids.ids.entity;
 
 import java.util.ArrayList;
 

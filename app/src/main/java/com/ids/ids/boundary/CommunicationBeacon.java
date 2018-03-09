@@ -1,4 +1,4 @@
-package com.ids.ids.invioSegnalazioneEmergenza.boundary;
+package com.ids.ids.boundary;
 
 public class CommunicationBeacon {
 

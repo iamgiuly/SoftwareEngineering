@@ -1,4 +1,4 @@
-package com.ids.ids.invioSegnalazioneEmergenza.ui;
+package com.ids.ids.ui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ids.ids.R;
-import com.ids.ids.invioSegnalazioneEmergenza.control.UserController;
+import com.ids.ids.control.UserController;
 
 /**
  * Questa activity viene mostrata all'apertura dell'applicazione, visualizza il bottone "Segnala Emergenza",

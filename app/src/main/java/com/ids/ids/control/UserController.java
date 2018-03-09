@@ -1,16 +1,15 @@
-package com.ids.ids.invioSegnalazioneEmergenza.control;
+package com.ids.ids.control;
 
 import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
-import com.ids.ids.invioSegnalazioneEmergenza.boundary.CommunicationBeacon;
-import com.ids.ids.invioSegnalazioneEmergenza.boundary.CommunicationServer;
-import com.ids.ids.invioSegnalazioneEmergenza.entity.Mappa;
-import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
-import com.ids.ids.invioSegnalazioneEmergenza.entity.NodoDAO;
+import com.ids.ids.boundary.CommunicationBeacon;
+import com.ids.ids.boundary.CommunicationServer;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.Nodo;
+import com.ids.ids.entity.NodoDAO;
 
 import java.util.ArrayList;
 

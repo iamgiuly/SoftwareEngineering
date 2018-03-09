@@ -1,9 +1,9 @@
-package com.ids.ids.invioSegnalazioneEmergenza.boundary;
+package com.ids.ids.boundary;
 
 import com.ids.ids.R;
-import com.ids.ids.invioSegnalazioneEmergenza.entity.Mappa;
-import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
-import com.ids.ids.invioSegnalazioneEmergenza.entity.NodoDAO;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.Nodo;
+import com.ids.ids.entity.NodoDAO;
 
 import java.util.ArrayList;
 

@@ -1,15 +1,21 @@
-package com.ids.ids.visualizzazioneMappaEmergenza.ui;
+package com.ids.ids.ui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ids.ids.R;
-import com.ids.ids.invioSegnalazioneEmergenza.control.UserController;
-import com.ids.ids.invioSegnalazioneEmergenza.ui.SegnalazioneEmergenzaActivity;
+import com.ids.ids.control.UserController;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.ui.SegnalazioneEmergenzaActivity;
+
+import java.util.Map;
 
 /**
  * Questa activity viene mostrata all'apertura dell'applicazione, visualizza il bottone "Segnala Emergenza",
@@ -21,8 +27,15 @@ public class EmergenzaActivity extends AppCompatActivity {
 
     private UserController userController = UserController.getInstance();
 
+    private Mappa mappa;
+
     private Button segnalaEmergenzaButton;
     private TextView messaggioErroreTextView;       // invisibile all'inizio
+    private ImageView mappaImageView;
+    private Map<Integer, ImageButton> nodi;         // da creare dinamicamente
+
+    private int lunghezzaMappa, altezzaMappa;
+    private boolean rendered = false;
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
@@ -45,6 +58,21 @@ public class EmergenzaActivity extends AppCompatActivity {
         });
 
         messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
+
+        this.mappa = userController.richiediMappa();
+        mappaImageView = findViewById(R.id.mappaImageView);
+        ViewTreeObserver viewTree = mappaImageView.getViewTreeObserver();
+        viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            public boolean onPreDraw() {
+                if(!rendered){
+                    lunghezzaMappa = mappaImageView.getMeasuredWidth();
+                    altezzaMappa = mappaImageView.getMeasuredHeight();
+                    //visualizzaMappa();
+                    rendered = true;
+                }
+                return true;
+            }
+        });
     }
 
     /**

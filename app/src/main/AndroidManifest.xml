@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".invioSegnalazioneEmergenza.ui.MainActivity">
+        <activity android:name="ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,10 +20,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".invioSegnalazioneEmergenza.ui.SegnalazioneEmergenzaActivity"
+            android:name="ui.SegnalazioneEmergenzaActivity"
             android:label="@string/title_activity_segnalazione_emergenza"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="visualizzazioneMappaEmergenza.ui.EmergenzaActivity"></activity>
+        <activity android:name="ui.EmergenzaActivity"></activity>
     </application>
 
 </manifest>

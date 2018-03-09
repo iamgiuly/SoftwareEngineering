@@ -1,6 +1,4 @@
-package com.ids.ids.invioSegnalazioneEmergenza.entity;
-
-import android.media.Image;
+package com.ids.ids.entity;
 
 import java.util.ArrayList;
 
