@@ -28,6 +28,10 @@ public class UserController extends Application{
         this.context = context;
     }
 
+    /**
+     * Verifica che l'utente sia connesso alla rete Wi-Fi
+     * @return true se l'utente è connesso al Wi-Fi
+     */
     public boolean controllaConnessione(){
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -35,6 +39,11 @@ public class UserController extends Application{
         return true;
     }
 
+    /**
+     * Verifica che il nodo con un certo id sia selezionato
+     * @param idNodo id del nodo da controllare
+     * @return true se il nodo con l'id passato è selezionato
+     */
     public boolean nodoSelezionato(int idNodo){
         for(Nodo nodo : this.nodiSelezionati)
             if(nodo.getId() == idNodo)
@@ -43,7 +52,7 @@ public class UserController extends Application{
     }
 
     /**
-     *
+     * Aggiunge o rimuove dalla lista dei nodi selezionati il nodo con l'id passato come parametro
      * @param idNodo id del nodo da selezionare o deselezionare
      * @return true se c'è almeno un nodo selezionato
      */
@@ -59,6 +68,12 @@ public class UserController extends Application{
         return true;
     }
 
+    /**
+     * I nodi selezionati vengono settati nel db locale come sotto incendio,
+     * viene fatto lo stesso nel db remoto inviando una richiesta RESTful al server,
+     * quindi la lista dei nodi selezionati viene svuotata
+     * @return true se l'operazione ha successo
+     */
     public boolean inviaNodiSelezionati(){
         // TODO aggiornare nel db locale?
         boolean result = this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati);
@@ -67,6 +82,10 @@ public class UserController extends Application{
         return result;
     }
 
+    /**
+     * Recupera la mappa del piano in cui si trova l'utente in base alla sua posizione rilevata dal beacon
+     * @return mappa del piano in cui si trova l'utente
+     */
     public Mappa richiediMappa() {
         int piano = this.communicationBeacon.getPianoUtente();
         return this.communicationServer.richiediMappa(piano);

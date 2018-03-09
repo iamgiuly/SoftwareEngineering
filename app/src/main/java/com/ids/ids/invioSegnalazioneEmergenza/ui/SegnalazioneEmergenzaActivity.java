@@ -115,11 +115,21 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Calcola la coordinata X assoluta di un nodo
+     * @param xNodoRelativa valore da 0 a 100 con riferimento alla posizione relativa alla lunghezza della mappa
+     * @return coordinata X espressa in pixel sullo schermo
+     */
     private int xNodoAssoluta(int xNodoRelativa){
         float xMappa = this.mappaImageView.getX();
         return (int) (xMappa + (this.lunghezzaMappa * xNodoRelativa) / 100);
     }
 
+    /**
+     * Calcola la coordinata Y assoluta di un nodo
+     * @param yNodoRelativa valore da 0 a 100 con riferimento alla posizione relativa all'altezza della mappa
+     * @return coordinata Y espressa in pixel sullo schermo
+     */
     private int yNodoAssoluta(int yNodoRelativa){
         float yMappa = this.mappaImageView.getY();
         return (int) (yMappa + (this.altezzaMappa * yNodoRelativa) / 100);
