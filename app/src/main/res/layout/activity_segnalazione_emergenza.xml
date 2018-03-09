@@ -9,7 +9,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="550dp">
+        android:layout_height="520dp">
 
         <TextView
             android:id="@+id/messaggioErroreTextView"

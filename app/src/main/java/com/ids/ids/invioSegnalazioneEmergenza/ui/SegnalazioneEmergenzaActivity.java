@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,7 +44,7 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
     private Button inviaNodiButton;                 // invisibile all'inizio
     private TextView messaggioErroreTextView;       // invisibile all'inizio
     private ImageView mappaImageView;
-    private Map<Integer, Button> nodi;               // da creare dinamicamente
+    private Map<Integer, ImageButton> nodi;         // da creare dinamicamente
 
     private int lunghezzaMappa, altezzaMappa;
     private boolean rendered = false;
@@ -88,36 +89,29 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
      * L'immagine associata alla mappa caricata viene visualizzata,
      * i nodi vengono visualizzati nelle coordinate opportune,
      * vengono associati i listener ai nodi che richiamano il metodo listenerNodoSelezionato()
+     * TODO i nodi già sotto incendio (presi dal db) devono già risultare selezionati
      */
     private void visualizzaMappa(){
-        // TODO settare immagine mappa con la mappa caricata
         this.mappaImageView.setImageResource(mappa.getPiantina());
-        // TODO visualizzare nodi nelle coordinate opportune
         ConstraintLayout layout = findViewById(R.id.layout);
-
         this.nodi = new HashMap<>();
-
         for (Nodo nodo : this.mappa.getNodi()) {
-            Button bottoneNodo = new Button(this);
-            bottoneNodo.setId(nodo.getId());  // TODO ID NODO
+            ImageButton bottoneNodo = new ImageButton(this);
+            bottoneNodo.setImageResource(Nodo.IMG_BASE);
+            bottoneNodo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            bottoneNodo.setBackgroundColor(Color.TRANSPARENT);
+            bottoneNodo.setId(nodo.getId());
             bottoneNodo.setX(this.xNodoAssoluta(nodo.getX()));
             bottoneNodo.setY(this.yNodoAssoluta(nodo.getY()));
-            bottoneNodo.setWidth(10);
-            bottoneNodo.setHeight(10);
-            bottoneNodo.setBackgroundColor(Color.BLUE);
+            bottoneNodo.setLayoutParams(new ConstraintLayout.LayoutParams(Nodo.dim, Nodo.dim));
             layout.addView(bottoneNodo);
-
             bottoneNodo.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v){
                     listenerNodoSelezionato(v.getId());
                 }
             });
-
             this.nodi.put(nodo.getId(), bottoneNodo);
-
-            // TODO aggiungere a lista nodi
-
         }
     }
 
@@ -138,10 +132,10 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
      * rendere visibile o invisibile il bottone "Invia Nodi"
      */
     public void listenerNodoSelezionato(int idNodo){
-        if(userController.nodoSelezionato(idNodo))
-            this.nodi.get(idNodo).setBackgroundColor(Color.BLUE);
-        else
-            this.nodi.get(idNodo).setBackgroundColor(Color.RED);
+        int icon = Nodo.IMG_INCENDIO;
+        if(userController.nodoSelezionato(idNodo))          // deseleziona
+            icon = Nodo.IMG_BASE;
+        this.nodi.get(idNodo).setImageResource(icon);
         // il bottone "Invia Nodi" viene reso visibile o invisibile a seconda che ci siano nodi selezionati
         if(this.userController.selezionaNodo(idNodo))
             this.inviaNodiButton.setVisibility(View.VISIBLE);

@@ -2,7 +2,7 @@ package com.ids.ids.invioSegnalazioneEmergenza.entity;
 
 import java.util.ArrayList;
 
-// TODO singleton
+// TODO singleton?
 public class NodoDAO {
 
     public static Nodo find(int id){

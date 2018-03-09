@@ -1,11 +1,20 @@
 package com.ids.ids.invioSegnalazioneEmergenza.entity;
 
+import com.ids.ids.R;
+
 public class Nodo {
 
     public static final int TIPO_BASE = 0;
     public static final int TIPO_UTENTE = 1;
     public static final int TIPO_USCITA = 2;
     public static final int TIPO_INCENDIO = 3;
+
+    public static final int IMG_BASE = R.drawable.nodo_base;
+    public static final int IMG_UTENTE = R.drawable.posizione;
+    public static final int IMG_USCITA = R.drawable.nodo_uscita;
+    public static final int IMG_INCENDIO = R.drawable.nodo_incendio;
+
+    public static final int dim = 80;
 
     private int id;
     private String beaconId;
