@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import com.ids.ids.invioSegnalazioneEmergenza.boundary.CommunicationBeacon;
 import com.ids.ids.invioSegnalazioneEmergenza.boundary.CommunicationServer;
@@ -21,7 +22,7 @@ public class UserController extends Application{
 
     private CommunicationServer communicationServer = CommunicationServer.getInstance();
     private CommunicationBeacon communicationBeacon = CommunicationBeacon.getInstance();
-    private ArrayList<Nodo> nodiSelezionati = null;
+    private ArrayList<Nodo> nodiSelezionati = new ArrayList<>();
 
     public void init(Context context){
         this.context = context;
@@ -34,17 +35,26 @@ public class UserController extends Application{
         return true;
     }
 
+    public boolean nodoSelezionato(int idNodo){
+        for(Nodo nodo : this.nodiSelezionati)
+            if(nodo.getId() == idNodo)
+                return true;
+        return false;
+    }
+
     /**
      *
      * @param idNodo id del nodo da selezionare o deselezionare
      * @return true se c'è almeno un nodo selezionato
      */
-    public boolean selezionaNodo(String idNodo){
-        Nodo nodo = NodoDAO.find(idNodo);
-        if(this.nodiSelezionati.contains(nodo)) {
-            this.nodiSelezionati.remove(nodo);
-            return !this.nodiSelezionati.isEmpty();
+    public boolean selezionaNodo(int idNodo){
+        for(Nodo nodo : this.nodiSelezionati){
+            if(nodo.getId() == idNodo){
+                this.nodiSelezionati.remove(nodo);
+                return !this.nodiSelezionati.isEmpty();
+            }
         }
+        Nodo nodo = NodoDAO.find(idNodo);
         this.nodiSelezionati.add(nodo);
         return true;
     }

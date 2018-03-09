@@ -3,12 +3,14 @@ package com.ids.ids.invioSegnalazioneEmergenza.ui;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -21,6 +23,8 @@ import com.ids.ids.invioSegnalazioneEmergenza.entity.Mappa;
 import com.ids.ids.invioSegnalazioneEmergenza.entity.Nodo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Questa activity viene mostrata al tap sul bottone "Segnala Emergenza",
@@ -39,7 +43,10 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
     private Button inviaNodiButton;                 // invisibile all'inizio
     private TextView messaggioErroreTextView;       // invisibile all'inizio
     private ImageView mappaImageView;
-    private ArrayList<Button> nodi;                 // da creare dinamicamente  TODO dictionary id -> button
+    private Map<Integer, Button> nodi;               // da creare dinamicamente
+
+    private int lunghezzaMappa, altezzaMappa;
+    private boolean rendered = false;
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
@@ -63,7 +70,18 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
 
         this.mappa = userController.richiediMappa();
         mappaImageView = findViewById(R.id.mappaImageView);
-        this.visualizzaMappa();
+        ViewTreeObserver viewTree = mappaImageView.getViewTreeObserver();
+        viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            public boolean onPreDraw() {
+                if(!rendered){
+                    lunghezzaMappa = mappaImageView.getMeasuredWidth();
+                    altezzaMappa = mappaImageView.getMeasuredHeight();
+                    visualizzaMappa();
+                    rendered = true;
+                }
+                return true;
+            }
+        });
     }
 
     /**
@@ -76,40 +94,41 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
         this.mappaImageView.setImageResource(mappa.getPiantina());
         // TODO visualizzare nodi nelle coordinate opportune
         ConstraintLayout layout = findViewById(R.id.layout);
-        ConstraintSet set = new ConstraintSet();
-        set.clone(layout);
+
+        this.nodi = new HashMap<>();
 
         for (Nodo nodo : this.mappa.getNodi()) {
             Button bottoneNodo = new Button(this);
-            bottoneNodo.setId(nodo.getIntId());  // TODO ID NODO
-            //bottoneNodo.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.WRAP_CONTENT, CoordinatorLayout.LayoutParams.WRAP_CONTENT));
+            bottoneNodo.setId(nodo.getId());  // TODO ID NODO
             bottoneNodo.setX(this.xNodoAssoluta(nodo.getX()));
             bottoneNodo.setY(this.yNodoAssoluta(nodo.getY()));
+            bottoneNodo.setWidth(10);
+            bottoneNodo.setHeight(10);
             bottoneNodo.setBackgroundColor(Color.BLUE);
             layout.addView(bottoneNodo);
 
-            set.connect(bottoneNodo.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
-            set.connect(bottoneNodo.getId(),ConstraintSet.RIGHT,ConstraintSet.PARENT_ID,ConstraintSet.RIGHT,0);
-            set.connect(bottoneNodo.getId(),ConstraintSet.LEFT,ConstraintSet.PARENT_ID,ConstraintSet.LEFT,0);
-            set.applyTo(layout);
+            bottoneNodo.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    listenerNodoSelezionato(v.getId());
+                }
+            });
+
+            this.nodi.put(nodo.getId(), bottoneNodo);
 
             // TODO aggiungere a lista nodi
 
         }
-
-        // TODO associare listener ai nodi
     }
 
     private int xNodoAssoluta(int xNodoRelativa){
-        float xMappa = mappaImageView.getX();
-        float lunghezzaMappa = 100;//mappaImageView.getWidth();
-        return (int) (xMappa + (lunghezzaMappa * xNodoRelativa) / 100);
+        float xMappa = this.mappaImageView.getX();
+        return (int) (xMappa + (this.lunghezzaMappa * xNodoRelativa) / 100);
     }
 
     private int yNodoAssoluta(int yNodoRelativa){
-        float yMappa = mappaImageView.getY();
-        float altezzaMappa = 100;//mappaImageView.getHeight();
-        return (int) (yMappa + (altezzaMappa * yNodoRelativa) / 100);
+        float yMappa = this.mappaImageView.getY();
+        return (int) (yMappa + (this.altezzaMappa * yNodoRelativa) / 100);
     }
 
     /**
@@ -118,15 +137,11 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
      * viene quindi controllato se c'è almeno un nodo selezionato in modo tale da
      * rendere visibile o invisibile il bottone "Invia Nodi"
      */
-    public void listenerNodoSelezionato(String idNodo){
-        // il bottone associato al nodo selezionato viene contrassegnato graficamente come tale
-        for (Button nodo : this.nodi) {
-            if(nodo.getId() == Integer.parseInt(idNodo)){
-                nodo.setBackgroundColor(Color.RED);
-                break;
-            }
-        }
-
+    public void listenerNodoSelezionato(int idNodo){
+        if(userController.nodoSelezionato(idNodo))
+            this.nodi.get(idNodo).setBackgroundColor(Color.BLUE);
+        else
+            this.nodi.get(idNodo).setBackgroundColor(Color.RED);
         // il bottone "Invia Nodi" viene reso visibile o invisibile a seconda che ci siano nodi selezionati
         if(this.userController.selezionaNodo(idNodo))
             this.inviaNodiButton.setVisibility(View.VISIBLE);
