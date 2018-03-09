@@ -30,7 +30,8 @@ public class UserController extends Application{
     public boolean controllaConnessione(){
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+        //return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+        return true;
     }
 
     /**

@@ -3,12 +3,17 @@ package com.ids.ids.invioSegnalazioneEmergenza.ui;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ids.ids.R;
 import com.ids.ids.invioSegnalazioneEmergenza.control.UserController;
@@ -70,33 +75,41 @@ public class SegnalazioneEmergenzaActivity extends AppCompatActivity {
         // TODO settare immagine mappa con la mappa caricata
         this.mappaImageView.setImageResource(mappa.getPiantina());
         // TODO visualizzare nodi nelle coordinate opportune
-        /*//the layout on which you are working
-        CoordinatorLayout layout = findViewById(R.id.layout);
+        ConstraintLayout layout = findViewById(R.id.layout);
+        ConstraintSet set = new ConstraintSet();
+        set.clone(layout);
 
         for (Nodo nodo : this.mappa.getNodi()) {
-            //set the properties for button
             Button bottoneNodo = new Button(this);
+            bottoneNodo.setId(nodo.getIntId());  // TODO ID NODO
             //bottoneNodo.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.WRAP_CONTENT, CoordinatorLayout.LayoutParams.WRAP_CONTENT));
             bottoneNodo.setX(this.xNodoAssoluta(nodo.getX()));
             bottoneNodo.setY(this.yNodoAssoluta(nodo.getY()));
             bottoneNodo.setBackgroundColor(Color.BLUE);
-            bottoneNodo.setId(Integer.parseInt(nodo.getId()));  // TODO ID NODO
+            layout.addView(bottoneNodo);
+
+            set.connect(bottoneNodo.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
+            set.connect(bottoneNodo.getId(),ConstraintSet.RIGHT,ConstraintSet.PARENT_ID,ConstraintSet.RIGHT,0);
+            set.connect(bottoneNodo.getId(),ConstraintSet.LEFT,ConstraintSet.PARENT_ID,ConstraintSet.LEFT,0);
+            set.applyTo(layout);
 
             // TODO aggiungere a lista nodi
 
-            //add button to the layout
-            layout.addView(bottoneNodo);
-        }*/
+        }
 
         // TODO associare listener ai nodi
     }
 
     private int xNodoAssoluta(int xNodoRelativa){
-        return xNodoRelativa;
+        float xMappa = mappaImageView.getX();
+        float lunghezzaMappa = 100;//mappaImageView.getWidth();
+        return (int) (xMappa + (lunghezzaMappa * xNodoRelativa) / 100);
     }
 
     private int yNodoAssoluta(int yNodoRelativa){
-        return yNodoRelativa;
+        float yMappa = mappaImageView.getY();
+        float altezzaMappa = 100;//mappaImageView.getHeight();
+        return (int) (yMappa + (altezzaMappa * yNodoRelativa) / 100);
     }
 
     /**

@@ -11,19 +11,27 @@
         android:id="@+id/segnalaEmergenzaButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="106dp"
+        android:layout_marginStart="106dp"
+        android:layout_marginTop="284dp"
         android:text="Segnala Emergenza"
-        tools:layout_editor_absoluteX="106dp"
-        tools:layout_editor_absoluteY="360dp"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/messaggioErroreTextView" />
 
     <TextView
         android:id="@+id/messaggioErroreTextView"
         android:layout_width="wrap_content"
         android:layout_height="38dp"
+        android:layout_marginBottom="284dp"
+        android:layout_marginLeft="91dp"
+        android:layout_marginRight="94dp"
+        android:layout_marginTop="38dp"
         android:text="Connessione assente. Riprovare"
-        tools:layout_editor_absoluteX="93dp"
-        tools:layout_editor_absoluteY="38dp"
         android:visibility="invisible"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintBottom_toTopOf="@+id/segnalaEmergenzaButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

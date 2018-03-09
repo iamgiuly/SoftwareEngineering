@@ -2,36 +2,55 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.ids.ids.invioSegnalazioneEmergenza.ui.SegnalazioneEmergenzaActivity">
 
-    <ImageView
-        android:id="@+id/mappaImageView"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:srcCompat="@drawable/ic_launcher_background"
-        tools:ignore="VectorDrawableCompat" />
+        android:layout_height="597dp">
 
-    <Button
-        android:id="@+id/inviaNodiButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Invia Nodi"
-        tools:layout_editor_absoluteX="106dp"
-        tools:layout_editor_absoluteY="360dp"
-        android:visibility="invisible"
-        tools:ignore="MissingConstraints" />
+        <TextView
+            android:id="@+id/messaggioErroreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginLeft="92dp"
+            android:layout_marginRight="93dp"
+            android:layout_marginTop="38dp"
+            android:text="Connessione assente. Riprovare"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mappaImageView" />
 
-    <TextView
-        android:id="@+id/messaggioErroreTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="38dp"
-        android:text="Connessione assente. Riprovare"
-        tools:layout_editor_absoluteX="93dp"
-        tools:layout_editor_absoluteY="38dp"
-        android:visibility="invisible"
-        tools:ignore="MissingConstraints" />
+        <ImageView
+            android:id="@+id/mappaImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_launcher_background"
+            tools:ignore="VectorDrawableCompat" />
+
+        <Button
+            android:id="@+id/inviaNodiButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="51dp"
+            android:layout_marginLeft="143dp"
+            android:layout_marginRight="145dp"
+            android:text="Invia Nodi"
+            android:visibility="invisible"
+            app:layout_anchor="@+id/mappaImageView"
+            app:layout_anchorGravity="bottom|center"
+            app:layout_constraintBottom_toTopOf="@+id/mappaImageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>

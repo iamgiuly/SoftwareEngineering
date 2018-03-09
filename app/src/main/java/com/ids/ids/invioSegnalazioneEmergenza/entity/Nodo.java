@@ -2,11 +2,16 @@ package com.ids.ids.invioSegnalazioneEmergenza.entity;
 
 public class Nodo {
 
-    private String id;
-    private int x, y;
-    private String tipo;    //TODO enum "SottoIncendio", "PosizioneUtente", "Uscita"...
+    public static final int TIPO_BASE = 0;
+    public static final int TIPO_UTENTE = 1;
+    public static final int TIPO_USCITA = 2;
+    public static final int TIPO_INCENDIO = 3;
 
-    public Nodo(String id, int x, int y, String tipo) {
+    private String id;
+    private int x, y;       // valori da 0 a 100 che indicano le coordinate relative alla mappa
+    private int tipo;
+
+    public Nodo(String id, int x, int y, int tipo) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -15,6 +20,9 @@ public class Nodo {
 
     public String getId(){
         return this.id;
+    }
+    public int getIntId(){
+        return this.id.hashCode();
     }
     public void setId(String id){
         this.id = id;
@@ -34,10 +42,10 @@ public class Nodo {
         this.y = y;
     }
 
-    public String getTipo(){
+    public int getTipo(){
         return this.tipo;
     }
-    public void setTipo(String tipo){
+    public void setTipo(int tipo){
         this.tipo = tipo;
     }
 }
