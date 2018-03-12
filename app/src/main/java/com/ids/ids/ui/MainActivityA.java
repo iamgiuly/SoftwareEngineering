@@ -17,8 +17,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.ids.ids.boundary.BeaconScanner;
+import com.ids.ids.control.UserController;
 
 
 public class MainActivityA extends AppCompatActivity {
@@ -35,6 +37,16 @@ public class MainActivityA extends AppCompatActivity {
     private BeaconScanner COMbeacon;
 
 
+
+    private UserController userController = UserController.getInstance();
+
+    private Button segnalazioneButton;
+    private Button emergenzaButton;
+    private TextView messaggioErroreTextView;       // invisibile all'inizio
+
+
+
+
     @TargetApi(Build.VERSION_CODES.M)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
@@ -43,18 +55,39 @@ public class MainActivityA extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+
+
+        userController.init(getApplicationContext());
+
+
         COMbeacon = new BeaconScanner(this);
 
-         //Al tap su segnala emergenza si invoca il metodo Scansione che avvia la scansione ogni tot di millisecondi
-        SegnalaEmergenzaButton = findViewById(R.id.segnalazioneButton);
-        SegnalaEmergenzaButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-
+        segnalazioneButton = findViewById(R.id.segnalazioneButton);
+        segnalazioneButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
                 COMbeacon.Scansione(true);
-
+                listenerBottoneSegnalazione();
             }
         });
+
+        emergenzaButton = findViewById(R.id.emergenzaButton);
+        emergenzaButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                listenerBottoneEmergenza();
+            }
+        });
+
+        messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
+
+
+
+
+
+
 
 
         //BluethoothManager è utilizzata per ottenere una istanza di Adapter
@@ -70,6 +103,37 @@ public class MainActivityA extends AppCompatActivity {
 
 
 
+    }
+
+
+    /**
+     * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
+     *  - se attiva viene avviata l'activity EmergenzaActivity
+     *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     */
+    public void listenerBottoneSegnalazione(){
+        if(this.userController.controllaConnessione()){
+            this.userController.setModalita(this.userController.MODALITA_SEGNALAZIONE);
+            Intent intent = new Intent(this, EmergenzaActivity.class);
+            startActivity(intent);
+        }
+        else
+            this.messaggioErroreTextView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
+     *  - se attiva viene avviata l'activity EmergenzaActivity
+     *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     */
+    public void listenerBottoneEmergenza(){
+        if(this.userController.controllaConnessione()){
+            this.userController.setModalita(this.userController.MODALITA_EMERGENZA);
+            Intent intent = new Intent(this, EmergenzaActivity.class);
+            startActivity(intent);
+        }
+        else
+            this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 
     private boolean AbilitaBLE(){
