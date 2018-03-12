@@ -1,6 +1,6 @@
 package com.ids.ids.entity;
 
-import com.ids.ids.R;
+import com.ids.ids.ui.R;
 
 public class Nodo {
 

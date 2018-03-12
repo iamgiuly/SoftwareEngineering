@@ -5,7 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.ids.ids.boundary.CommunicationBeacon;
+import com.ids.ids.boundary.BeaconScanner;
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
@@ -23,7 +23,7 @@ public class UserController extends Application{
     private Context context;
 
     private CommunicationServer communicationServer = CommunicationServer.getInstance();
-    private CommunicationBeacon communicationBeacon = CommunicationBeacon.getInstance();
+    //private BeaconScanner beaconScanner = BeaconScanner.getInstance();
     private ArrayList<Nodo> nodiSelezionati = new ArrayList<>();
 
     private int modalita = MODALITA_SEGNALAZIONE;
@@ -91,7 +91,7 @@ public class UserController extends Application{
      * @return mappa del piano in cui si trova l'utente
      */
     public Mappa richiediMappa() {
-        int piano = this.communicationBeacon.getPianoUtente();
+        int piano = 150;// TODO this.beaconScanner.getPianoUtente();
         return this.communicationServer.richiediMappa(piano);
     }
 
