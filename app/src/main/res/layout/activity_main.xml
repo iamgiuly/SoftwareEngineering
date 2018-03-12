@@ -5,19 +5,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ids.ids.invioSegnalazioneEmergenza.ui.MainActivity">
+    tools:context="com.ids.ids.ui.MainActivity">
 
     <Button
-        android:id="@+id/segnalaEmergenzaButton"
+        android:id="@+id/segnalazioneButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="106dp"
-        android:layout_marginStart="106dp"
+        android:layout_marginLeft="105dp"
+        android:layout_marginRight="105dp"
         android:layout_marginTop="284dp"
         android:text="Segnala Emergenza"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/messaggioErroreTextView" />
+
+    <Button
+        android:id="@+id/emergenzaButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="80dp"
+        android:layout_marginLeft="105dp"
+        android:layout_marginRight="105dp"
+        android:layout_marginTop="30dp"
+        android:text="Emergenza"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/segnalazioneButton" />
 
     <TextView
         android:id="@+id/messaggioErroreTextView"
@@ -29,7 +43,7 @@
         android:layout_marginTop="38dp"
         android:text="Connessione assente. Riprovare"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/segnalaEmergenzaButton"
+        app:layout_constraintBottom_toTopOf="@+id/segnalazioneButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

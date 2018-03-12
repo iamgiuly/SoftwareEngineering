@@ -15,6 +15,9 @@ import java.util.ArrayList;
 
 public class UserController extends Application{
 
+    public static final int MODALITA_SEGNALAZIONE = 0;
+    public static final int MODALITA_EMERGENZA = 1;
+
     private static UserController instance = null;
 
     private Context context;
@@ -22,6 +25,8 @@ public class UserController extends Application{
     private CommunicationServer communicationServer = CommunicationServer.getInstance();
     private CommunicationBeacon communicationBeacon = CommunicationBeacon.getInstance();
     private ArrayList<Nodo> nodiSelezionati = new ArrayList<>();
+
+    private int modalita = MODALITA_SEGNALAZIONE;
 
     public void init(Context context){
         this.context = context;
@@ -88,6 +93,13 @@ public class UserController extends Application{
     public Mappa richiediMappa() {
         int piano = this.communicationBeacon.getPianoUtente();
         return this.communicationServer.richiediMappa(piano);
+    }
+
+    public int getModalita() {
+        return modalita;
+    }
+    public void setModalita(int modalita) {
+        this.modalita = modalita;
     }
 
     public static UserController getInstance(){

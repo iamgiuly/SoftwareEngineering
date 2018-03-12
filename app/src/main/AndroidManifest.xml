@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ids.ids">
+    package="com.ids.ids.ui">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="ui.MainActivity">
+        <activity android:name="MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,10 +20,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ui.SegnalazioneEmergenzaActivity"
-            android:label="@string/title_activity_segnalazione_emergenza"
+            android:name="EmergenzaActivity"
+            android:label="@string/title_activity_emergenza"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="ui.EmergenzaActivity"></activity>
+        <activity android:name="EmActivity"></activity>
     </application>
 
 </manifest>

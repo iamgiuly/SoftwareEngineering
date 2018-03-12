@@ -1,6 +1,6 @@
 package com.ids.ids.boundary;
 
-import com.ids.ids.R;
+import com.ids.ids.ui.R;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.entity.NodoDAO;
@@ -23,7 +23,7 @@ public class CommunicationServer{
 
     public Mappa richiediMappa(int piano){
         // TODO dummy
-        Mappa mappa = new Mappa(145, R.drawable.map145, null);
+        Mappa mappa = new Mappa(145, R.drawable.map145, null, null);
         mappa.setNodi(NodoDAO.findAll());
         return mappa;
     }

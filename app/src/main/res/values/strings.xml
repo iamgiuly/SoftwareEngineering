@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">ids</string>
-    <string name="title_activity_segnalazione_emergenza">SegnalazioneEmergenzaActivity</string>
+    <string name="title_activity_emergenza">EmergenzaActivity</string>
 </resources>
