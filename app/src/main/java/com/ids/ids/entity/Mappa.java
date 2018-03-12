@@ -42,6 +42,27 @@ public class Mappa {
         this.nodi = nodi;
     }
 
+    //TODO sostituirà getNodi()
+    public ArrayList<Nodo> getNodiFromArchi(){
+        ArrayList<Nodo> nodi = new ArrayList<>();
+        for(Arco arco : this.archi){
+            Nodo nodoPartenza = arco.getNodoPartenza();
+            if(!isNodoInArrayList(nodoPartenza, nodi))
+                nodi.add(nodoPartenza);
+            Nodo nodoArrivo = arco.getNodoArrivo();
+            if(!isNodoInArrayList(nodoArrivo, nodi))
+                nodi.add(nodoArrivo);
+            nodi.add(arco.getNodoArrivo());
+        }
+        return this.nodi;
+    }
+    private boolean isNodoInArrayList(Nodo nodo, ArrayList<Nodo> nodi){
+        for(Nodo n : nodi)
+            if(n.getId() == nodo.getId())
+                return true;
+        return false;
+    }
+
     public ArrayList<Arco> getArchi() {
         return archi;
     }

@@ -23,7 +23,6 @@
             android:name="EmergenzaActivity"
             android:label="@string/title_activity_emergenza"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="EmActivity"></activity>
     </application>
 
 </manifest>

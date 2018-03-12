@@ -100,6 +100,9 @@ public class EmergenzaActivity extends AppCompatActivity {
                 });
             }
         }
+
+        if(this.userController.getModalita() == this.userController.MODALITA_EMERGENZA)
+            this.visualizzaPercorso();
     }
 
     private ImageButton visualizzaBottoneNodo(Nodo nodo){
@@ -112,6 +115,10 @@ public class EmergenzaActivity extends AppCompatActivity {
         bottoneNodo.setY(this.yNodoAssoluta(nodo.getY()));
         bottoneNodo.setLayoutParams(new ConstraintLayout.LayoutParams(Nodo.dim, Nodo.dim));
         return bottoneNodo;
+    }
+
+    private void visualizzaPercorso(){
+
     }
 
     /**
