@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class EmergenzaActivity extends AppCompatActivity {
 
-    private UserController userController = UserController.getInstance();
+    private UserController userController;
 
     private Mappa mappa;
 
@@ -50,6 +50,8 @@ public class EmergenzaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergenza);
+
+        this.userController = UserController.getInstance(this.getApplicationContext());
 
         inviaNodiButton = findViewById(R.id.inviaNodiButton);
         inviaNodiButton.setOnClickListener(new View.OnClickListener(){

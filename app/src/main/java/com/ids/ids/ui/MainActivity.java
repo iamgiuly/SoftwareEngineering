@@ -1,13 +1,18 @@
 package com.ids.ids.ui;
 
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.ids.ids.control.BluetoothController;
 import com.ids.ids.control.UserController;
+
+import static com.ids.ids.control.BluetoothController.PERMISSION_REQUEST_COARSE_LOCATION;
 
 /**
  * Questa activity viene mostrata all'apertura dell'applicazione, visualizza il bottone "Segnala Emergenza",
@@ -17,7 +22,8 @@ import com.ids.ids.control.UserController;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private UserController userController = UserController.getInstance();
+    private UserController userController;
+    private BluetoothController bluetoothController;
 
     private Button segnalazioneButton;
     private Button emergenzaButton;
@@ -28,15 +34,18 @@ public class MainActivity extends AppCompatActivity {
      * viene inizializzato il Controller dell'utente
      * @param savedInstanceState
      */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        userController.init(getApplicationContext());
+        userController = UserController.getInstance(this.getApplicationContext());
+        bluetoothController = BluetoothController.getInstance(this.getApplicationContext());
 
         segnalazioneButton = findViewById(R.id.segnalazioneButton);
         segnalazioneButton.setOnClickListener(new View.OnClickListener(){
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v){
                 listenerBottoneSegnalazione();
@@ -59,7 +68,9 @@ public class MainActivity extends AppCompatActivity {
      *  - se attiva viene avviata l'activity EmergenzaActivity
      *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneSegnalazione(){
+        this.bluetoothController.avviaScansione();
         if(this.userController.controllaConnessione()){
             this.userController.setModalita(this.userController.MODALITA_SEGNALAZIONE);
             Intent intent = new Intent(this, EmergenzaActivity.class);
@@ -82,6 +93,13 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             this.messaggioErroreTextView.setVisibility(View.VISIBLE);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if(requestCode == PERMISSION_REQUEST_COARSE_LOCATION)
+            bluetoothController.fornisciPermessi(grantResults[0]);
     }
 
 }

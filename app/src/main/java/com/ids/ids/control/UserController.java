@@ -1,5 +1,6 @@
 package com.ids.ids.control;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -20,7 +21,7 @@ public class UserController extends Application{
 
     private static UserController instance = null;
 
-    private Context context;
+    private Activity context;
 
     private CommunicationServer communicationServer = CommunicationServer.getInstance();
     //private BeaconScanner beaconScanner = BeaconScanner.getInstance();
@@ -28,8 +29,8 @@ public class UserController extends Application{
 
     private int modalita = MODALITA_SEGNALAZIONE;
 
-    public void init(Context context){
-        this.context = context;
+    public UserController(Context context){
+        this.context = (Activity) context;
     }
 
     /**
@@ -102,9 +103,9 @@ public class UserController extends Application{
         this.modalita = modalita;
     }
 
-    public static UserController getInstance(){
+    public static UserController getInstance(Context context){
         if(instance == null)
-            instance = new UserController();
+            instance = new UserController(context);
         return instance;
     }
 }

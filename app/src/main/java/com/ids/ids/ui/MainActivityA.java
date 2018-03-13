@@ -25,50 +25,45 @@ import com.ids.ids.control.UserController;
 
 public class MainActivityA extends AppCompatActivity {
 
-
-    private Button SegnalaEmergenzaButton;
+    private static final int REQUEST_ENABLE_BT = 1;
+    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
     private BluetoothAdapter btAdapter;
     private BluetoothManager btManager;
-
-    private final static int REQUEST_ENABLE_BT = 1;
-    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
-
     private BeaconScanner COMbeacon;
 
-
-
-    private UserController userController = UserController.getInstance();
+    private UserController userController;
 
     private Button segnalazioneButton;
     private Button emergenzaButton;
     private TextView messaggioErroreTextView;       // invisibile all'inizio
 
-
-
-
     @TargetApi(Build.VERSION_CODES.M)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-
-
-        userController.init(getApplicationContext());
-
+        userController = UserController.getInstance(getApplicationContext());
 
         COMbeacon = new BeaconScanner(this);
+        // Ottengo BluethoothManager e lo salvo in locale (classe utilizzata per ottenere una istanza di Adapter)
+        btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        // Richiamo l'Adapter e lo salvo in locale (rappresenta l'adattatore Bluetooth del dispositivo locale,
+        // consente di eseguire attività Bluetooth fondamentali, come avviare il rilevamento dei dispositivi)
+        btAdapter = btManager.getAdapter();
+
+
+
+        if(abilitaBLE())
+            abilitaLocazione();
+
 
         segnalazioneButton = findViewById(R.id.segnalazioneButton);
         segnalazioneButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                COMbeacon.Scansione(true);
                 listenerBottoneSegnalazione();
             }
         });
@@ -82,27 +77,6 @@ public class MainActivityA extends AppCompatActivity {
         });
 
         messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
-
-
-
-
-
-
-
-
-        //BluethoothManager è utilizzata per ottenere una istanza di Adapter
-        //Bluethooth adapter rappresenta l'adattatore Bluetooth del dispositivo locale.
-        //BluetoothAdapter consente di eseguire attività Bluetooth fondamentali, come avviare il rilevamento dei dispositivi,
-        btManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE); //Ottengo BluethoothManager e lo salvo in locale
-        btAdapter = btManager.getAdapter();                                        //richiamo l adapter e lo salvo in locale
-
-
-
-        if(AbilitaBLE())
-            AbilitaLocazione();
-
-
-
     }
 
 
@@ -111,7 +85,9 @@ public class MainActivityA extends AppCompatActivity {
      *  - se attiva viene avviata l'activity EmergenzaActivity
      *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneSegnalazione(){
+        COMbeacon.Scansione(true);
         if(this.userController.controllaConnessione()){
             this.userController.setModalita(this.userController.MODALITA_SEGNALAZIONE);
             Intent intent = new Intent(this, EmergenzaActivity.class);
@@ -136,26 +112,20 @@ public class MainActivityA extends AppCompatActivity {
             this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 
-    private boolean AbilitaBLE(){
-
+    private boolean abilitaBLE(){
         boolean statoBLE = btAdapter.isEnabled();
-
         if (btAdapter != null && !statoBLE) {
-
-            Intent enableIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);  //Messaggio
-            startActivityForResult(enableIntent,REQUEST_ENABLE_BT); //Metodo dell activity che permette di lanciare una dialogWindow,
-            // REQUEST_ENABLE_BT è il codice sopra definito che permette alla dialog
-            // di capire che la finestra da lancioare è quella per l attivazione del bluethooth
-
+            // Viene mostrata all'utente una dialogWindow con la richiesta di attivazione,
+            // La particolare richiesta è definita da REQUEST_ENABLE_BT
+            Intent enableIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
-
-       return statoBLE;
-
+        return statoBLE;
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void AbilitaLocazione(){
+    private void abilitaLocazione(){
 
 
         if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -190,8 +160,8 @@ public class MainActivityA extends AppCompatActivity {
 
             case PERMISSION_REQUEST_COARSE_LOCATION: {
 
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED & AbilitaBLE() )
-                    AbilitaLocazione();
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED & abilitaBLE() )
+                    abilitaLocazione();
                 else
                      Log.i("Localizzazione", "Permessi di localizzazione negati");
 
