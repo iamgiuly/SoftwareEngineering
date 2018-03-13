@@ -29,8 +29,8 @@ public class UserController extends Application{
 
     private int modalita = MODALITA_SEGNALAZIONE;
 
-    public UserController(Context context){
-        this.context = (Activity) context;
+    public UserController(Activity context){
+        this.context = context;
     }
 
     /**
@@ -103,7 +103,7 @@ public class UserController extends Application{
         this.modalita = modalita;
     }
 
-    public static UserController getInstance(Context context){
+    public static UserController getInstance(Activity context){
         if(instance == null)
             instance = new UserController(context);
         return instance;

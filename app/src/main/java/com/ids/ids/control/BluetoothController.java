@@ -4,11 +4,13 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -30,11 +32,11 @@ public class BluetoothController {
     private BeaconScanner COMbeacon;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public BluetoothController(Context context){
-        this.context = (Activity) context;
+    public BluetoothController(Activity context){
+        this.context = context;
 
         COMbeacon = new BeaconScanner(this.context);
-        // Ottengo BluethoothManager e lo salvo in locale (classe utilizzata per ottenere una istanza di Adapter)
+        // Ottengo BluetoothManager e lo salvo in locale (classe utilizzata per ottenere una istanza di Adapter)
         btManager = (BluetoothManager) this.context.getSystemService(Context.BLUETOOTH_SERVICE);
         // Richiamo l'Adapter e lo salvo in locale (rappresenta l'adattatore Bluetooth del dispositivo locale,
         // consente di eseguire attività Bluetooth fondamentali, come avviare il rilevamento dei dispositivi)
@@ -66,10 +68,7 @@ public class BluetoothController {
     @TargetApi(Build.VERSION_CODES.M)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void abilitaLocazione(){
-
-
         if (this.context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
             final AlertDialog.Builder alert = new AlertDialog.Builder(this.context);
             alert.setTitle("Localizzazione");
             alert.setMessage("Accettare per attivare i servizi di localizzazione");
@@ -78,28 +77,24 @@ public class BluetoothController {
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-
                     context.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
-
                 }
             });
-
             alert.show();
-
         }
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void fornisciPermessi(int permesso){
-        if (permesso == PackageManager.PERMISSION_GRANTED & abilitaBLE() )
+        if(permesso == PackageManager.PERMISSION_GRANTED & abilitaBLE())
             this.abilitaLocazione();
         else
             Log.i("Localizzazione", "Permessi di localizzazione negati");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public static BluetoothController getInstance(Context context){
+    public static BluetoothController getInstance(Activity context){
         if(instance == null)
             instance = new BluetoothController(context);
         return instance;

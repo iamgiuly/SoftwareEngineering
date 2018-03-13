@@ -51,7 +51,7 @@ public class EmergenzaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergenza);
 
-        this.userController = UserController.getInstance(this.getApplicationContext());
+        this.userController = UserController.getInstance(this);
 
         inviaNodiButton = findViewById(R.id.inviaNodiButton);
         inviaNodiButton.setOnClickListener(new View.OnClickListener(){

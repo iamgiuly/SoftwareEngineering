@@ -1,5 +1,7 @@
 package com.ids.ids.ui;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -40,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        userController = UserController.getInstance(this.getApplicationContext());
-        bluetoothController = BluetoothController.getInstance(this.getApplicationContext());
+        userController = UserController.getInstance(this);
+        bluetoothController = BluetoothController.getInstance(this);
 
         segnalazioneButton = findViewById(R.id.segnalazioneButton);
         segnalazioneButton.setOnClickListener(new View.OnClickListener(){

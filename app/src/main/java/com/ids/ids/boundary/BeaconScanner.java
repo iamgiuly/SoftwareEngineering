@@ -1,6 +1,7 @@
 package com.ids.ids.boundary;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -30,7 +31,7 @@ public class BeaconScanner {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public BeaconScanner(Context context) {
+    public BeaconScanner(Activity context) {
 
         //BluethoothManager è utilizzata per ottenere una istanza di Adapter
         //Bluethooth adapter rappresenta l'adattatore Bluetooth del dispositivo locale. BluetoothAdapter
