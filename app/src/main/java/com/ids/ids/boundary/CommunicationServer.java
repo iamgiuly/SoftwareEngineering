@@ -1,5 +1,7 @@
 package com.ids.ids.boundary;
 
+import android.content.Context;
+
 import com.ids.ids.ui.R;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
@@ -10,6 +12,15 @@ import java.util.ArrayList;
 public class CommunicationServer{
 
     private static CommunicationServer instance = null;
+
+    private Context context;
+
+    private NodoDAO nodoDAO;
+
+    public CommunicationServer(Context context){
+        this.context = context;
+        nodoDAO = NodoDAO.getInstance(context);
+    }
 
     /**
      * ottiene come parametri gli ID dei nodi da inviare nella segnalazione,
@@ -22,15 +33,15 @@ public class CommunicationServer{
     }
 
     public Mappa richiediMappa(int piano){
-        // TODO dummy
+        // TODO dictionary piano -> drawable
         Mappa mappa = new Mappa(145, R.drawable.map145, null, null);
-        mappa.setNodi(NodoDAO.findAll());
+        mappa.setNodi(NodoDAO.getInstance(this.context).findAll());
         return mappa;
     }
 
-    public static CommunicationServer getInstance(){
+    public static CommunicationServer getInstance(Context context){
         if(instance == null)
-            instance = new CommunicationServer();
+            instance = new CommunicationServer(context);
         return instance;
     }
 

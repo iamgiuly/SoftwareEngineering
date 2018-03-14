@@ -23,14 +23,18 @@ public class UserController extends Application{
 
     private Activity context;
 
-    private CommunicationServer communicationServer = CommunicationServer.getInstance();
-    //private BeaconScanner beaconScanner = BeaconScanner.getInstance();
-    private ArrayList<Nodo> nodiSelezionati = new ArrayList<>();
+    private CommunicationServer communicationServer;
+    private NodoDAO nodoDAO;
+    private ArrayList<Nodo> nodiSelezionati;
 
-    private int modalita = MODALITA_SEGNALAZIONE;
+    private int modalita;
 
     public UserController(Activity context){
         this.context = context;
+        this.communicationServer = CommunicationServer.getInstance(context.getApplicationContext());
+        this.nodoDAO = NodoDAO.getInstance(context.getApplicationContext());
+        this.nodiSelezionati = new ArrayList<>();
+        this.modalita = MODALITA_SEGNALAZIONE;
     }
 
     /**
@@ -68,7 +72,7 @@ public class UserController extends Application{
                 return !this.nodiSelezionati.isEmpty();
             }
         }
-        Nodo nodo = NodoDAO.find(idNodo);
+        Nodo nodo = nodoDAO.find(idNodo);
         this.nodiSelezionati.add(nodo);
         return true;
     }
