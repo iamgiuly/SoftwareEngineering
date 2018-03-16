@@ -11,6 +11,7 @@ import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.entity.NodoDAO;
+import com.ids.ids.utils.DebugSettings;
 
 import java.util.ArrayList;
 
@@ -44,8 +45,7 @@ public class UserController extends Application{
     public boolean controllaConnessione(){
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        //return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-        return true;
+        return !DebugSettings.CHECK_WIFI || activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
     /**
@@ -84,7 +84,12 @@ public class UserController extends Application{
      * @return true se l'operazione ha successo
      */
     public boolean inviaNodiSelezionati(){
-        // TODO aggiornare nel db locale?
+        //TODO inviare TUTTI i nodi
+        for(Nodo nodo : this.nodiSelezionati) {
+            nodo.setTipo(Nodo.TIPO_INCENDIO);
+            nodoDAO.update(nodo);                   //TODO da inserire nella mappa
+        }
+        //TODO cambiare anche incendio -> base
         boolean result = this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati);
         if(result)
             this.nodiSelezionati.clear();

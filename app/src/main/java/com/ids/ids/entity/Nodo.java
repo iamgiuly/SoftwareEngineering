@@ -14,7 +14,7 @@ public class Nodo {
     public static final int IMG_USCITA = R.drawable.nodo_uscita;
     public static final int IMG_INCENDIO = R.drawable.nodo_incendio;
 
-    public static final int dim = 80;
+    public static final int DIM = 50;
 
     private int id;
     private String beaconId;

@@ -13,6 +13,13 @@ import android.widget.TextView;
 
 import com.ids.ids.control.BluetoothController;
 import com.ids.ids.control.UserController;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.MappaDAO;
+import com.ids.ids.entity.Nodo;
+import com.ids.ids.entity.NodoDAO;
+import com.ids.ids.utils.DebugSettings;
+
+import java.util.ArrayList;
 
 import static com.ids.ids.control.BluetoothController.PERMISSION_REQUEST_COARSE_LOCATION;
 
@@ -23,6 +30,8 @@ import static com.ids.ids.control.BluetoothController.PERMISSION_REQUEST_COARSE_
  *  - mostra un messaggio di errore all'utente offline
  */
 public class MainActivity extends AppCompatActivity {
+
+    public static boolean DB_SEEDED = false;            //TODO solo per debug
 
     private UserController userController;
     private BluetoothController bluetoothController;
@@ -43,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         userController = UserController.getInstance(this);
-        bluetoothController = BluetoothController.getInstance(this);
+        if(DebugSettings.SCAN_BLUETOOTH)
+            bluetoothController = BluetoothController.getInstance(this);
 
         segnalazioneButton = findViewById(R.id.segnalazioneButton);
         segnalazioneButton.setOnClickListener(new View.OnClickListener(){
@@ -63,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
+
+        //TODO solo per debug
+        if(DebugSettings.SEED_DB && !MainActivity.DB_SEEDED) {
+            this.seedDb();
+            MainActivity.DB_SEEDED = true;
+        }
     }
 
     /**
@@ -72,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneSegnalazione(){
-        this.bluetoothController.avviaScansione();
+        if(DebugSettings.SCAN_BLUETOOTH)
+            this.bluetoothController.avviaScansione();
         if(this.userController.controllaConnessione()){
             this.userController.setModalita(this.userController.MODALITA_SEGNALAZIONE);
             Intent intent = new Intent(this, EmergenzaActivity.class);
@@ -102,6 +119,24 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         if(requestCode == PERMISSION_REQUEST_COARSE_LOCATION)
             bluetoothController.fornisciPermessi(grantResults[0]);
+    }
+
+    //TODO solo per debug
+    public void seedDb(){
+        ArrayList<Nodo> nodi = new ArrayList<>();
+        nodi.add(new Nodo(1, "1", 10, 10, Nodo.TIPO_BASE));
+        nodi.add(new Nodo(2, "2", 20, 20, Nodo.TIPO_BASE));
+        nodi.add(new Nodo(3, "3", 30, 30, Nodo.TIPO_BASE));
+        nodi.add(new Nodo(4, "4", 40, 40, Nodo.TIPO_BASE));
+        nodi.add(new Nodo(5, "5", 50, 50, Nodo.TIPO_BASE));
+        nodi.add(new Nodo(6, "6", 60, 60, Nodo.TIPO_BASE));
+        nodi.add(new Nodo(7, "7", 70, 70, Nodo.TIPO_BASE));
+        nodi.add(new Nodo(8, "8", 80, 80, Nodo.TIPO_BASE));
+        nodi.add(new Nodo(9, "9", 90, 90, Nodo.TIPO_BASE));
+        nodi.add(new Nodo(10, "10", 100, 100, Nodo.TIPO_BASE));
+        MappaDAO.getInstance(this).clear();
+        NodoDAO.getInstance(this).clear();
+        MappaDAO.getInstance(this).insert(new Mappa(145, R.drawable.map145, nodi, null));
     }
 
 }

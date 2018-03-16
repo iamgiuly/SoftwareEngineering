@@ -1,15 +1,21 @@
 package com.ids.ids.ui;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ids.ids.control.UserController;
@@ -35,8 +41,9 @@ public class EmergenzaActivity extends AppCompatActivity {
 
     private Button inviaNodiButton;                 // invisibile all'inizio
     private TextView messaggioErroreTextView;       // invisibile all'inizio
-    private ImageView mappaImageView;
-    private Map<Integer, ImageButton> nodi;         // da creare dinamicamente
+    private MappaView mappaView;
+
+    private Map<Integer, ImageView> nodi;         // da creare dinamicamente
 
     private int lunghezzaMappa, altezzaMappa;
     private boolean rendered = false;
@@ -63,9 +70,9 @@ public class EmergenzaActivity extends AppCompatActivity {
 
         messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
 
-        this.mappa = userController.richiediMappa();
-        mappaImageView = findViewById(R.id.mappaImageView);
-        ViewTreeObserver viewTree = mappaImageView.getViewTreeObserver();
+
+        /*this.mappaImageView = findViewById(R.id.mappaImageView);
+        ViewTreeObserver viewTree = this.mappaImageView.getViewTreeObserver();
         viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             public boolean onPreDraw() {
                 if(!rendered){
@@ -76,84 +83,51 @@ public class EmergenzaActivity extends AppCompatActivity {
                 }
                 return true;
             }
-        });
-    }
+        });*/
+       /* viewTree.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
+            @Override
+            public void onDraw() {
 
-    /**
-     * L'immagine associata alla mappa caricata viene visualizzata,
-     * i nodi vengono visualizzati nelle coordinate opportune,
-     * vengono associati i listener ai nodi che richiamano il metodo listenerNodoSelezionato()
-     * TODO i nodi già sotto incendio (presi dal db) devono già risultare selezionati
-     */
-    private void visualizzaMappa(){
-        this.mappaImageView.setImageResource(mappa.getPiantina());
-        ConstraintLayout layout = findViewById(R.id.layout);
-        this.nodi = new HashMap<>();
-        for (Nodo nodo : this.mappa.getNodi()) {
-            ImageButton bottoneNodo = this.visualizzaBottoneNodo(nodo);
-            layout.addView(bottoneNodo);
-            this.nodi.put(nodo.getId(), bottoneNodo);
-            if(this.userController.getModalita() == this.userController.MODALITA_SEGNALAZIONE) {
-                bottoneNodo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listenerNodoSelezionato(v.getId());
-                    }
-                });
             }
+        });*/
+
+        this.mappa = userController.richiediMappa();
+        this.mappaView = findViewById(R.id.mappaView);
+        this.mappaView.setMappa(this.mappa);
+        //TODO i nodi già sotto incendio (presi dal db) devono già risultare selezionati
+        if(this.userController.getModalita() == this.userController.MODALITA_SEGNALAZIONE) {
+            this.mappaView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    if (motionEvent.getAction() != MotionEvent.ACTION_DOWN)
+                        return true;
+                    MappaView mappaView = (MappaView) view;
+                    NodoView nodoView = mappaView.getNodoPremuto((int) motionEvent.getX(), (int) motionEvent.getY());
+                    if (nodoView != null)
+                        listenerNodoSelezionato(nodoView);
+                    mappaView.invalidate();
+                    return true;
+                }
+            });
         }
-
-        if(this.userController.getModalita() == this.userController.MODALITA_EMERGENZA)
-            this.visualizzaPercorso();
+        else
+            this.mappaView.disegnaPercorso();
     }
 
-    private ImageButton visualizzaBottoneNodo(Nodo nodo){
-        ImageButton bottoneNodo = new ImageButton(this);
-        bottoneNodo.setImageResource(Nodo.IMG_BASE);
-        bottoneNodo.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        bottoneNodo.setBackgroundColor(Color.TRANSPARENT);
-        bottoneNodo.setId(nodo.getId());
-        bottoneNodo.setX(this.xNodoAssoluta(nodo.getX()));
-        bottoneNodo.setY(this.yNodoAssoluta(nodo.getY()));
-        bottoneNodo.setLayoutParams(new ConstraintLayout.LayoutParams(Nodo.dim, Nodo.dim));
-        return bottoneNodo;
-    }
-
-    private void visualizzaPercorso(){
-
-    }
-
-    /**
-     * Calcola la coordinata X assoluta di un nodo
-     * @param xNodoRelativa valore da 0 a 100 con riferimento alla posizione relativa alla lunghezza della mappa
-     * @return coordinata X espressa in pixel sullo schermo
-     */
-    private int xNodoAssoluta(int xNodoRelativa){
-        float xMappa = this.mappaImageView.getX();
-        return (int) (xMappa + (this.lunghezzaMappa * xNodoRelativa) / 100);
-    }
-
-    /**
-     * Calcola la coordinata Y assoluta di un nodo
-     * @param yNodoRelativa valore da 0 a 100 con riferimento alla posizione relativa all'altezza della mappa
-     * @return coordinata Y espressa in pixel sullo schermo
-     */
-    private int yNodoAssoluta(int yNodoRelativa){
-        float yMappa = this.mappaImageView.getY();
-        return (int) (yMappa + (this.altezzaMappa * yNodoRelativa) / 100);
-    }
-
+    //TODO creiamo i listener relativi a MappaView qui
     /**
      * Richiamato dal listener associato ad un nodo, tale nodo deve essere opportunamente contrassegnato
      * oltre ad essere aggiunto alla / rimosso dalla lista dei nodi selezionati,
      * viene quindi controllato se c'è almeno un nodo selezionato in modo tale da
      * rendere visibile o invisibile il bottone "Invia Nodi"
      */
-    public void listenerNodoSelezionato(int idNodo){
-        int icon = Nodo.IMG_INCENDIO;
+    public void listenerNodoSelezionato(NodoView nodoView){
+        int idNodo = nodoView.getId();
+        int image = Nodo.IMG_INCENDIO;
         if(userController.nodoSelezionato(idNodo))          // deseleziona
-            icon = Nodo.IMG_BASE;
-        this.nodi.get(idNodo).setImageResource(icon);
+            image = Nodo.IMG_BASE;
+        nodoView.setImage(image);
+        // TODO: cambiare il seguito (vengono anche deselezionati nodi selezionati prima dell'avvio)
         // il bottone "Invia Nodi" viene reso visibile o invisibile a seconda che ci siano nodi selezionati
         if(this.userController.selezionaNodo(idNodo))
             this.inviaNodiButton.setVisibility(View.VISIBLE);

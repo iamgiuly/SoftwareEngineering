@@ -26,14 +26,6 @@ public class NodoDAO {
 
     public NodoDAO(Context context) {
         dbHelper = new DBHelper(context);
-        this.seed();
-    }
-
-    //TODO solo per testing
-    public void seed(){
-        this.insert(new Nodo(1, "1", 10, 10, Nodo.TIPO_BASE));
-        this.insert(new Nodo(2, "2", 20, 20, Nodo.TIPO_BASE));
-        this.insert(new Nodo(3, "3", 30, 30, Nodo.TIPO_BASE));
     }
 
     public Nodo find(int id){
@@ -114,6 +106,14 @@ public class NodoDAO {
         db.delete(TABLE, KEY_ID + " = ?", new String[] { String.valueOf(id) });
         db.close();
     }
+
+    //TODO se esiste
+    public void clear(){
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(TABLE, "1=1", null);
+        db.close();
+    }
+
 
     public static NodoDAO getInstance(Context context){
         if(instance == null)

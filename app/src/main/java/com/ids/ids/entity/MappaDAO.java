@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.ids.ids.ui.R;
 import com.ids.ids.utils.DBHelper;
 
 import java.util.ArrayList;
@@ -28,12 +29,6 @@ public class MappaDAO {
         dbHelper = new DBHelper(context);
         this.nodoDAO = NodoDAO.getInstance(context);
         //TODO this.arcoDAO = ArcoDAO.getInstance(context);
-        this.seed();
-    }
-
-    //TODO solo per testing
-    public void seed(){
-
     }
 
     public Mappa find(int id){
@@ -107,6 +102,13 @@ public class MappaDAO {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete(TABLE, KEY_ID + " = ?", new String[] { String.valueOf(id) });
         // TODO delete nodi, archi
+        db.close();
+    }
+
+    //TODO se esiste
+    public void clear(){
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(TABLE, "1=1", null);
         db.close();
     }
 
