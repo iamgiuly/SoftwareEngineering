@@ -55,6 +55,7 @@ public class NodoDAO extends DAO<Nodo> {
 
     @Override
     protected void putValues(Nodo nodo, ContentValues values) {
+        values.put(KEY_ID, nodo.getId());
         values.put(KEY_beaconId, nodo.getBeaconId());
         values.put(KEY_x, nodo.getX());
         values.put(KEY_y, nodo.getY());

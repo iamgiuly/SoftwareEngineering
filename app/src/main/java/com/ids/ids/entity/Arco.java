@@ -4,16 +4,25 @@ import java.util.Map;
 
 public class Arco {
 
+    private int id;
     private Nodo nodoPartenza;
     private Nodo nodoArrivo;
     private Map<String, Integer> pesi;
     private int mappaId;
 
-    public Arco(Nodo nodoPartenza, Nodo nodoArrivo, Map<String, Integer> pesi) {
+    public Arco(int id, Nodo nodoPartenza, Nodo nodoArrivo, Map<String, Integer> pesi) {
+        this.id = id;
         this.nodoPartenza = nodoPartenza;
         this.nodoArrivo = nodoArrivo;
         this.pesi = pesi;
         this.mappaId = nodoPartenza.getMappaId();
+    }
+
+    public int getId(){
+        return this.id;
+    }
+    public void setId(int id){
+        this.id = id;
     }
 
     public Nodo getNodoPartenza() {

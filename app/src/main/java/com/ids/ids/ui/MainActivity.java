@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -144,12 +145,12 @@ public class MainActivity extends AppCompatActivity {
         nodi.add(nodo6);
         nodi.add(nodo7);
         nodi.add(nodo8);
-        archi.add(new Arco(nodo1, nodo2, null));
-        archi.add(new Arco(nodo3, nodo4, null));
-        archi.add(new Arco(nodo5, nodo6, null));
-        archi.add(new Arco(nodo7, nodo8, null));
-        archi.add(new Arco(nodo1, nodo4, null));
-        archi.add(new Arco(nodo2, nodo8, null));
+        archi.add(new Arco(1, nodo1, nodo2, null));
+        archi.add(new Arco(2, nodo3, nodo4, null));
+        archi.add(new Arco(3, nodo5, nodo6, null));
+        archi.add(new Arco(4, nodo7, nodo8, null));
+        archi.add(new Arco(5, nodo1, nodo4, null));
+        archi.add(new Arco(6, nodo2, nodo8, null));
 
         MappaDAO.getInstance(this).clear();
         NodoDAO.getInstance(this).clear();

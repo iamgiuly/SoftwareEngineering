@@ -41,20 +41,22 @@ public class ArcoDAO extends DAO<Arco> {
 
     @Override
     protected int getId(Arco arco) {
-        return 0;           //TODO
+        return arco.getId();
     }
 
     @Override
     protected Arco getFromCursor(Cursor cursor) {
+        int id = cursor.getInt(cursor.getColumnIndex(KEY_ID));
         Nodo nodoPartenza = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoPartenzaId)));
         Nodo nodoArrivo = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoArrivoId)));
 
-        Arco arco = new Arco(nodoPartenza, nodoArrivo, null);       //TODO
+        Arco arco = new Arco(id, nodoPartenza, nodoArrivo, null);       //TODO
         return arco;
     }
 
     @Override
     protected void putValues(Arco arco, ContentValues values) {
+        values.put(KEY_ID, arco.getId());
         values.put(KEY_nodoPartenzaId, arco.getNodoPartenza().getId());
         values.put(KEY_nodoArrivoId, arco.getNodoArrivo().getId());
         values.put(KEY_mappaId, arco.getMappaId());

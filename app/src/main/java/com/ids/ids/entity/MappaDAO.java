@@ -46,7 +46,7 @@ public class MappaDAO extends DAO<Mappa>{
         int piantina = cursor.getInt(cursor.getColumnIndex(KEY_piantina));
 
         ArrayList<Nodo> nodi = nodoDAO.findAllByColumnValue(NodoDAO.KEY_mappaId, String.valueOf(piano));
-        ArrayList<Arco> archi = arcoDAO.findAllByColumnValue(ArcoDAO.KEY_mappaId, String.valueOf(piantina));
+        ArrayList<Arco> archi = arcoDAO.findAllByColumnValue(ArcoDAO.KEY_mappaId, String.valueOf(piano));
 
         Mappa mappa = new Mappa(piano, piantina, nodi, archi);
         return mappa;
