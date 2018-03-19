@@ -10,7 +10,7 @@ import com.ids.ids.utils.DBHelper;
 
 import java.util.ArrayList;
 
-public class MappaDAO {
+public class MappaDAO extends DAO<Mappa>{
 
     public static final String TABLE = "Mappa";
 
@@ -20,37 +20,70 @@ public class MappaDAO {
 
     private static MappaDAO instance = null;
 
-    private DBHelper dbHelper;
-
     private NodoDAO nodoDAO;
     //TODO private ArcoDAO arcoDAO;
 
     public MappaDAO(Context context) {
-        dbHelper = new DBHelper(context);
+        super(context);
         this.nodoDAO = NodoDAO.getInstance(context);
         //TODO this.arcoDAO = ArcoDAO.getInstance(context);
     }
 
-    public Mappa find(int id){
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String selectQuery =  "SELECT *" +
-                " FROM " + TABLE +
-                " WHERE " + KEY_ID + " = ?";   // "?" è un parametro che verrà inserito alla chiamata di db.rawQuery()
+    @Override
+    protected String getTable() {
+        return TABLE;
+    }
 
-        Cursor cursor = db.rawQuery(selectQuery, new String[] { String.valueOf(id) } );
-        cursor.moveToFirst();
+    @Override
+    protected String getIdColumn() {
+        return KEY_ID;
+    }
 
-        int idMappa = cursor.getColumnIndex(KEY_ID);
+    @Override
+    protected int getId(Mappa mappa) {
+        return mappa.getPiano();
+    }
+
+    @Override
+    protected Mappa getFromCursor(Cursor cursor) {
+        int idMappa = cursor.getColumnIndex(KEY_ID);            //TODO inutile? non è uguale a id?
         ArrayList<Nodo> nodi = nodoDAO.findByMappa(idMappa);
         ArrayList<Arco> archi = null; //TODO nodoDAO.findByMappa(idMappa);
 
         Mappa mappa = new Mappa(cursor.getInt(cursor.getColumnIndex(KEY_piano)),
-                                cursor.getInt(cursor.getColumnIndex(KEY_piantina)),
-                                nodi, archi);
-
-        cursor.close();
-        db.close();
+                cursor.getInt(cursor.getColumnIndex(KEY_piantina)),
+                nodi, archi);
         return mappa;
+    }
+
+    @Override
+    protected void putValues(Mappa mappa, ContentValues values) {
+        values.put(KEY_piano, mappa.getPiano());
+        values.put(KEY_piantina, mappa.getPiantina());
+    }
+
+    @Override
+    protected void cascadeInsert(Mappa mappa) {
+        for(Nodo nodo : mappa.getNodi())
+            nodoDAO.insert(nodo);
+        //TODO for(Arco arco : mappa.getArchi())
+        //TODO     arcoDAO.insert(arco);
+    }
+
+    @Override
+    protected void cascadeUpdate(Mappa mappa) {
+        for(Nodo nodo : mappa.getNodi())
+            nodoDAO.update(nodo);
+        //TODO for(Arco arco : mappa.getArchi())
+        //TODO     arcoDAO.update(arco);
+    }
+
+    @Override
+    protected void cascadeDelete(Mappa mappa) {
+        for(Nodo nodo : mappa.getNodi())
+            nodoDAO.delete(nodo.getId());
+        //TODO for(Arco arco : mappa.getArchi())
+        //TODO     arcoDAO.delete(arco.getIdColumn());
     }
 
     public ArrayList<Mappa> findAll(){
@@ -77,39 +110,6 @@ public class MappaDAO {
         cursor.close();
         db.close();
         return mappe;
-    }
-
-    public int insert(Mappa mappa){
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_piano, mappa.getPiano());
-        values.put(KEY_piantina, mappa.getPiantina());
-
-        long mappaId = db.insert(TABLE, null, values);
-        db.close();
-        for(Nodo nodo : mappa.getNodi())
-            nodoDAO.insert(nodo);
-        //for(Arco arco : mappa.getArchi())
-        //    arcoDAO.insert(arco);
-        return (int) mappaId;
-    }
-
-    public void update(Mappa mappa) {
-        //TODO
-    }
-
-    public void delete(int id){
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(TABLE, KEY_ID + " = ?", new String[] { String.valueOf(id) });
-        // TODO delete nodi, archi
-        db.close();
-    }
-
-    //TODO se esiste
-    public void clear(){
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(TABLE, "1=1", null);
-        db.close();
     }
 
     public static MappaDAO getInstance(Context context){

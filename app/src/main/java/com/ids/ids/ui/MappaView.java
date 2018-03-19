@@ -1,22 +1,17 @@
 package com.ids.ids.ui;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
-import android.widget.LinearLayout;
 
+import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 
@@ -28,15 +23,14 @@ public class MappaView extends View {
     private int height;
     private Context context;
     private Paint mPaint;
-    private boolean rendered = false;
 
     private Bitmap image;
     private Mappa mappa;
 
     private ArrayList<NodoView> nodi;
 
-
-    private Button button1, button2;        //TODO
+    private boolean disegnaPercorso = false;
+    private boolean rendered = false;
 
     public MappaView(Context c, AttributeSet attrs) {
         super(c, attrs);
@@ -51,27 +45,41 @@ public class MappaView extends View {
         mPaint.setStrokeWidth(4f);
     }
 
-    private void visualizzaMappa(){
-
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //canvas.drawBitmap(this.image, null, new RectF(0, 0, this.width, this.height), this.mPaint);
         canvas.drawBitmap(this.image, null, new Rect(0, 0, this.width, this.height), this.mPaint);
-        canvas.drawLine(10, 10, 100, 100, this.mPaint);     //TODO
         for(NodoView nodo : this.nodi)
             canvas.drawBitmap(nodo.getImage(), null, nodo.getRect(), this.mPaint);
-        //TODO disegna percorso
+        if(this.disegnaPercorso)
+            this.disegnaPercorso(canvas);
     }
 
-    public void disegnaPercorso(){
+    private void disegnaPercorso(Canvas canvas){
+        ArrayList<Arco> archi = this.mappa.getArchi();
+        if(archi == null) return;
+        for(Arco arco : this.mappa.getArchi())
+            this.disegnaArcoTraNodi(canvas,
+                                    this.getNodoViewFromNodo(arco.getNodoPartenza()),
+                                    this.getNodoViewFromNodo(arco.getNodoArrivo()));
+        //TODO contrassegna archi percorso
+    }
 
+    private void disegnaArcoTraNodi(Canvas canvas, NodoView nodo1, NodoView nodo2){
+        canvas.drawLine(nodo1.getX(), nodo1.getY(), nodo2.getX(), nodo2.getY(), this.mPaint);
+    }
+
+    private NodoView getNodoViewFromNodo(Nodo nodo){
+        for(NodoView nodoView : this.nodi)
+            if(nodoView.getId() == nodo.getId())
+                return nodoView;
+        return null;
     }
 
     public void setMappa(Mappa map){
         this.mappa = map;
+        this.disegnaPercorso = false;
+        this.rendered = false;
         //TODO FIXARE OutOfMemoryError
         image = BitmapFactory.decodeResource(getResources(), mappa.getPiantina());
         this.nodi.clear();
@@ -79,14 +87,13 @@ public class MappaView extends View {
         ViewTreeObserver viewTree = this.getViewTreeObserver();
         viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             public boolean onPreDraw() {
-                if(!rendered){
+                if(!rendered) {
                     width = getMeasuredWidth();
                     height = getMeasuredHeight();
-                    for(Nodo nodo : mappa.getNodi()){
+                    for (Nodo nodo : mappa.getNodi()) {
                         NodoView nodoView = new NodoView(nodo, width, height, context);
                         nodi.add(nodoView);
                     }
-                    visualizzaMappa();
                     rendered = true;
                 }
                 return true;
@@ -99,6 +106,10 @@ public class MappaView extends View {
             if(nodo.getRect().contains(x, y))
                 return nodo;
         return null;
+    }
+
+    public void setDisegnaPercorso(boolean disegnaPercorso){
+        this.disegnaPercorso = disegnaPercorso;
     }
 
 }

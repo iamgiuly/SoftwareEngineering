@@ -45,18 +45,24 @@ public class NodoView {
         return nodo.getId();
     }
 
+    public int getX(){
+        return xAssoluta(nodo.getX());
+    }
     public int getXStart() {
-        return xAssoluta(nodo.getX()) - Nodo.DIM / 2;
+        return this.getX() - Nodo.DIM / 2;
     }
     public int getXEnd() {
-        return xAssoluta(nodo.getX()) + Nodo.DIM / 2;
+        return this.getX() + Nodo.DIM / 2;
     }
 
+    public int getY(){
+        return yAssoluta(nodo.getY());
+    }
     public int getYStart() {
-        return yAssoluta(nodo.getY()) - Nodo.DIM / 2;
+        return this.getY() - Nodo.DIM / 2;
     }
     public int getYEnd() {
-        return yAssoluta(nodo.getY()) + Nodo.DIM / 2;
+        return this.getY() + Nodo.DIM / 2;
     }
 
     public Bitmap getImage() {

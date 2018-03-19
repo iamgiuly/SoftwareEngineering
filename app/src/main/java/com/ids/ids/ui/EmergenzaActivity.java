@@ -111,7 +111,7 @@ public class EmergenzaActivity extends AppCompatActivity {
             });
         }
         else
-            this.mappaView.disegnaPercorso();
+            this.mappaView.setDisegnaPercorso(true);
     }
 
     //TODO creiamo i listener relativi a MappaView qui

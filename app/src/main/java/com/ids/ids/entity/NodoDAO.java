@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import com.ids.ids.utils.DBHelper;
 
 //TODO insertInMappa, idMappa
-public class NodoDAO {
+public class NodoDAO extends DAO<Nodo> {
 
     public static final String TABLE = "Nodo";
 
@@ -22,29 +22,56 @@ public class NodoDAO {
 
     private static NodoDAO instance = null;
 
-    private DBHelper dbHelper;
-
     public NodoDAO(Context context) {
-        dbHelper = new DBHelper(context);
+        super(context);
     }
 
-    public Nodo find(int id){
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String selectQuery =  "SELECT *" +
-                " FROM " + TABLE +
-                " WHERE " + KEY_ID + " = ?";   // "?" è un parametro che verrà inserito alla chiamata di db.rawQuery()
+    @Override
+    protected String getTable() {
+        return TABLE;
+    }
 
-        Cursor cursor = db.rawQuery(selectQuery, new String[] { String.valueOf(id) } );
-        cursor.moveToFirst();
+    @Override
+    protected String getIdColumn() {
+        return KEY_ID;
+    }
+
+    @Override
+    protected int getId(Nodo nodo) {
+        return nodo.getId();
+    }
+
+    @Override
+    protected Nodo getFromCursor(Cursor cursor) {
         Nodo nodo = new Nodo(   cursor.getInt(cursor.getColumnIndex(KEY_ID)),
-                                cursor.getString(cursor.getColumnIndex(KEY_beaconId)),
-                                cursor.getInt(cursor.getColumnIndex(KEY_x)),
-                                cursor.getInt(cursor.getColumnIndex(KEY_y)),
-                                cursor.getInt(cursor.getColumnIndex(KEY_tipo)));
-
-        cursor.close();
-        db.close();
+                cursor.getString(cursor.getColumnIndex(KEY_beaconId)),
+                cursor.getInt(cursor.getColumnIndex(KEY_x)),
+                cursor.getInt(cursor.getColumnIndex(KEY_y)),
+                cursor.getInt(cursor.getColumnIndex(KEY_tipo)));
         return nodo;
+    }
+
+    @Override
+    protected void putValues(Nodo nodo, ContentValues values) {
+        values.put(KEY_beaconId, nodo.getBeaconId());
+        values.put(KEY_x, nodo.getX());
+        values.put(KEY_y, nodo.getY());
+        values.put(KEY_tipo, nodo.getTipo());
+    }
+
+    @Override
+    protected void cascadeInsert(Nodo nodo) {
+        return;
+    }
+
+    @Override
+    protected void cascadeUpdate(Nodo nodo) {
+        return;
+    }
+
+    @Override
+    protected void cascadeDelete(Nodo nodo) {
+        return;
     }
 
     public ArrayList<Nodo> findByMappa(int idMappa){
@@ -75,45 +102,6 @@ public class NodoDAO {
         db.close();
         return nodi;
     }
-
-    public int insert(Nodo nodo){
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_beaconId, nodo.getBeaconId());
-        values.put(KEY_x, nodo.getX());
-        values.put(KEY_y, nodo.getY());
-        values.put(KEY_tipo, nodo.getTipo());
-
-        long nodoId = db.insert(TABLE, null, values);
-        db.close();
-        return (int) nodoId;
-    }
-
-    public void update(Nodo nodo) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(KEY_beaconId, nodo.getBeaconId());
-        values.put(KEY_x, nodo.getX());
-        values.put(KEY_y, nodo.getY());
-        values.put(KEY_tipo, nodo.getTipo());
-
-        db.update(TABLE, values, KEY_ID + " = ?", new String[] { String.valueOf(nodo.getId()) });
-        db.close();
-    }
-
-    public void delete(int id){
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(TABLE, KEY_ID + " = ?", new String[] { String.valueOf(id) });
-        db.close();
-    }
-
-    //TODO se esiste
-    public void clear(){
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(TABLE, "1=1", null);
-        db.close();
-    }
-
 
     public static NodoDAO getInstance(Context context){
         if(instance == null)
