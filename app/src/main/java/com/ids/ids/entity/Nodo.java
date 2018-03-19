@@ -20,13 +20,15 @@ public class Nodo {
     private String beaconId;
     private int x, y;       // valori da 0 a 100 che indicano le coordinate relative alla mappa
     private int tipo;
+    private int mappaId;
 
-    public Nodo(int id, String beaconId, int x, int y, int tipo) {
+    public Nodo(int id, String beaconId, int x, int y, int tipo, int mappaId) {
         this.id = id;
         this.beaconId = beaconId;
         this.x = x;
         this.y = y;
         this.tipo = tipo;
+        this.mappaId = mappaId;
     }
 
     public int getId(){
@@ -62,5 +64,12 @@ public class Nodo {
     }
     public void setTipo(int tipo){
         this.tipo = tipo;
+    }
+
+    public int getMappaId() {
+        return mappaId;
+    }
+    public void setMappaId(int mappaId){
+        this.mappaId = mappaId;
     }
 }

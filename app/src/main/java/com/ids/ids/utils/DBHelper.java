@@ -10,7 +10,7 @@ import com.ids.ids.entity.NodoDAO;
 public class DBHelper extends SQLiteOpenHelper{
 
     // TODO incrementare ogni volta che si modifica la struttura del db (tabelle)
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "ids.db";
 
     public DBHelper(Context context){
@@ -33,7 +33,8 @@ public class DBHelper extends SQLiteOpenHelper{
                 NodoDAO.KEY_beaconId + " TEXT, " +
                 NodoDAO.KEY_x + " INTEGER, " +
                 NodoDAO.KEY_y + " INTEGER, " +
-                NodoDAO.KEY_tipo + " INTEGER)";
+                NodoDAO.KEY_tipo + " INTEGER, " +
+                NodoDAO.KEY_mappaId + " INTEGER)";
 
         db.execSQL(CREATE_TABLE_MAPPA);
         db.execSQL(CREATE_TABLE_NODO);

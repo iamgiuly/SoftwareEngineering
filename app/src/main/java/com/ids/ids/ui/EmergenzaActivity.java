@@ -43,11 +43,6 @@ public class EmergenzaActivity extends AppCompatActivity {
     private TextView messaggioErroreTextView;       // invisibile all'inizio
     private MappaView mappaView;
 
-    private Map<Integer, ImageView> nodi;         // da creare dinamicamente
-
-    private int lunghezzaMappa, altezzaMappa;
-    private boolean rendered = false;
-
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
      * viene caricata e visualizzata la mappa con i suoi nodi e settati i listener associati ad essi
@@ -70,38 +65,15 @@ public class EmergenzaActivity extends AppCompatActivity {
 
         messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
 
-
-        /*this.mappaImageView = findViewById(R.id.mappaImageView);
-        ViewTreeObserver viewTree = this.mappaImageView.getViewTreeObserver();
-        viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            public boolean onPreDraw() {
-                if(!rendered){
-                    lunghezzaMappa = mappaImageView.getMeasuredWidth();
-                    altezzaMappa = mappaImageView.getMeasuredHeight();
-                    visualizzaMappa();
-                    rendered = true;
-                }
-                return true;
-            }
-        });*/
-       /* viewTree.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
-            @Override
-            public void onDraw() {
-
-            }
-        });*/
-
         this.mappa = userController.richiediMappa();
         this.mappaView = findViewById(R.id.mappaView);
         this.mappaView.setMappa(this.mappa);
-        //TODO i nodi già sotto incendio (presi dal db) devono già risultare selezionati
         if(this.userController.getModalita() == this.userController.MODALITA_SEGNALAZIONE) {
             this.mappaView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     if (motionEvent.getAction() != MotionEvent.ACTION_DOWN)
                         return true;
-                    MappaView mappaView = (MappaView) view;
                     NodoView nodoView = mappaView.getNodoPremuto((int) motionEvent.getX(), (int) motionEvent.getY());
                     if (nodoView != null)
                         listenerNodoSelezionato(nodoView);

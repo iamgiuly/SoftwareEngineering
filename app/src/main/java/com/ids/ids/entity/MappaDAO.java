@@ -3,10 +3,6 @@ package com.ids.ids.entity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.ids.ids.ui.R;
-import com.ids.ids.utils.DBHelper;
 
 import java.util.ArrayList;
 
@@ -21,12 +17,12 @@ public class MappaDAO extends DAO<Mappa>{
     private static MappaDAO instance = null;
 
     private NodoDAO nodoDAO;
-    //TODO private ArcoDAO arcoDAO;
+    private ArcoDAO arcoDAO;
 
     public MappaDAO(Context context) {
         super(context);
         this.nodoDAO = NodoDAO.getInstance(context);
-        //TODO this.arcoDAO = ArcoDAO.getInstance(context);
+        this.arcoDAO = ArcoDAO.getInstance(context);
     }
 
     @Override
@@ -47,8 +43,8 @@ public class MappaDAO extends DAO<Mappa>{
     @Override
     protected Mappa getFromCursor(Cursor cursor) {
         int idMappa = cursor.getColumnIndex(KEY_ID);            //TODO inutile? non è uguale a id?
-        ArrayList<Nodo> nodi = nodoDAO.findByMappa(idMappa);
-        ArrayList<Arco> archi = null; //TODO nodoDAO.findByMappa(idMappa);
+        ArrayList<Nodo> nodi = nodoDAO.findAllByColumnValue(NodoDAO.KEY_mappaId, String.valueOf(idMappa));
+        ArrayList<Arco> archi = arcoDAO.findAllByColumnValue(NodoDAO.KEY_mappaId, String.valueOf(idMappa));
 
         Mappa mappa = new Mappa(cursor.getInt(cursor.getColumnIndex(KEY_piano)),
                 cursor.getInt(cursor.getColumnIndex(KEY_piantina)),
@@ -66,16 +62,16 @@ public class MappaDAO extends DAO<Mappa>{
     protected void cascadeInsert(Mappa mappa) {
         for(Nodo nodo : mappa.getNodi())
             nodoDAO.insert(nodo);
-        //TODO for(Arco arco : mappa.getArchi())
-        //TODO     arcoDAO.insert(arco);
+        for(Arco arco : mappa.getArchi())
+            arcoDAO.insert(arco);
     }
 
     @Override
     protected void cascadeUpdate(Mappa mappa) {
         for(Nodo nodo : mappa.getNodi())
             nodoDAO.update(nodo);
-        //TODO for(Arco arco : mappa.getArchi())
-        //TODO     arcoDAO.update(arco);
+        for(Arco arco : mappa.getArchi())
+            arcoDAO.update(arco);
     }
 
     @Override
@@ -83,33 +79,7 @@ public class MappaDAO extends DAO<Mappa>{
         for(Nodo nodo : mappa.getNodi())
             nodoDAO.delete(nodo.getId());
         //TODO for(Arco arco : mappa.getArchi())
-        //TODO     arcoDAO.delete(arco.getIdColumn());
-    }
-
-    public ArrayList<Mappa> findAll(){
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String selectQuery =  "SELECT * FROM " + TABLE;
-
-        ArrayList<Mappa> mappe = new ArrayList();
-
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                int idMappa = cursor.getColumnIndex(KEY_ID);
-                ArrayList<Nodo> nodi = nodoDAO.findByMappa(idMappa);
-                ArrayList<Arco> archi = null; //TODO nodoDAO.findByMappa(idMappa);
-
-                mappe.add(new Mappa(cursor.getInt(cursor.getColumnIndex(KEY_piano)),
-                                    cursor.getInt(cursor.getColumnIndex(KEY_piantina)),
-                                    nodi, archi));
-
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-        return mappe;
+        //TODO     arcoDAO.delete(arco.getId());
     }
 
     public static MappaDAO getInstance(Context context){

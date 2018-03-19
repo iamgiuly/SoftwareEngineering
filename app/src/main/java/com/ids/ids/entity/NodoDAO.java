@@ -19,6 +19,7 @@ public class NodoDAO extends DAO<Nodo> {
     public static final String KEY_x = "x";
     public static final String KEY_y = "y";
     public static final String KEY_tipo = "tipo";
+    public static final String KEY_mappaId = "mappaId";
 
     private static NodoDAO instance = null;
 
@@ -47,7 +48,8 @@ public class NodoDAO extends DAO<Nodo> {
                 cursor.getString(cursor.getColumnIndex(KEY_beaconId)),
                 cursor.getInt(cursor.getColumnIndex(KEY_x)),
                 cursor.getInt(cursor.getColumnIndex(KEY_y)),
-                cursor.getInt(cursor.getColumnIndex(KEY_tipo)));
+                cursor.getInt(cursor.getColumnIndex(KEY_tipo)),
+                cursor.getInt(cursor.getColumnIndex(KEY_mappaId)));
         return nodo;
     }
 
@@ -57,6 +59,7 @@ public class NodoDAO extends DAO<Nodo> {
         values.put(KEY_x, nodo.getX());
         values.put(KEY_y, nodo.getY());
         values.put(KEY_tipo, nodo.getTipo());
+        values.put(KEY_mappaId, nodo.getMappaId());
     }
 
     @Override
@@ -72,35 +75,6 @@ public class NodoDAO extends DAO<Nodo> {
     @Override
     protected void cascadeDelete(Nodo nodo) {
         return;
-    }
-
-    public ArrayList<Nodo> findByMappa(int idMappa){
-        //TODO
-        return null;
-    }
-
-    public ArrayList<Nodo> findAll(){
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String selectQuery =  "SELECT * FROM " + TABLE;
-
-        ArrayList<Nodo> nodi = new ArrayList();
-
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                nodi.add(new Nodo(  cursor.getInt(cursor.getColumnIndex(KEY_ID)),
-                                    cursor.getString(cursor.getColumnIndex(KEY_beaconId)),
-                                    cursor.getInt(cursor.getColumnIndex(KEY_x)),
-                                    cursor.getInt(cursor.getColumnIndex(KEY_y)),
-                                    cursor.getInt(cursor.getColumnIndex(KEY_tipo))));
-
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-        return nodi;
     }
 
     public static NodoDAO getInstance(Context context){

@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.ids.ids.utils.DBHelper;
 
+import java.util.ArrayList;
+
 public abstract class DAO<Table> {
 
     protected DBHelper dbHelper;
@@ -29,6 +31,42 @@ public abstract class DAO<Table> {
         cursor.close();
         db.close();
         return elem;
+    }
+
+    public ArrayList<Table> findAll(){
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + this.getTable();
+
+        ArrayList<Table> elementi = new ArrayList();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                elementi.add(this.getFromCursor(cursor));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return elementi;
+    }
+
+    public ArrayList<Table> findAllByColumnValue(String column, String value){
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + this.getTable() + " WHERE " + column + " = " + value;
+
+        ArrayList<Table> elementi = new ArrayList();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                elementi.add(this.getFromCursor(cursor));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return elementi;
     }
 
     public int insert(Table table){

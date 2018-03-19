@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.ids.ids.control.BluetoothController;
 import com.ids.ids.control.UserController;
+import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.MappaDAO;
 import com.ids.ids.entity.Nodo;
@@ -124,19 +125,34 @@ public class MainActivity extends AppCompatActivity {
     //TODO solo per debug
     public void seedDb(){
         ArrayList<Nodo> nodi = new ArrayList<>();
-        nodi.add(new Nodo(1, "1", 10, 10, Nodo.TIPO_BASE));
-        nodi.add(new Nodo(2, "2", 20, 20, Nodo.TIPO_BASE));
-        nodi.add(new Nodo(3, "3", 30, 30, Nodo.TIPO_BASE));
-        nodi.add(new Nodo(4, "4", 40, 40, Nodo.TIPO_BASE));
-        nodi.add(new Nodo(5, "5", 50, 50, Nodo.TIPO_BASE));
-        nodi.add(new Nodo(6, "6", 60, 60, Nodo.TIPO_BASE));
-        nodi.add(new Nodo(7, "7", 70, 70, Nodo.TIPO_BASE));
-        nodi.add(new Nodo(8, "8", 80, 80, Nodo.TIPO_BASE));
-        nodi.add(new Nodo(9, "9", 90, 90, Nodo.TIPO_BASE));
-        nodi.add(new Nodo(10, "10", 100, 100, Nodo.TIPO_BASE));
+        ArrayList<Arco> archi = new ArrayList<>();
+        int idMappa = 145;
+        Nodo nodo1 = new Nodo(1, "1", 20, 20, Nodo.TIPO_BASE, idMappa);
+        Nodo nodo2 = new Nodo(2, "2", 20, 40, Nodo.TIPO_BASE, idMappa);
+        Nodo nodo3 = new Nodo(3, "3", 20, 60, Nodo.TIPO_BASE, idMappa);
+        Nodo nodo4 = new Nodo(4, "4", 20, 80, Nodo.TIPO_BASE, idMappa);
+        Nodo nodo5 = new Nodo(5, "5", 60, 20, Nodo.TIPO_BASE, idMappa);
+        Nodo nodo6 = new Nodo(6, "6", 60, 40, Nodo.TIPO_BASE, idMappa);
+        Nodo nodo7 = new Nodo(7, "7", 60, 60, Nodo.TIPO_BASE, idMappa);
+        Nodo nodo8 = new Nodo(8, "8", 60, 80, Nodo.TIPO_BASE, idMappa);
+        nodi.add(nodo1);
+        nodi.add(nodo2);
+        nodi.add(nodo3);
+        nodi.add(nodo4);
+        nodi.add(nodo5);
+        nodi.add(nodo6);
+        nodi.add(nodo7);
+        nodi.add(nodo8);
+        archi.add(new Arco(nodo1, nodo2, null));
+        archi.add(new Arco(nodo3, nodo4, null));
+        archi.add(new Arco(nodo5, nodo6, null));
+        archi.add(new Arco(nodo7, nodo8, null));
+        archi.add(new Arco(nodo1, nodo4, null));
+        archi.add(new Arco(nodo2, nodo8, null));
+
         MappaDAO.getInstance(this).clear();
         NodoDAO.getInstance(this).clear();
-        MappaDAO.getInstance(this).insert(new Mappa(145, R.drawable.map145, nodi, null));
+        MappaDAO.getInstance(this).insert(new Mappa(idMappa, R.drawable.map145, nodi, archi));
     }
 
 }

@@ -72,11 +72,6 @@ public class ArcoDAO extends DAO<Arco> {
         //TODO eliminare pesi
     }
 
-    public ArrayList<Arco> findByMappa(int idMappa){
-        //TODO
-        return null;
-    }
-
     public static ArcoDAO getInstance(Context context){
         if(instance == null)
             instance = new ArcoDAO(context);

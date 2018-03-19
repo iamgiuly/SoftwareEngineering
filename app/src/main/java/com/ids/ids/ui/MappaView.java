@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -58,7 +59,7 @@ public class MappaView extends View {
     private void disegnaPercorso(Canvas canvas){
         ArrayList<Arco> archi = this.mappa.getArchi();
         if(archi == null) return;
-        for(Arco arco : this.mappa.getArchi())
+        for(Arco arco : archi)
             this.disegnaArcoTraNodi(canvas,
                                     this.getNodoViewFromNodo(arco.getNodoPartenza()),
                                     this.getNodoViewFromNodo(arco.getNodoArrivo()));
@@ -80,9 +81,10 @@ public class MappaView extends View {
         this.mappa = map;
         this.disegnaPercorso = false;
         this.rendered = false;
-        //TODO FIXARE OutOfMemoryError
-        image = BitmapFactory.decodeResource(getResources(), mappa.getPiantina());
         this.nodi.clear();
+
+        //TODO FIXARE OUTOFMEMORY ERROR (È INVIA NODI CHE FA CRASHARE, TORNARE INDIETRO NO)
+        image = BitmapFactory.decodeResource(getResources(), mappa.getPiantina());
 
         ViewTreeObserver viewTree = this.getViewTreeObserver();
         viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
