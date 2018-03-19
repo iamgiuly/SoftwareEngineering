@@ -18,6 +18,7 @@ public class ArcoDAO extends DAO<Arco> {
     public static final String KEY_ID = "id";
     public static final String KEY_nodoPartenzaId = "nodoPartenzaId";
     public static final String KEY_nodoArrivoId = "nodoArrivoId";
+    public static final String KEY_mappaId = "mappaId";
 
     private static ArcoDAO instance = null;
 
@@ -47,6 +48,7 @@ public class ArcoDAO extends DAO<Arco> {
     protected Arco getFromCursor(Cursor cursor) {
         Nodo nodoPartenza = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoPartenzaId)));
         Nodo nodoArrivo = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoArrivoId)));
+
         Arco arco = new Arco(nodoPartenza, nodoArrivo, null);       //TODO
         return arco;
     }
@@ -55,6 +57,7 @@ public class ArcoDAO extends DAO<Arco> {
     protected void putValues(Arco arco, ContentValues values) {
         values.put(KEY_nodoPartenzaId, arco.getNodoPartenza().getId());
         values.put(KEY_nodoArrivoId, arco.getNodoArrivo().getId());
+        values.put(KEY_mappaId, arco.getMappaId());
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.ids.ids.boundary;
 
 import android.content.Context;
 
+import com.ids.ids.entity.MappaDAO;
 import com.ids.ids.ui.R;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
@@ -34,9 +35,7 @@ public class CommunicationServer{
 
     public Mappa richiediMappa(int piano){
         // TODO dictionary piano -> drawable
-        Mappa mappa = new Mappa(145, R.drawable.map145, null, null);
-        mappa.setNodi(NodoDAO.getInstance(this.context).findAll());     //TODO prendi solo quelli della mappa
-        return mappa;
+        return MappaDAO.getInstance(this.context).find(piano);
     }
 
     public static CommunicationServer getInstance(Context context){

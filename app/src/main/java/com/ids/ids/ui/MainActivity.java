@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.ids.ids.control.BluetoothController;
 import com.ids.ids.control.UserController;
 import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.ArcoDAO;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.MappaDAO;
 import com.ids.ids.entity.Nodo;
@@ -152,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
         MappaDAO.getInstance(this).clear();
         NodoDAO.getInstance(this).clear();
+        ArcoDAO.getInstance(this).clear();
         MappaDAO.getInstance(this).insert(new Mappa(idMappa, R.drawable.map145, nodi, archi));
     }
 

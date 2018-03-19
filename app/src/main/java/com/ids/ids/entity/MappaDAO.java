@@ -3,6 +3,7 @@ package com.ids.ids.entity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -10,7 +11,6 @@ public class MappaDAO extends DAO<Mappa>{
 
     public static final String TABLE = "Mappa";
 
-    public static final String KEY_ID = "id";
     public static final String KEY_piano = "piano";
     public static final String KEY_piantina = "piantina";
 
@@ -32,7 +32,7 @@ public class MappaDAO extends DAO<Mappa>{
 
     @Override
     protected String getIdColumn() {
-        return KEY_ID;
+        return KEY_piano;
     }
 
     @Override
@@ -42,13 +42,13 @@ public class MappaDAO extends DAO<Mappa>{
 
     @Override
     protected Mappa getFromCursor(Cursor cursor) {
-        int idMappa = cursor.getColumnIndex(KEY_ID);            //TODO inutile? non è uguale a id?
-        ArrayList<Nodo> nodi = nodoDAO.findAllByColumnValue(NodoDAO.KEY_mappaId, String.valueOf(idMappa));
-        ArrayList<Arco> archi = arcoDAO.findAllByColumnValue(NodoDAO.KEY_mappaId, String.valueOf(idMappa));
+        int piano = cursor.getInt(cursor.getColumnIndex(KEY_piano));
+        int piantina = cursor.getInt(cursor.getColumnIndex(KEY_piantina));
 
-        Mappa mappa = new Mappa(cursor.getInt(cursor.getColumnIndex(KEY_piano)),
-                cursor.getInt(cursor.getColumnIndex(KEY_piantina)),
-                nodi, archi);
+        ArrayList<Nodo> nodi = nodoDAO.findAllByColumnValue(NodoDAO.KEY_mappaId, String.valueOf(piano));
+        ArrayList<Arco> archi = arcoDAO.findAllByColumnValue(ArcoDAO.KEY_mappaId, String.valueOf(piantina));
+
+        Mappa mappa = new Mappa(piano, piantina, nodi, archi);
         return mappa;
     }
 

@@ -101,7 +101,7 @@ public class UserController extends Application{
      * @return mappa del piano in cui si trova l'utente
      */
     public Mappa richiediMappa() {
-        int piano = 150;// TODO this.beaconScanner.getPianoUtente();
+        int piano = 145;// TODO this.beaconScanner.getPianoUtente();
         return this.communicationServer.richiediMappa(piano);
     }
 

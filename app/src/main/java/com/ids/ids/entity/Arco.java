@@ -7,11 +7,13 @@ public class Arco {
     private Nodo nodoPartenza;
     private Nodo nodoArrivo;
     private Map<String, Integer> pesi;
+    private int mappaId;
 
     public Arco(Nodo nodoPartenza, Nodo nodoArrivo, Map<String, Integer> pesi) {
         this.nodoPartenza = nodoPartenza;
         this.nodoArrivo = nodoArrivo;
         this.pesi = pesi;
+        this.mappaId = nodoPartenza.getMappaId();
     }
 
     public Nodo getNodoPartenza() {
@@ -35,4 +37,10 @@ public class Arco {
         this.pesi = pesi;
     }
 
+    public int getMappaId() {
+        return mappaId;
+    }
+    public void setMappaId(int mappaId){
+        this.mappaId = mappaId;
+    }
 }
