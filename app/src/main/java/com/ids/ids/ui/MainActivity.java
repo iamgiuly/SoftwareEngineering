@@ -23,8 +23,6 @@ import static com.ids.ids.control.BluetoothController.PERMISSION_REQUEST_COARSE_
  */
 public class MainActivity extends AppCompatActivity {
 
-    public static boolean DB_SEEDED = false;        // solo per debug
-
     private UserController userController;
     private BluetoothController bluetoothController;
 
@@ -66,10 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
         messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
 
-        if(DebugSettings.SEED_DB && !MainActivity.DB_SEEDED) {
+        if(DebugSettings.SEED_DB)
             DebugSettings.seedDb(this);
-            MainActivity.DB_SEEDED = true;
-        }
     }
 
     /**

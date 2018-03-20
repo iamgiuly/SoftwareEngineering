@@ -14,6 +14,8 @@ import android.view.ViewTreeObserver;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
+import com.ids.ids.utils.DebugSettings;
+import com.ids.ids.utils.DecodedResources;
 
 import java.util.ArrayList;
 
@@ -104,8 +106,7 @@ public class MappaView extends View {
         this.nodi.clear();
         this.percorso.clear();
 
-        //TODO FIXARE OUTOFMEMORY ERROR (È INVIA NODI CHE FA CRASHARE, TORNARE INDIETRO NO)
-        image = BitmapFactory.decodeResource(getResources(), mappa.getPiantina());
+        image = DecodedResources.getInstance().getPreloadedImage(this.context, mappa);
 
         ViewTreeObserver viewTree = this.getViewTreeObserver();
         viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {

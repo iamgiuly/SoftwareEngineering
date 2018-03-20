@@ -127,13 +127,13 @@ public class UserController extends Application{
         this.modalita = modalita;
     }
 
+    public void clearNodiSelezionati() {
+        this.nodiSelezionati.clear();
+    }
+
     public static UserController getInstance(Activity context){
         if(instance == null)
             instance = new UserController(context);
         return instance;
-    }
-
-    public void clearNodiSelezionati() {
-        this.nodiSelezionati.clear();
     }
 }

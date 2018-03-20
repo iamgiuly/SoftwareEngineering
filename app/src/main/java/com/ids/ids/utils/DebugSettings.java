@@ -1,6 +1,8 @@
 package com.ids.ids.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.ArcoDAO;
@@ -17,7 +19,11 @@ public class DebugSettings {
     public static boolean SCAN_BLUETOOTH = false;
     public static boolean CHECK_WIFI = false;
 
+    private static boolean DB_SEEDED = false;
+
     public static void seedDb(Context context){
+        if(DB_SEEDED) return;
+
         ArrayList<Nodo> nodi = new ArrayList<>();
         ArrayList<Arco> archi = new ArrayList<>();
         int idMappa = 145;
@@ -48,5 +54,7 @@ public class DebugSettings {
         NodoDAO.getInstance(context).clear();
         ArcoDAO.getInstance(context).clear();
         MappaDAO.getInstance(context).insert(new Mappa(idMappa, R.drawable.map145, nodi, archi));
+
+        DB_SEEDED = true;
     }
 }
