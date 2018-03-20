@@ -41,7 +41,7 @@ public class Nodo {
     private int mappaId;
 
     private boolean cambiato = false;       // se true significa che il valore di tipoIncendio è stato cambiato
-                                            // TODO (serve a decidere se mostrare il bottone "Invia Nodi")
+                                            // (serve a decidere se mostrare il bottone "Invia Nodi")
 
     public Nodo(int id, String beaconId, int x, int y, int mappaId) {
         this(id, beaconId, x, y, false, false, mappaId);
@@ -96,7 +96,6 @@ public class Nodo {
         this.mappaId = mappaId;
     }
 
-    // TODO da richiamare quando viene selezionato il nodo
     public void setIncendio(){
         this.tipoIncendio = !this.tipoIncendio;
         this.cambiato = !this.cambiato;
@@ -115,9 +114,8 @@ public class Nodo {
 
     // L'ordine in cui vengono associate le immagini è importante per le priorità
     // (più valori possono essere true contemporaneamente)
+    // TODO gestire anche posizione utente
     public int getImage(){
-        //if(this.tipoUtente)         // TODO togliere utente
-        //    return IMG_UTENTE;
         if(this.tipoIncendio)
             return IMG_INCENDIO;
         if(this.tipoUscita)

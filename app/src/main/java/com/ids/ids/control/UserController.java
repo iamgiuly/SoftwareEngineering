@@ -99,12 +99,8 @@ public class UserController extends Application{
      * @return true se l'operazione ha successo
      */
     public boolean inviaNodiSelezionati(){
-        //TODO inviare TUTTI i nodi
-        for(Nodo nodo : this.nodiSelezionati) {
-            //TODO togliere? nodo.setTipo(Nodo.TIPO_INCENDIO);
-            nodoDAO.update(nodo);                   //TODO da inserire nella mappa
-        }
-        //TODO cambiare anche incendio -> base
+        for(Nodo nodo : this.nodiSelezionati)
+            nodoDAO.update(nodo);
         boolean result = this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati);
         if(result)
             this.clearNodiSelezionati();
