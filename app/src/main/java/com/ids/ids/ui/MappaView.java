@@ -8,14 +8,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.utils.DebugSettings;
 
 import java.util.ArrayList;
 
@@ -24,12 +22,15 @@ public class MappaView extends View {
     private int width;
     private int height;
     private Context context;
-    private Paint mPaint;
+    private Paint paint;
+    private Paint paintArcoNormale;
+    private Paint paintArcoPercorso;
 
     private Bitmap image;
     private Mappa mappa;
 
     private ArrayList<NodoView> nodi;
+    private ArrayList<Arco> percorso;
 
     private boolean disegnaPercorso = false;
     private boolean rendered = false;
@@ -38,21 +39,37 @@ public class MappaView extends View {
         super(c, attrs);
         context = c;
         this.nodi = new ArrayList<>();
+        this.percorso = new ArrayList<>();
 
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.BLACK);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPaint.setStrokeWidth(4f);
+        this.paint = new Paint();
+        this.initPaintArcoNormale();
+        this.initPaintArcoPercorso();
+    }
+
+    private void initPaintArcoNormale() {
+        paintArcoNormale = new Paint();
+        paintArcoNormale.setAntiAlias(true);
+        paintArcoNormale.setColor(Color.BLACK);
+        paintArcoNormale.setStyle(Paint.Style.STROKE);
+        paintArcoNormale.setStrokeJoin(Paint.Join.ROUND);
+        paintArcoNormale.setStrokeWidth(4f);
+    }
+
+    private void initPaintArcoPercorso() {
+        paintArcoPercorso = new Paint();
+        paintArcoPercorso.setAntiAlias(true);
+        paintArcoPercorso.setColor(Color.BLUE);
+        paintArcoPercorso.setStyle(Paint.Style.STROKE);
+        paintArcoPercorso.setStrokeJoin(Paint.Join.ROUND);
+        paintArcoPercorso.setStrokeWidth(4f);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawBitmap(this.image, null, new Rect(0, 0, this.width, this.height), this.mPaint);
+        canvas.drawBitmap(this.image, null, new Rect(0, 0, this.width, this.height), this.paint);
         for(NodoView nodo : this.nodi)
-            canvas.drawBitmap(nodo.getImage(), null, nodo.getRect(), this.mPaint);
+            canvas.drawBitmap(nodo.getImage(), null, nodo.getRect(), this.paint);
         if(this.disegnaPercorso)
             this.disegnaPercorso(canvas);
     }
@@ -63,12 +80,14 @@ public class MappaView extends View {
         for(Arco arco : archi)
             this.disegnaArcoTraNodi(canvas,
                                     this.getNodoViewFromNodo(arco.getNodoPartenza()),
-                                    this.getNodoViewFromNodo(arco.getNodoArrivo()));
+                                    this.getNodoViewFromNodo(arco.getNodoArrivo()),
+                                    this.percorso.contains(arco));
         //TODO contrassegna archi percorso
     }
 
-    private void disegnaArcoTraNodi(Canvas canvas, NodoView nodo1, NodoView nodo2){
-        canvas.drawLine(nodo1.getX(), nodo1.getY(), nodo2.getX(), nodo2.getY(), this.mPaint);
+    private void disegnaArcoTraNodi(Canvas canvas, NodoView nodo1, NodoView nodo2, boolean percorso){
+        Paint p = percorso ? this.paintArcoNormale : this.paintArcoPercorso;
+        canvas.drawLine(nodo1.getX(), nodo1.getY(), nodo2.getX(), nodo2.getY(), p);
     }
 
     private NodoView getNodoViewFromNodo(Nodo nodo){
@@ -83,6 +102,7 @@ public class MappaView extends View {
         this.disegnaPercorso = false;
         this.rendered = false;
         this.nodi.clear();
+        this.percorso.clear();
 
         //TODO FIXARE OUTOFMEMORY ERROR (È INVIA NODI CHE FA CRASHARE, TORNARE INDIETRO NO)
         image = BitmapFactory.decodeResource(getResources(), mappa.getPiantina());
@@ -97,6 +117,11 @@ public class MappaView extends View {
                         NodoView nodoView = new NodoView(nodo, width, height, context);
                         nodi.add(nodoView);
                     }
+                    //TODO dummy
+                    for (Arco arco : mappa.getArchi())
+                        if(arco.getId() % 2 == 0)
+                            percorso.add(arco);
+
                     rendered = true;
                 }
                 return true;

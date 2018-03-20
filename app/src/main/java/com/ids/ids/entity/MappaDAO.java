@@ -78,8 +78,8 @@ public class MappaDAO extends DAO<Mappa>{
     protected void cascadeDelete(Mappa mappa) {
         for(Nodo nodo : mappa.getNodi())
             nodoDAO.delete(nodo.getId());
-        //TODO for(Arco arco : mappa.getArchi())
-        //TODO     arcoDAO.delete(arco.getId());
+        for(Arco arco : mappa.getArchi())
+            arcoDAO.delete(arco.getId());
     }
 
     public static MappaDAO getInstance(Context context){

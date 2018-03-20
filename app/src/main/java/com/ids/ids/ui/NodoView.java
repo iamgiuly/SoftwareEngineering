@@ -24,20 +24,8 @@ public class NodoView {
         this.lunghezzaMappa = lunghezzaMappa;
         this.altezzaMappa = altezzaMappa;
 
-        //TODO dictionary TIPO -> IMG
         int tipo = nodo.getTipo();
-        int image = Nodo.IMG_BASE;
-        switch (tipo){
-            case Nodo.TIPO_UTENTE:
-                image = Nodo.IMG_UTENTE;
-                break;
-            case Nodo.TIPO_USCITA:
-                image = Nodo.IMG_USCITA;
-                break;
-            case Nodo.TIPO_INCENDIO:
-                image = Nodo.IMG_INCENDIO;
-                break;
-        }
+        int image = Nodo.TIPO_IMG.get(tipo);
         this.setImage(image);
     }
 

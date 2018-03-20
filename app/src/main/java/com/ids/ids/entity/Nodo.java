@@ -2,6 +2,9 @@ package com.ids.ids.entity;
 
 import com.ids.ids.ui.R;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Nodo {
 
     public static final int TIPO_BASE = 0;
@@ -13,6 +16,17 @@ public class Nodo {
     public static final int IMG_UTENTE = R.drawable.posizione;
     public static final int IMG_USCITA = R.drawable.nodo_uscita;
     public static final int IMG_INCENDIO = R.drawable.nodo_incendio;
+
+    public static Map<Integer, Integer> TIPO_IMG = initTipoImg();
+
+    private static Map<Integer,Integer> initTipoImg() {
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(TIPO_BASE, IMG_BASE);
+        map.put(TIPO_UTENTE, IMG_UTENTE);
+        map.put(TIPO_USCITA, IMG_USCITA);
+        map.put(TIPO_INCENDIO, IMG_INCENDIO);
+        return map;
+    }
 
     public static final int DIM = 50;
 

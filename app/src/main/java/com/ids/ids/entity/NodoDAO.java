@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 import com.ids.ids.utils.DBHelper;
 
-//TODO insertInMappa, idMappa
 public class NodoDAO extends DAO<Nodo> {
 
     public static final String TABLE = "Nodo";

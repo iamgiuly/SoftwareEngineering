@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import com.ids.ids.utils.DBHelper;
 
-//TODO insertInMappa, idMappa
 public class ArcoDAO extends DAO<Arco> {
 
     public static final String TABLE = "Arco";

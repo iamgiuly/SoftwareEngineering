@@ -86,7 +86,6 @@ public class EmergenzaActivity extends AppCompatActivity {
             this.mappaView.setDisegnaPercorso(true);
     }
 
-    //TODO creiamo i listener relativi a MappaView qui
     /**
      * Richiamato dal listener associato ad un nodo, tale nodo deve essere opportunamente contrassegnato
      * oltre ad essere aggiunto alla / rimosso dalla lista dei nodi selezionati,
