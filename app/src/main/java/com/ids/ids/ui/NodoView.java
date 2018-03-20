@@ -24,9 +24,12 @@ public class NodoView {
         this.lunghezzaMappa = lunghezzaMappa;
         this.altezzaMappa = altezzaMappa;
 
-        int tipo = nodo.getTipo();
-        int image = Nodo.TIPO_IMG.get(tipo);
+        int image = nodo.getImage();
         this.setImage(image);
+    }
+
+    public Nodo getNodo() {
+        return nodo;
     }
 
     public int getId(){

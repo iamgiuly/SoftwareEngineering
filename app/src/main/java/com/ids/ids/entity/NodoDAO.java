@@ -17,7 +17,8 @@ public class NodoDAO extends DAO<Nodo> {
     public static final String KEY_beaconId = "beaconId";
     public static final String KEY_x = "x";
     public static final String KEY_y = "y";
-    public static final String KEY_tipo = "tipo";
+    public static final String KEY_tipoUscita = "tipoUscita";
+    public static final String KEY_tipoIncendio = "tipoIncendio";
     public static final String KEY_mappaId = "mappaId";
 
     private static NodoDAO instance = null;
@@ -47,7 +48,8 @@ public class NodoDAO extends DAO<Nodo> {
                 cursor.getString(cursor.getColumnIndex(KEY_beaconId)),
                 cursor.getInt(cursor.getColumnIndex(KEY_x)),
                 cursor.getInt(cursor.getColumnIndex(KEY_y)),
-                cursor.getInt(cursor.getColumnIndex(KEY_tipo)),
+                cursor.getInt(cursor.getColumnIndex(KEY_tipoUscita)) != 0,
+                cursor.getInt(cursor.getColumnIndex(KEY_tipoIncendio)) != 0,
                 cursor.getInt(cursor.getColumnIndex(KEY_mappaId)));
         return nodo;
     }
@@ -58,7 +60,8 @@ public class NodoDAO extends DAO<Nodo> {
         values.put(KEY_beaconId, nodo.getBeaconId());
         values.put(KEY_x, nodo.getX());
         values.put(KEY_y, nodo.getY());
-        values.put(KEY_tipo, nodo.getTipo());
+        values.put(KEY_tipoUscita, nodo.isTipoUscita());
+        values.put(KEY_tipoIncendio, nodo.isTipoIncendio());
         values.put(KEY_mappaId, nodo.getMappaId());
     }
 

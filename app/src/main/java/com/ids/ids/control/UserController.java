@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import com.ids.ids.boundary.BeaconScanner;
 import com.ids.ids.boundary.CommunicationServer;
@@ -65,16 +66,30 @@ public class UserController extends Application{
      * @param idNodo id del nodo da selezionare o deselezionare
      * @return true se c'è almeno un nodo selezionato
      */
-    public boolean selezionaNodo(int idNodo){
-        for(Nodo nodo : this.nodiSelezionati){
-            if(nodo.getId() == idNodo){
+    public boolean selezionaNodo(Nodo nodo){
+        nodo.setIncendio();
+        if(nodo.isCambiato()) {
+            if (!this.nodiSelezionati.contains(nodo))
+                this.nodiSelezionati.add(nodo);
+        }
+        else {
+            if (this.nodiSelezionati.contains(nodo))
                 this.nodiSelezionati.remove(nodo);
-                return !this.nodiSelezionati.isEmpty();
+        }
+        return !this.nodiSelezionati.isEmpty();
+/*
+            this.nodiSelezionati.get
+        for(Nodo nodo : this.nodiSelezionati){
+            if(nodo.getId() == nodoSel.getId()){
+                nodo = nodoSel;
+                return true;
+                //this.nodiSelezionati.remove(nodo);
+                //return !this.nodiSelezionati.isEmpty();
             }
         }
-        Nodo nodo = nodoDAO.find(idNodo);
-        this.nodiSelezionati.add(nodo);
-        return true;
+        //Nodo nodo = nodoDAO.find(idNodo);
+        this.nodiSelezionati.add(nodoSel);
+        return true;*/
     }
 
     /**
@@ -86,13 +101,13 @@ public class UserController extends Application{
     public boolean inviaNodiSelezionati(){
         //TODO inviare TUTTI i nodi
         for(Nodo nodo : this.nodiSelezionati) {
-            nodo.setTipo(Nodo.TIPO_INCENDIO);
+            //TODO togliere? nodo.setTipo(Nodo.TIPO_INCENDIO);
             nodoDAO.update(nodo);                   //TODO da inserire nella mappa
         }
         //TODO cambiare anche incendio -> base
         boolean result = this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati);
         if(result)
-            this.nodiSelezionati.clear();
+            this.clearNodiSelezionati();
         return result;
     }
 
@@ -116,5 +131,9 @@ public class UserController extends Application{
         if(instance == null)
             instance = new UserController(context);
         return instance;
+    }
+
+    public void clearNodiSelezionati() {
+        this.nodiSelezionati.clear();
     }
 }

@@ -49,19 +49,19 @@ public class MappaView extends View {
     private void initPaintArcoNormale() {
         paintArcoNormale = new Paint();
         paintArcoNormale.setAntiAlias(true);
-        paintArcoNormale.setColor(Color.BLACK);
+        paintArcoNormale.setColor(Color.BLUE);
         paintArcoNormale.setStyle(Paint.Style.STROKE);
         paintArcoNormale.setStrokeJoin(Paint.Join.ROUND);
-        paintArcoNormale.setStrokeWidth(4f);
+        paintArcoNormale.setStrokeWidth(5f);
     }
 
     private void initPaintArcoPercorso() {
         paintArcoPercorso = new Paint();
         paintArcoPercorso.setAntiAlias(true);
-        paintArcoPercorso.setColor(Color.BLUE);
+        paintArcoPercorso.setColor(Color.GREEN);
         paintArcoPercorso.setStyle(Paint.Style.STROKE);
         paintArcoPercorso.setStrokeJoin(Paint.Join.ROUND);
-        paintArcoPercorso.setStrokeWidth(4f);
+        paintArcoPercorso.setStrokeWidth(8f);
     }
 
     @Override

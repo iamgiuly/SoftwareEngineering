@@ -54,6 +54,7 @@ public class EmergenzaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_emergenza);
 
         this.userController = UserController.getInstance(this);
+        this.userController.clearNodiSelezionati();
 
         inviaNodiButton = findViewById(R.id.inviaNodiButton);
         inviaNodiButton.setOnClickListener(new View.OnClickListener(){
@@ -93,17 +94,12 @@ public class EmergenzaActivity extends AppCompatActivity {
      * rendere visibile o invisibile il bottone "Invia Nodi"
      */
     public void listenerNodoSelezionato(NodoView nodoView){
-        int idNodo = nodoView.getId();
-        int image = Nodo.IMG_INCENDIO;
-        if(userController.nodoSelezionato(idNodo))          // deseleziona
-            image = Nodo.IMG_BASE;
-        nodoView.setImage(image);
-        // TODO: cambiare il seguito (vengono anche deselezionati nodi selezionati prima dell'avvio)
-        // il bottone "Invia Nodi" viene reso visibile o invisibile a seconda che ci siano nodi selezionati
-        if(this.userController.selezionaNodo(idNodo))
+        Nodo nodo = nodoView.getNodo();
+        if(this.userController.selezionaNodo(nodo))
             this.inviaNodiButton.setVisibility(View.VISIBLE);
         else
             this.inviaNodiButton.setVisibility(View.INVISIBLE);
+        nodoView.setImage(nodo.getImage());
     }
 
     /**
