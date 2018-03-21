@@ -33,6 +33,7 @@ public class MappaView extends View {
     private Mappa mappa;
 
     private ArrayList<NodoView> nodi;
+    private Nodo posUtente;
     private ArrayList<Arco> percorso;
 
     private boolean disegnaPercorso = false;
@@ -72,8 +73,12 @@ public class MappaView extends View {
         super.onDraw(canvas);
         if(this.image != null) {
             canvas.drawBitmap(this.image, null, new Rect(0, 0, this.width, this.height), this.paint);
-            for (NodoView nodo : this.nodi)
-                canvas.drawBitmap(nodo.getImage(), null, nodo.getRect(), this.paint);
+            for (NodoView nodoView : this.nodi) {
+                Bitmap image = nodoView.getNodo().equals(this.posUtente)
+                ? BitmapFactory.decodeResource(context.getResources(), Nodo.IMG_UTENTE)
+                : nodoView.getImage();
+                canvas.drawBitmap(image, null, nodoView.getRect(), this.paint);
+            }
             if (this.disegnaPercorso)
                 this.disegnaPercorso(canvas);
         }
@@ -103,6 +108,10 @@ public class MappaView extends View {
 
     public void setMappa(Mappa map){
         this.setMappa(map, false);
+    }
+
+    public void setPosUtente(Nodo posUtente){
+        this.posUtente = posUtente;
     }
 
     public void setMappa(Mappa map, boolean disegnaPercorso){

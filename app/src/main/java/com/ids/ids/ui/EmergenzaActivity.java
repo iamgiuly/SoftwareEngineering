@@ -101,16 +101,13 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
 
     // TODO thread (ogni 2 secondi richiama un metodo del controller per il ricalcolo di posizione, percorso e nodi)
     public void richiediRicalcolo(){
-        Nodo posUtente = userController.getPosizioneUtente();
         this.mappa = userController.richiediMappa();        // TODO serve per prendere i nodi sotto incendio aggiornati
                                                             // TODO e se la mappa cambia? (non dovrebbe succedere)
-
+        this.mappaView.setPosUtente(userController.getPosizioneUtente());
 
         //this.mappaView.setMappa(this.mappa, true);
         // TODO ************ LE SEGUENTI OPERAZIONI VANNO FATTE SU this.mappa,
         // TODO ************ LA VIEW SI AGGIORNA IN AUTOMATICO CON invalidate()
-        // TODO riacquisizione nodi sotto incendio
-        // TODO contrassegno nodo posizione utente
         // TODO calcolo percorso
 
         try {

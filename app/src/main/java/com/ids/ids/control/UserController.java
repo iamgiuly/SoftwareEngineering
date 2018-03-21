@@ -117,8 +117,8 @@ public class UserController extends Application{
     }
 
     public Nodo getPosizioneUtente() {
-        // TODO
-        return null;
+        // TODO dummy
+        return nodoDAO.findAll().get(0);
     }
 
     public int getModalita() {
