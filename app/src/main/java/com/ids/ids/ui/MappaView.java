@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -69,11 +70,13 @@ public class MappaView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawBitmap(this.image, null, new Rect(0, 0, this.width, this.height), this.paint);
-        for(NodoView nodo : this.nodi)
-            canvas.drawBitmap(nodo.getImage(), null, nodo.getRect(), this.paint);
-        if(this.disegnaPercorso)
-            this.disegnaPercorso(canvas);
+        if(this.image != null) {
+            canvas.drawBitmap(this.image, null, new Rect(0, 0, this.width, this.height), this.paint);
+            for (NodoView nodo : this.nodi)
+                canvas.drawBitmap(nodo.getImage(), null, nodo.getRect(), this.paint);
+            if (this.disegnaPercorso)
+                this.disegnaPercorso(canvas);
+        }
     }
 
     private void disegnaPercorso(Canvas canvas){
@@ -84,7 +87,6 @@ public class MappaView extends View {
                                     this.getNodoViewFromNodo(arco.getNodoPartenza()),
                                     this.getNodoViewFromNodo(arco.getNodoArrivo()),
                                     this.percorso.contains(arco));
-        //TODO contrassegna archi percorso
     }
 
     private void disegnaArcoTraNodi(Canvas canvas, NodoView nodo1, NodoView nodo2, boolean percorso){
@@ -100,8 +102,12 @@ public class MappaView extends View {
     }
 
     public void setMappa(Mappa map){
+        this.setMappa(map, false);
+    }
+
+    public void setMappa(Mappa map, boolean disegnaPercorso){
         this.mappa = map;
-        this.disegnaPercorso = false;
+        this.disegnaPercorso = disegnaPercorso;
         this.rendered = false;
         this.nodi.clear();
         this.percorso.clear();
@@ -135,10 +141,6 @@ public class MappaView extends View {
             if(nodo.getRect().contains(x, y))
                 return nodo;
         return null;
-    }
-
-    public void setDisegnaPercorso(boolean disegnaPercorso){
-        this.disegnaPercorso = disegnaPercorso;
     }
 
 }

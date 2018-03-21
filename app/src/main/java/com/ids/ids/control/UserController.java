@@ -116,6 +116,11 @@ public class UserController extends Application{
         return this.communicationServer.richiediMappa(piano);
     }
 
+    public Nodo getPosizioneUtente() {
+        // TODO
+        return null;
+    }
+
     public int getModalita() {
         return modalita;
     }

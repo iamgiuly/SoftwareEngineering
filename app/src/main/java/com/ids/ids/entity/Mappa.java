@@ -69,4 +69,15 @@ public class Mappa {
     public void setArchi(ArrayList<Arco> archi) {
         this.archi = archi;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Mappa mappa = (Mappa) o;
+
+        return piano == mappa.piano;
+    }
+
 }

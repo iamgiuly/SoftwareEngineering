@@ -96,7 +96,6 @@ public abstract class DAO<Table> {
         db.close();
     }
 
-    //TODO se esiste
     public void clear(){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete(this.getTable(), "", null);
@@ -105,7 +104,7 @@ public abstract class DAO<Table> {
 
     protected abstract String getTable();
     protected abstract String getIdColumn();
-    protected abstract int getId(Table table);                 //TODO cambiare con getId() in classe Table
+    protected abstract int getId(Table table);
 
     protected abstract Table getFromCursor(Cursor cursor);
     protected abstract void putValues(Table table, ContentValues values);

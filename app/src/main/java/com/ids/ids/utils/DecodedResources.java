@@ -3,6 +3,7 @@ package com.ids.ids.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.ui.R;
@@ -13,7 +14,6 @@ import java.util.Map;
 /**
  * In questa classe vengono salvate le immagini Bitmap come variabili statiche,
  * in questo modo eviteremo di ricrearle ogni volta occupando troppa memoria
- * TODO singleton
  */
 public class DecodedResources {
 

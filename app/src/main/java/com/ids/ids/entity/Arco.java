@@ -52,4 +52,15 @@ public class Arco {
     public void setMappaId(int mappaId){
         this.mappaId = mappaId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Arco arco = (Arco) o;
+
+        return id == arco.id;
+    }
+
 }

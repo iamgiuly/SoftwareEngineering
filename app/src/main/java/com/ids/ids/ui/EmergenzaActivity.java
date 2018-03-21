@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.ids.ids.control.UserController;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
+import com.ids.ids.utils.DebugSettings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ import java.util.Map;
  * Al tap sul bottone "Invia Nodi" (visibile se almeno un nodo è selezionato),
  * viene chiesto al Controller di inviare al server i nodi selezionati
  */
-public class EmergenzaActivity extends AppCompatActivity {
+public class EmergenzaActivity extends AppCompatActivity implements Runnable {
 
     private UserController userController;
 
@@ -42,6 +43,8 @@ public class EmergenzaActivity extends AppCompatActivity {
     private Button inviaNodiButton;                 // invisibile all'inizio
     private TextView messaggioErroreTextView;       // invisibile all'inizio
     private MappaView mappaView;
+
+    private boolean threadRunning;
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
@@ -68,8 +71,8 @@ public class EmergenzaActivity extends AppCompatActivity {
 
         this.mappa = userController.richiediMappa();
         this.mappaView = findViewById(R.id.mappaView);
-        this.mappaView.setMappa(this.mappa);
         if(this.userController.getModalita() == this.userController.MODALITA_SEGNALAZIONE) {
+            this.mappaView.setMappa(this.mappa);
             this.mappaView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -83,8 +86,36 @@ public class EmergenzaActivity extends AppCompatActivity {
                 }
             });
         }
-        else
-            this.mappaView.setDisegnaPercorso(true);
+        else{
+            this.mappaView.setMappa(this.mappa, true);
+            this.threadRunning = true;
+            (new Thread(this)).start();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.threadRunning = false;
+    }
+
+    // TODO thread (ogni 2 secondi richiama un metodo del controller per il ricalcolo di posizione, percorso e nodi)
+    public void richiediRicalcolo(){
+        Nodo posUtente = userController.getPosizioneUtente();
+        this.mappa = userController.richiediMappa();        // TODO serve per prendere i nodi sotto incendio aggiornati
+                                                            // TODO e se la mappa cambia? (non dovrebbe succedere)
+
+
+        //this.mappaView.setMappa(this.mappa, true);
+        // TODO ************ LE SEGUENTI OPERAZIONI VANNO FATTE SU this.mappa,
+        // TODO ************ LA VIEW SI AGGIORNA IN AUTOMATICO CON invalidate()
+        // TODO riacquisizione nodi sotto incendio
+        // TODO contrassegno nodo posizione utente
+        // TODO calcolo percorso
+
+        try {
+            this.mappaView.invalidate();
+        } catch (Exception e) { }
     }
 
     /**
@@ -110,6 +141,7 @@ public class EmergenzaActivity extends AppCompatActivity {
      */
     public void listenerBottoneInvioNodi(){
         if(this.userController.controllaConnessione() && userController.inviaNodiSelezionati()){
+            this.finish();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
@@ -117,4 +149,19 @@ public class EmergenzaActivity extends AppCompatActivity {
             this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 
+    public boolean isThreadRunning() {
+        return threadRunning;
+    }
+
+    @Override
+    public void run() {
+        while(this.isThreadRunning()) {
+            this.richiediRicalcolo();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

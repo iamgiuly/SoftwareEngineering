@@ -34,7 +34,6 @@ public class CommunicationServer{
     }
 
     public Mappa richiediMappa(int piano){
-        // TODO dictionary piano -> drawable
         return MappaDAO.getInstance(this.context).find(piano);
     }
 

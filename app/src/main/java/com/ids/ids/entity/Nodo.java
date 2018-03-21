@@ -1,35 +1,13 @@
 package com.ids.ids.entity;
 
-import android.util.Log;
-
 import com.ids.ids.ui.R;
-import com.ids.ids.utils.DebugSettings;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Nodo {
-
-    /*public static final int TIPO_BASE = 0;
-    public static final int TIPO_UTENTE = 1;
-    public static final int TIPO_USCITA = 2;
-    public static final int TIPO_INCENDIO = 3;*/
 
     public static final int IMG_BASE = R.drawable.nodo_base;
     public static final int IMG_UTENTE = R.drawable.posizione;
     public static final int IMG_USCITA = R.drawable.nodo_uscita;
     public static final int IMG_INCENDIO = R.drawable.nodo_incendio;
-
-    /*public static Map<Integer, Integer> TIPO_IMG = initTipoImg();
-
-    private static Map<Integer,Integer> initTipoImg() {
-        Map<Integer, Integer> map = new HashMap<>();
-        map.put(TIPO_BASE, IMG_BASE);
-        map.put(TIPO_UTENTE, IMG_UTENTE);
-        map.put(TIPO_USCITA, IMG_USCITA);
-        map.put(TIPO_INCENDIO, IMG_INCENDIO);
-        return map;
-    }*/
 
     public static final int DIM = 50;
 
@@ -40,6 +18,7 @@ public class Nodo {
     private boolean tipoIncendio;
     private int mappaId;
 
+    private boolean posUtente = false;
     private boolean cambiato = false;       // se true significa che il valore di tipoIncendio è stato cambiato
                                             // (serve a decidere se mostrare il bottone "Invia Nodi")
 
@@ -121,5 +100,15 @@ public class Nodo {
         if(this.tipoUscita)
             return IMG_USCITA;
         return IMG_BASE;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Nodo nodo = (Nodo) o;
+
+        return id == nodo.id;
     }
 }
