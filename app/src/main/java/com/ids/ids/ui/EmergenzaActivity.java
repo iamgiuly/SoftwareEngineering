@@ -1,30 +1,21 @@
 package com.ids.ids.ui;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
+import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ids.ids.control.UserController;
+import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.utils.DebugSettings;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * Questa activity viene mostrata al tap sul bottone "Segnala Emergenza",
@@ -103,7 +94,10 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
     public void richiediRicalcolo(){
         this.mappa = userController.richiediMappa();        // TODO serve per prendere i nodi sotto incendio aggiornati
                                                             // TODO e se la mappa cambia? (non dovrebbe succedere)
-        this.mappaView.setPosUtente(userController.getPosizioneUtente());
+        Nodo posUtente = userController.getPosizioneUtente();
+        this.mappaView.setPosUtente(posUtente);
+        ArrayList<Arco> percorso = userController.calcolaPercorso(this.mappa, posUtente);
+        this.mappaView.setPercorso(percorso);
 
         //this.mappaView.setMappa(this.mappa, true);
         // TODO ************ LE SEGUENTI OPERAZIONI VANNO FATTE SU this.mappa,
@@ -111,7 +105,7 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
         // TODO calcolo percorso
 
         try {
-            this.mappaView.invalidate();
+            this.mappaView.postInvalidate();
         } catch (Exception e) { }
     }
 

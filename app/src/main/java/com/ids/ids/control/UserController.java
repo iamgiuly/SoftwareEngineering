@@ -5,16 +5,19 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Debug;
 import android.util.Log;
 
 import com.ids.ids.boundary.BeaconScanner;
 import com.ids.ids.boundary.CommunicationServer;
+import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.entity.NodoDAO;
 import com.ids.ids.utils.DebugSettings;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class UserController extends Application{
 
@@ -136,5 +139,16 @@ public class UserController extends Application{
         if(instance == null)
             instance = new UserController(context);
         return instance;
+    }
+
+    public ArrayList<Arco> calcolaPercorso(Mappa mappa, Nodo posUtente) {
+        //TODO dummy
+        Random random = new Random();
+        ArrayList<Arco> percorso = new ArrayList<>();
+        int factor = random.nextInt(3) + 1;
+        for (Arco arco : mappa.getArchi())
+            if(arco.getId() % factor == 0)
+                percorso.add(arco);
+        return percorso;
     }
 }

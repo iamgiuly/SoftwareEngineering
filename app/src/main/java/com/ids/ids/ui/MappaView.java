@@ -42,6 +42,7 @@ public class MappaView extends View {
     public MappaView(Context c, AttributeSet attrs) {
         super(c, attrs);
         context = c;
+
         this.nodi = new ArrayList<>();
         this.percorso = new ArrayList<>();
 
@@ -82,6 +83,10 @@ public class MappaView extends View {
             if (this.disegnaPercorso)
                 this.disegnaPercorso(canvas);
         }
+    }
+
+    public void setPercorso(ArrayList<Arco> percorso) {
+        this.percorso = percorso;
     }
 
     private void disegnaPercorso(Canvas canvas){
@@ -133,11 +138,6 @@ public class MappaView extends View {
                         NodoView nodoView = new NodoView(nodo, width, height, context);
                         nodi.add(nodoView);
                     }
-                    //TODO dummy
-                    for (Arco arco : mappa.getArchi())
-                        if(arco.getId() % 2 == 0)
-                            percorso.add(arco);
-
                     rendered = true;
                 }
                 return true;
