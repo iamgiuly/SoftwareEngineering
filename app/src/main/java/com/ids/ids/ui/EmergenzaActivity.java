@@ -90,20 +90,14 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
         this.threadRunning = false;
     }
 
-    // TODO thread (ogni 2 secondi richiama un metodo del controller per il ricalcolo di posizione, percorso e nodi)
     public void richiediRicalcolo(){
         this.mappa = userController.richiediMappa();        // TODO serve per prendere i nodi sotto incendio aggiornati
                                                             // TODO e se la mappa cambia? (non dovrebbe succedere)
+        // TODO PROVA: aggiornare (dummy) nodi sotto incendio
         Nodo posUtente = userController.getPosizioneUtente();
         this.mappaView.setPosUtente(posUtente);
         ArrayList<Arco> percorso = userController.calcolaPercorso(this.mappa, posUtente);
         this.mappaView.setPercorso(percorso);
-
-        //this.mappaView.setMappa(this.mappa, true);
-        // TODO ************ LE SEGUENTI OPERAZIONI VANNO FATTE SU this.mappa,
-        // TODO ************ LA VIEW SI AGGIORNA IN AUTOMATICO CON invalidate()
-        // TODO calcolo percorso
-
         try {
             this.mappaView.postInvalidate();
         } catch (Exception e) { }

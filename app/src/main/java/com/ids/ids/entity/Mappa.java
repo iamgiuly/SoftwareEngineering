@@ -63,6 +63,14 @@ public class Mappa {
         return false;
     }
 
+    public ArrayList<Nodo> getNodiUscita() {
+        ArrayList<Nodo> uscite = new ArrayList<>();
+        for(Nodo nodo : this.nodi)
+            if(nodo.isTipoUscita())
+                uscite.add(nodo);
+        return uscite;
+    }
+
     public ArrayList<Arco> getArchi() {
         return archi;
     }
@@ -79,5 +87,4 @@ public class Mappa {
 
         return piano == mappa.piano;
     }
-
 }

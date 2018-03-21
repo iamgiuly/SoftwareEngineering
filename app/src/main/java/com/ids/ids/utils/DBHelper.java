@@ -43,6 +43,15 @@ public class DBHelper extends SQLiteOpenHelper{
                 ArcoDAO.KEY_nodoArrivoId + " INTEGER, " +
                 ArcoDAO.KEY_mappaId + " INTEGER)";
 
+        // TODO TABLE PESO
+        /*String CREATE_TABLE_PESO = "CREATE TABLE " + ArcoDAO.TABLE + "(" +
+                ArcoDAO.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ArcoDAO.KEY_nodoPartenzaId + " INTEGER, " +
+                ArcoDAO.KEY_nodoArrivoId + " INTEGER, " +
+                ArcoDAO.KEY_mappaId + " INTEGER)";*/
+
+        // TODO TABLE PESOARCO
+
         db.execSQL(CREATE_TABLE_MAPPA);
         db.execSQL(CREATE_TABLE_NODO);
         db.execSQL(CREATE_TABLE_ARCO);

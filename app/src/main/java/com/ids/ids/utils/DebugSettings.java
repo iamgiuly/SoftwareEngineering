@@ -10,9 +10,13 @@ import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.MappaDAO;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.entity.NodoDAO;
+import com.ids.ids.entity.Peso;
+import com.ids.ids.entity.PesoArco;
 import com.ids.ids.ui.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DebugSettings {
     public static boolean SEED_DB = false;
@@ -24,9 +28,14 @@ public class DebugSettings {
     public static void seedDb(Context context){
         if(DB_SEEDED) return;
 
-        ArrayList<Nodo> nodi = new ArrayList<>();
-        ArrayList<Arco> archi = new ArrayList<>();
         int idMappa = 145;
+
+        ArrayList<Peso> pesi = new ArrayList<>();
+        pesi.add(new Peso("Lunghezza", 3));
+        pesi.add(new Peso("Viabilità", 1));
+        //TODO... pesoArco
+
+        ArrayList<Nodo> nodi = new ArrayList<>();
         Nodo nodo1 = new Nodo(1, "1", 20, 20, idMappa);
         Nodo nodo2 = new Nodo(2, "2", 20, 40, idMappa);
         Nodo nodo3 = new Nodo(3, "3", 20, 60, idMappa);
@@ -43,12 +52,14 @@ public class DebugSettings {
         nodi.add(nodo6);
         nodi.add(nodo7);
         nodi.add(nodo8);
-        archi.add(new Arco(1, nodo1, nodo2, null));
-        archi.add(new Arco(2, nodo3, nodo4, null));
-        archi.add(new Arco(3, nodo5, nodo6, null));
-        archi.add(new Arco(4, nodo7, nodo8, null));
-        archi.add(new Arco(5, nodo1, nodo4, null));
-        archi.add(new Arco(6, nodo2, nodo8, null));
+
+        ArrayList<Arco> archi = new ArrayList<>();
+        archi.add(new Arco(1, nodo1, nodo2, getPesi(pesi, 10)));
+        archi.add(new Arco(2, nodo3, nodo4, getPesi(pesi, 10)));
+        archi.add(new Arco(3, nodo5, nodo6, getPesi(pesi, 10)));
+        archi.add(new Arco(4, nodo7, nodo8, getPesi(pesi, 10)));
+        archi.add(new Arco(5, nodo1, nodo4, getPesi(pesi, 10)));
+        archi.add(new Arco(6, nodo2, nodo8, getPesi(pesi, 10)));
 
         MappaDAO.getInstance(context).clear();
         NodoDAO.getInstance(context).clear();
@@ -56,5 +67,15 @@ public class DebugSettings {
         MappaDAO.getInstance(context).insert(new Mappa(idMappa, R.drawable.map145, nodi, archi));
 
         DB_SEEDED = true;
+    }
+
+    private static ArrayList<PesoArco> getPesi(ArrayList<Peso> pesi, int seed){
+        ArrayList<PesoArco> pesiArco = new ArrayList<>();
+        int i = 1;
+        for(Peso peso : pesi) {
+            pesiArco.add(new PesoArco(peso, seed * i));
+            i++;
+        }
+        return pesiArco;
     }
 }

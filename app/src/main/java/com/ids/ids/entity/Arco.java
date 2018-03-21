@@ -1,5 +1,6 @@
 package com.ids.ids.entity;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Arco {
@@ -7,10 +8,10 @@ public class Arco {
     private int id;
     private Nodo nodoPartenza;
     private Nodo nodoArrivo;
-    private Map<String, Integer> pesi;
+    private ArrayList<PesoArco> pesi;
     private int mappaId;
 
-    public Arco(int id, Nodo nodoPartenza, Nodo nodoArrivo, Map<String, Integer> pesi) {
+    public Arco(int id, Nodo nodoPartenza, Nodo nodoArrivo, ArrayList<PesoArco> pesi) {
         this.id = id;
         this.nodoPartenza = nodoPartenza;
         this.nodoArrivo = nodoArrivo;
@@ -39,11 +40,18 @@ public class Arco {
         this.nodoArrivo = nodoArrivo;
     }
 
-    public Map<String, Integer> getPesi() {
+    public ArrayList<PesoArco> getPesi() {
         return pesi;
     }
-    public void setPesi(Map<String, Integer> pesi) {
+    public void setPesi(ArrayList<PesoArco> pesi) {
         this.pesi = pesi;
+    }
+
+    public int getCosto(){
+        int costo = 0;
+        for(PesoArco pesoArco : this.pesi)
+            costo += pesoArco.getPeso().getPeso() * pesoArco.getValore();
+        return costo;
     }
 
     public int getMappaId() {

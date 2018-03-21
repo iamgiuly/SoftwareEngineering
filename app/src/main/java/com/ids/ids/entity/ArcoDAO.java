@@ -22,10 +22,12 @@ public class ArcoDAO extends DAO<Arco> {
     private static ArcoDAO instance = null;
 
     private NodoDAO nodoDAO;
+    private PesoArcoDAO pesoArcoDAO;
 
     public ArcoDAO(Context context) {
         super(context);
         this.nodoDAO = NodoDAO.getInstance(context);
+        this.pesoArcoDAO = PesoArcoDAO.getInstance(context);
     }
 
     @Override
@@ -49,7 +51,10 @@ public class ArcoDAO extends DAO<Arco> {
         Nodo nodoPartenza = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoPartenzaId)));
         Nodo nodoArrivo = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoArrivoId)));
 
-        Arco arco = new Arco(id, nodoPartenza, nodoArrivo, null);       //TODO
+        //TODO TABLE PesoArco (togliere model, aggiungere PesoArcoDAO)
+        //TODO no, tenere PesoArco (problemi con il DAO altrimenti), anche in Arco al posto di HashMap
+//TODO        ArrayList<PesoArco> pesi = pesoArcoDAO.findAllByColumnValue("idArco", String.valueOf(id)); //TODO idArco nella tabella
+        Arco arco = new Arco(id, nodoPartenza, nodoArrivo, null);       //TODO pesi al posto di null
         return arco;
     }
 
