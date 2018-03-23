@@ -17,12 +17,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ids.ids.boundary.BeaconScanner;
-import com.ids.ids.control.BluetoothController;
 import com.ids.ids.control.Localizzatore;
 import com.ids.ids.control.UserController;
 import com.ids.ids.utils.DebugSettings;
-
-import static com.ids.ids.control.BluetoothController.PERMISSION_REQUEST_COARSE_LOCATION;
 
 /**
  * Questa activity viene mostrata all'apertura dell'applicazione, visualizza il bottone "Segnala Emergenza",
@@ -32,20 +29,23 @@ import static com.ids.ids.control.BluetoothController.PERMISSION_REQUEST_COARSE_
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_ENABLE_BT = 1; // il popup da mostrare è quello per l'attivazione del bluetooth
+    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+
     private UserController userController;
-    private BluetoothController bluetoothController;
+   // private BluetoothController bluetoothController;
 
     private Button segnalazioneButton;
     private Button emergenzaButton;
     private TextView messaggioErroreTextView;       // invisibile all'inizio
 
-
-    private BluetoothAdapter btAdapter;
-    private BluetoothManager btManager;
-    private final static int REQUEST_ENABLE_BT = 1;
-    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
-    private BeaconScanner Scanner;
-    private Localizzatore Localiz;
+    private BluetoothManager btManager;             // utilizzata per ottenere una istanza di Adapter
+    private BluetoothAdapter btAdapter;             // adattatore Bluetooth del dispositivo locale,
+                                                    // consente di eseguire attività Bluetooth fondamentali
+                                                    // (es. avviare il rilevamento dei dispositivi)
+    private BroadcastReceiver receiver;             // permette di ricevere notifice sullo stato del dispositivo
+    private BeaconScanner scanner;
+    private Localizzatore localizzatore;
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
@@ -60,26 +60,15 @@ public class MainActivity extends AppCompatActivity {
 
         userController = UserController.getInstance(this);
         if(DebugSettings.SCAN_BLUETOOTH) {
-          //  bluetoothController = BluetoothController.getInstance(this);
-
-            //BluethoothManager è utilizzata per ottenere una istanza di Adapter
-            //Bluethooth adapter rappresenta l'adattatore Bluetooth del dispositivo locale.
-            //BluetoothAdapter consente di eseguire attività Bluetooth fondamentali, come avviare il rilevamento dei dispositivi,
-            btManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE); //Ottengo BluethoothManager e lo salvo in locale
-            btAdapter = btManager.getAdapter();                                        //richiamo l adapter e lo salvo in locale
-
-
-            Scanner = new BeaconScanner(this);
-            Localiz = new Localizzatore(this,Scanner);
+            //bluetoothController = BluetoothController.getInstance(this);
+            this.initBluetooth();
 
             segnalazioneButton = findViewById(R.id.segnalazioneButton);
             segnalazioneButton.setOnClickListener(new View.OnClickListener(){
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void onClick(View v){
-
-                    if(AbilitaBLE())
-                        listenerBottoneSegnalazione();
+                    listenerBottoneSegnalazione();
                 }
             });
 
@@ -95,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Registra il ricevitore per le notifiche di stato
             IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(mReceiver, filter);
+            registerReceiver(receiver, filter);
         }
 
 
@@ -120,52 +109,42 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         // Cancella il ricevitore dalle notifiche di stato
-        unregisterReceiver(mReceiver);
+        unregisterReceiver(receiver);
         //mDriverServer.mToServer.startAmb(false);
     }
 
-    // Permette di ricevere notifice sullo stato del dispositivo
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private void initBluetooth(){
+        this.btManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE);
+        this.btAdapter = btManager.getAdapter();
+        this.scanner = new BeaconScanner(this);
+        this.localizzatore = new Localizzatore(this, scanner);
+        this.receiver = new BroadcastReceiver() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String action = intent.getAction();
 
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
 
-                final int bluetoothState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                        BluetoothAdapter.ERROR);
+                    final int bluetoothState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                            BluetoothAdapter.ERROR);
 
-                switch (bluetoothState) {
-                    case BluetoothAdapter.STATE_ON:
-                        listenerBottoneSegnalazione();
+                    switch (bluetoothState) {
+                        case BluetoothAdapter.STATE_ON:
+                            listenerBottoneSegnalazione();
 
-                        break;
-                    case BluetoothAdapter.STATE_OFF:
-                        finish();
-                        // Segalare all'utente che l'app non funziona senza ble
-                        break;
+                            break;
+                        case BluetoothAdapter.STATE_OFF:
+                            finish();
+                            // Segalare all'utente che l'app non funziona senza ble
+                            break;
+                    }
                 }
             }
-        }
-    };
-
-    private boolean AbilitaBLE(){
-
-        boolean statoBLE = btAdapter.isEnabled();
-
-        if (btAdapter != null && !statoBLE) {
-
-            Intent enableIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);  //Messaggio
-            startActivityForResult(enableIntent,REQUEST_ENABLE_BT); //Metodo dell activity che permette di lanciare una dialogWindow,
-            // REQUEST_ENABLE_BT è il codice sopra definito che permette alla dialog
-            // di capire che la finestra da lancioare è quella per l attivazione del bluethooth
-
-        }
-
-        return statoBLE;
-
+        };
     }
+
 
     /**
      * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
@@ -174,20 +153,21 @@ public class MainActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneSegnalazione(){
-
-        Scanner.Scansione(true);
-        Localiz.startFinderONE();
-        userController.setModalita(0);
-        segnalazioneButton.setVisibility(Button.INVISIBLE);
-        /*if(DebugSettings.SCAN_BLUETOOTH)
-            this.bluetoothController.avviaScansione();
-        if(this.userController.controllaConnessione()){
+        if(this.userController.controllaConnessione()) {
             this.userController.setModalita(this.userController.MODALITA_SEGNALAZIONE);
-            Intent intent = new Intent(this, EmergenzaActivity.class);
-            startActivity(intent);
+            if (DebugSettings.SCAN_BLUETOOTH) {
+                if(this.abilitaBLE()) {
+                    scanner.scansione(true);
+                    localizzatore.startFinderONE();
+                    segnalazioneButton.setVisibility(Button.INVISIBLE);
+                }
+            } else {
+                Intent intent = new Intent(this, EmergenzaActivity.class);
+                startActivity(intent);
+            }
         }
         else
-            this.messaggioErroreTextView.setVisibility(View.VISIBLE);*/
+            this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -196,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
      *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
      */
     public void listenerBottoneEmergenza(){
+        // TODO bluetooth
         if(this.userController.controllaConnessione()){
             this.userController.setModalita(this.userController.MODALITA_EMERGENZA);
             Intent intent = new Intent(this, EmergenzaActivity.class);
@@ -203,6 +184,19 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             this.messaggioErroreTextView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Prova ad abilitare l'adapter del bluetooth
+     * @return true se l'adapter è stato abilitato
+     */
+    private boolean abilitaBLE(){
+        boolean statoBLE = btAdapter.isEnabled();
+        if (btAdapter != null && !statoBLE) {
+            Intent enableIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        }
+        return statoBLE;
     }
 
 }

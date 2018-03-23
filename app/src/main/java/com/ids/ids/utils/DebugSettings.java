@@ -64,7 +64,7 @@ public class DebugSettings {
         MappaDAO.getInstance(context).clear();
         NodoDAO.getInstance(context).clear();
         ArcoDAO.getInstance(context).clear();
-        MappaDAO.getInstance(context).insert(new Mappa(idMappa, R.drawable.map145, nodi, archi));
+        MappaDAO.getInstance(context).insert(new Mappa(idMappa, "map145", nodi, archi));
 
         DB_SEEDED = true;
     }

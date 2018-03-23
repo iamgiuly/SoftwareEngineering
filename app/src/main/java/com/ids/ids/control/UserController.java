@@ -32,7 +32,7 @@ public class UserController extends Application{
 
     private CommunicationServer communicationServer;
     private NodoDAO nodoDAO;
-    private ArrayList<Nodo> nodiSelezionati;
+    private ArrayList<Nodo> nodiSelezionati;                // nodi di cui bisogna cambiare il flag "sotto incendio"
 
     private int modalita;
 
@@ -57,20 +57,8 @@ public class UserController extends Application{
     }
 
     /**
-     * Verifica che il nodo con un certo id sia selezionato
-     * @param idNodo id del nodo da controllare
-     * @return true se il nodo con l'id passato è selezionato
-     */
-    public boolean nodoSelezionato(int idNodo){
-        for(Nodo nodo : this.nodiSelezionati)
-            if(nodo.getId() == idNodo)
-                return true;
-        return false;
-    }
-
-    /**
      * Aggiunge o rimuove dalla lista dei nodi selezionati il nodo con l'id passato come parametro
-     * @param idNodo id del nodo da selezionare o deselezionare
+     * @param nodo nodo da selezionare o deselezionare
      * @return true se c'è almeno un nodo selezionato
      */
     public boolean selezionaNodo(Nodo nodo){
@@ -84,19 +72,6 @@ public class UserController extends Application{
                 this.nodiSelezionati.remove(nodo);
         }
         return !this.nodiSelezionati.isEmpty();
-/*
-            this.nodiSelezionati.get
-        for(Nodo nodo : this.nodiSelezionati){
-            if(nodo.getId() == nodoSel.getId()){
-                nodo = nodoSel;
-                return true;
-                //this.nodiSelezionati.remove(nodo);
-                //return !this.nodiSelezionati.isEmpty();
-            }
-        }
-        //Nodo nodo = nodoDAO.find(idNodo);
-        this.nodiSelezionati.add(nodoSel);
-        return true;*/
     }
 
     /**

@@ -127,7 +127,7 @@ public class MappaView extends View {
         this.nodi.clear();
         this.percorso.clear();
 
-        image = BitmapFactory.decodeStream(context.openFileInput(mappa.nomePiantina+".png"));
+        image = BitmapFactory.decodeStream(context.openFileInput(mappa.getPiantina() + ".png"));
         //image = DecodedResources.getInstance().getPreloadedImage(this.context, mappa);
 
         ViewTreeObserver viewTree = this.getViewTreeObserver();

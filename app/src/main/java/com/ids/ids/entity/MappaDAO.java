@@ -43,7 +43,7 @@ public class MappaDAO extends DAO<Mappa>{
     @Override
     protected Mappa getFromCursor(Cursor cursor) {
         int piano = cursor.getInt(cursor.getColumnIndex(KEY_piano));
-        int piantina = cursor.getInt(cursor.getColumnIndex(KEY_piantina));
+        String piantina = cursor.getString(cursor.getColumnIndex(KEY_piantina));
 
         ArrayList<Nodo> nodi = nodoDAO.findAllByColumnValue(NodoDAO.KEY_mappaId, String.valueOf(piano));
         ArrayList<Arco> archi = arcoDAO.findAllByColumnValue(ArcoDAO.KEY_mappaId, String.valueOf(piano));

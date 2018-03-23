@@ -4,13 +4,11 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -50,7 +48,7 @@ public class BluetoothController {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void avviaScansione(){
-        COMbeacon.Scansione(true);
+        COMbeacon.scansione(true);
     }
 
 

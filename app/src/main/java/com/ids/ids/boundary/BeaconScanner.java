@@ -73,7 +73,7 @@ public class BeaconScanner {
 
     // Questo metodo avvia e ferma la scansione periodica, in base al booleano in ingresso
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void Scansione(Boolean enable) {
+    public void scansione(Boolean enable) {
 
 
         // Lo scanner è invocato solo prima della scansione per attendere che il ble sia attivo

@@ -5,13 +5,11 @@ import java.util.ArrayList;
 public class Mappa {
 
     private int piano;
-    private int piantina;           //è un'immagine, è intero perché fa riferimento al codice del drawable associato
+    private String piantina;        //nome dell'immagine
     private ArrayList<Nodo> nodi;   //TODO eliminare, avremo un getNodi() che recupera l'ArrayList dei nodi dagli archi
     private ArrayList<Arco> archi;
 
-    public String nomePiantina;
-
-    public Mappa(int piano, int piantina, ArrayList<Nodo> nodi, ArrayList<Arco> archi) {
+    public Mappa(int piano, String piantina, ArrayList<Nodo> nodi, ArrayList<Arco> archi) {
         this.piano = piano;
         this.piantina = piantina;
         this.nodi = nodi;
@@ -30,10 +28,10 @@ public class Mappa {
         this.piano = piano;
     }
 
-    public int getPiantina(){
+    public String getPiantina(){
         return this.piantina;
     }
-    public void setPiantina(int piantina){
+    public void setPiantina(String piantina){
         this.piantina = piantina;
     }
 

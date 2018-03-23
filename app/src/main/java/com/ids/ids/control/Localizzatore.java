@@ -78,7 +78,7 @@ public class Localizzatore {
                 // E' stato trovato il beacon dallo scanner
                 System.out.println("MAC: "+macAdrs);
                 // Fermo la scansione dello scanner
-                Scanner.Scansione(false);
+                Scanner.scansione(false);
                 // Tolgo il messaggio di localizzazione
                 loading_localizzazione.dismiss();
 

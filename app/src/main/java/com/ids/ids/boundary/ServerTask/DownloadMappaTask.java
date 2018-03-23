@@ -215,8 +215,7 @@ public class DownloadMappaTask extends AsyncTask<Void, Void, String> {
 
             System.out.println("ecco: "+nome_piantina);
 
-            Mappa mappa_scaricata = new Mappa(piano, 0  , nodi , null);
-            mappa_scaricata.nomePiantina = nome_piantina;
+            Mappa mappa_scaricata = new Mappa(piano, nome_piantina, nodi , null);
             download_mappa_in_corso.dismiss();
             new DownloadPiantinaTask(context,mappa_scaricata).execute();
 

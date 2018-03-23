@@ -30,8 +30,6 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
 
     private UserController userController;
 
-    private Mappa mappa;
-
     private Button inviaNodiButton;                 // invisibile all'inizio
     private TextView messaggioErroreTextView;       // invisibile all'inizio
     private MappaView mappaView;
@@ -65,7 +63,6 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
         this.mappaView = findViewById(R.id.mappaView);
         try {
             if (this.userController.getModalita() == this.userController.MODALITA_SEGNALAZIONE) {
-                //this.mappaView.setMappa(this.mappa);
                 this.mappaView.setMappa(userController.getMappa());
                 this.mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -80,7 +77,6 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
                     }
                 });
             } else {
-                //this.mappaView.setMappa(this.mappa, true);
                 this.mappaView.setMappa(userController.getMappa(), true);
                 this.threadRunning = true;
                 (new Thread(this)).start();
@@ -104,7 +100,7 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
         // TODO PROVA: aggiornare (dummy) nodi sotto incendio
         Nodo posUtente = userController.getPosizioneUtente();
         this.mappaView.setPosUtente(posUtente);
-        ArrayList<Arco> percorso = userController.calcolaPercorso(this.mappa, posUtente);
+        ArrayList<Arco> percorso = userController.calcolaPercorso(userController.getMappa(), posUtente);
         this.mappaView.setPercorso(percorso);
         try {
             this.mappaView.postInvalidate();

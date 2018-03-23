@@ -23,14 +23,14 @@ public class DecodedResources {
     // il valore sarà l'immagine Bitmap associata
     public Map<Integer, Bitmap> preloadedImages = new HashMap<>();
 
-    public Bitmap getPreloadedImage(Context context, Mappa mappa){
+    /*TODO public Bitmap getPreloadedImage(Context context, Mappa mappa){
         int id = mappa.getPiano();
         if(preloadedImages.containsKey(id))
             return preloadedImages.get(id);
         Bitmap image = BitmapFactory.decodeResource(context.getResources(), mappa.getPiantina());
         preloadedImages.put(id, image);
         return image;
-    }
+    }*/
 
     public static DecodedResources getInstance(){
         if(instance == null)
