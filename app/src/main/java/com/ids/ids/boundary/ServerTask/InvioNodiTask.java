@@ -32,8 +32,8 @@ import java.util.concurrent.ExecutionException;
 public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
-    //private final String PATH = "http://192.168.1.8:8080";
-    private final String PATH = "http://172.23.128.184:8080";
+    private final String PATH = "http://192.168.1.8:8080";
+  //  private final String PATH = "http://172.23.128.184:8080";
 
     private ArrayList<Nodo> NodiSottoIncendio;
     private ProgressDialog loading_segnalazione;
@@ -83,15 +83,18 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
         }
 
 
-        if (!connesso)
-            return null;
-        else {
+      //  if (!connesso)
+      //      return null;
+      //  else {
 
             try {
 
                 //creo il JSON as a key value pair
                 Gson gson = new Gson();
                 String Data = gson.toJson(NodiSottoIncendio);
+
+                for(Nodo n : NodiSottoIncendio)
+                    System.out.println(n.getBeaconId());
 
                 // Create the request
                 //TODO: URL
@@ -137,7 +140,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
                 }
             }
 
-        }
+      //  }
 
 
         return null;
@@ -155,7 +158,9 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
 
         if (result == null) {
-            //CODE
+            System.out.println("la segnalazione non è andata a buon fine");
+        }else{
+            System.out.println("la segnalazione è andata con esito"+result);
         }
 
     }

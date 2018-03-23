@@ -38,8 +38,8 @@ public class DownloadMappaTask extends AsyncTask<Void, Void, String> {
 
 
     private HttpURLConnection connection;
-    //private final String PATH = "http://192.168.1.8:8080";
-    private final String PATH = "http://172.23.128.184:8080";
+    private final String PATH = "http://192.168.1.8:8080";
+    //private final String PATH = "http://172.23.128.184:8080";
     private String PosizioneU;
     private Context context;
     private ProgressDialog loading_mappa;
@@ -92,7 +92,6 @@ public class DownloadMappaTask extends AsyncTask<Void, Void, String> {
         } catch (IOException exception) {
             System.out.println("Eccezione");
         }
-
 
         try {
 

@@ -63,14 +63,19 @@ public class UserController extends Application{
      */
     public boolean selezionaNodo(Nodo nodo){
         nodo.setIncendio();
+
         if(nodo.isCambiato()) {
-            if (!this.nodiSelezionati.contains(nodo))
+            if (!this.nodiSelezionati.contains(nodo)) {
                 this.nodiSelezionati.add(nodo);
+            }
         }
         else {
-            if (this.nodiSelezionati.contains(nodo))
+            System.out.println(" non Cambiato");
+            if (this.nodiSelezionati.contains(nodo)) {
                 this.nodiSelezionati.remove(nodo);
+            }
         }
+
         return !this.nodiSelezionati.isEmpty();
     }
 

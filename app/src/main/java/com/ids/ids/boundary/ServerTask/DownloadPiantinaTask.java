@@ -20,8 +20,8 @@ import java.net.URL;
 public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
     private HttpURLConnection connection;
-    //private final String PATH = "http://192.168.1.8:8080";
-    private final String PATH = "http://172.23.128.184:8080";
+    private final String PATH = "http://192.168.1.8:8080";
+   // private final String PATH = "http://172.23.128.184:8080";
 
     private Context context;
     private Mappa mappa_scaricata;

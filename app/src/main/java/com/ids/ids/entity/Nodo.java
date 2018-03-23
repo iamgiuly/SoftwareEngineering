@@ -30,6 +30,7 @@ public class Nodo {
     }
 
     public Nodo(int id, String beaconId, int x, int y, boolean tipoUscita, boolean tipoIncendio, int mappaId) {
+
         this.id = id;
         this.beaconId = beaconId;
         this.x = x;
@@ -37,6 +38,7 @@ public class Nodo {
         this.tipoUscita = tipoUscita;
         this.tipoIncendio = tipoIncendio;
         this.mappaId = mappaId;
+
     }
 
     public int getId(){
@@ -103,11 +105,12 @@ public class Nodo {
 
     @Override
     public boolean equals(Object o) {
+
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Nodo nodo = (Nodo) o;
 
-        return id == nodo.id;
+        return beaconId == nodo.beaconId;
     }
 }
