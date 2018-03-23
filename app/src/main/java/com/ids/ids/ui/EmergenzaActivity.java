@@ -133,10 +133,12 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
      *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
      */
     public void listenerBottoneInvioNodi(){
-        if(this.userController.controllaConnessione() && userController.inviaNodiSelezionati()){
-            this.finish();
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+
+        if(this.userController.controllaConnessione()){
+
+            userController.inviaNodiSelezionati();
+
+            //this.finish();
         }
         else
             this.messaggioErroreTextView.setVisibility(View.VISIBLE);

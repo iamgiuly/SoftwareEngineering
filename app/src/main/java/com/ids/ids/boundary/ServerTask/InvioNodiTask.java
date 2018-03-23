@@ -3,6 +3,8 @@ package com.ids.ids.boundary.ServerTask;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+
+import com.google.gson.Gson;
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.entity.Nodo;
 import org.json.JSONException;
@@ -29,8 +31,10 @@ import java.util.concurrent.ExecutionException;
 
 public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
-
     private HttpURLConnection connection;
+    //private final String PATH = "http://192.168.1.8:8080";
+    private final String PATH = "http://172.23.128.184:8080";
+
     private ArrayList<Nodo> NodiSottoIncendio;
     private ProgressDialog loading_segnalazione;
     private Context context;
@@ -66,13 +70,18 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
         try {
 
-            connesso = execute.get();
+            //connesso = execute.get();
+            connection = (HttpURLConnection) new URL(PATH + "/").openConnection();
+            //set timeout for connection
+            connection.setConnectTimeout(3000);
+            //set timeout for reading InputStream
+            connection.setReadTimeout(3000);
+            System.out.println("connesso  "+connection);
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            System.out.println("Eccezione");
         }
+
 
         if (!connesso)
             return null;
@@ -80,15 +89,14 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
             try {
 
-                //creo il JSON as a key value pair.
-                JSONObject Data = new JSONObject();
-                Data.put("nodi_sotto_incendio", NodiSottoIncendio );
-                System.out.println("   "+Data.toString());
+                //creo il JSON as a key value pair
+                Gson gson = new Gson();
+                String Data = gson.toJson(NodiSottoIncendio);
 
                 // Create the request
                 //TODO: URL
-                //  --> URL url = new URL(/*URL*/);
-                // --> connection = (HttpURLConnection) url.openConnection();
+                URL url = new URL(PATH+"/FireExit/services/maps/segnalazione");
+                connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
                 connection.setRequestMethod("POST");
@@ -118,9 +126,6 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-
             } finally {
 
                 if (connection != null) {

@@ -212,17 +212,13 @@ public class DownloadMappaTask extends AsyncTask<Void, Void, String> {
 
 
             }
+
             System.out.println("ecco: "+nome_piantina);
-
-           // ArrayList<Nodo> nodi = dati_mappa.getNodi();
-
 
             Mappa mappa_scaricata = new Mappa(piano, 0  , nodi , null);
             mappa_scaricata.nomePiantina = nome_piantina;
             download_mappa_in_corso.dismiss();
             new DownloadPiantinaTask(context,mappa_scaricata).execute();
-
-
 
         }
 

@@ -105,13 +105,18 @@ public class UserController extends Application{
      * quindi la lista dei nodi selezionati viene svuotata
      * @return true se l'operazione ha successo
      */
-    public boolean inviaNodiSelezionati(){
+    public void inviaNodiSelezionati(){
+
         for(Nodo nodo : this.nodiSelezionati)
-            nodoDAO.update(nodo);
-        boolean result = this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati);
-        if(result)
-            this.clearNodiSelezionati();
-        return result;
+            nodoDAO.update(nodo);    //salvataggio in locale
+
+        this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati, context);
+
+        //TODO: RESULT
+       // if(result)
+           // this.clearNodiSelezionati();
+        //return result;
+
     }
 
     /**

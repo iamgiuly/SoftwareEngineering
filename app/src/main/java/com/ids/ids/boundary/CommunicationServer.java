@@ -30,20 +30,19 @@ public class CommunicationServer{
      * invia una richiesta RESTful con questi ID,
      * riceve come risposta l'eventuale successo dell'operazione
      */
-    public boolean inviaNodiSottoIncendio(ArrayList<Nodo> nodi){
-        // TODO dummy
-        return true;
-    }
-
-    public Mappa richiediMappa(int piano){
-        return MappaDAO.getInstance(this.context).find(piano);
-    }
-
     public void inviaNodiSottoIncendio(ArrayList<Nodo> nodi, Context contxt){
 
         new InvioNodiTask(nodi,contxt).execute();
 
     }
+
+    public Mappa richiediMappa(int piano){
+
+        return MappaDAO.getInstance(this.context).find(piano);
+
+    }
+
+
 
 
     public void richiestaMappa(Context contxt,String posizioneU){
