@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         userController = UserController.getInstance(this);
         if(DebugSettings.SCAN_BLUETOOTH) {
-            bluetoothController = BluetoothController.getInstance(this);
+          //  bluetoothController = BluetoothController.getInstance(this);
 
             //BluethoothManager è utilizzata per ottenere una istanza di Adapter
             //Bluethooth adapter rappresenta l'adattatore Bluetooth del dispositivo locale.
@@ -71,6 +71,17 @@ public class MainActivity extends AppCompatActivity {
 
             Scanner = new BeaconScanner(this);
             Localiz = new Localizzatore(this,Scanner);
+
+            segnalazioneButton = findViewById(R.id.segnalazioneButton);
+            segnalazioneButton.setOnClickListener(new View.OnClickListener(){
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public void onClick(View v){
+
+                    if(AbilitaBLE())
+                        listenerBottoneSegnalazione();
+                }
+            });
 
 
             // Richiesta dei permessi di localizzazione approssimata
@@ -87,16 +98,7 @@ public class MainActivity extends AppCompatActivity {
             registerReceiver(mReceiver, filter);
         }
 
-        segnalazioneButton = findViewById(R.id.segnalazioneButton);
-        segnalazioneButton.setOnClickListener(new View.OnClickListener(){
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(View v){
 
-                if(AbilitaBLE())
-                    listenerBottoneSegnalazione();
-            }
-        });
 
         emergenzaButton = findViewById(R.id.emergenzaButton);
         emergenzaButton.setOnClickListener(new View.OnClickListener(){
@@ -110,6 +112,59 @@ public class MainActivity extends AppCompatActivity {
 
         if(DebugSettings.SEED_DB)
             DebugSettings.seedDb(this);
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Cancella il ricevitore dalle notifiche di stato
+        unregisterReceiver(mReceiver);
+        //mDriverServer.mToServer.startAmb(false);
+    }
+
+    // Permette di ricevere notifice sullo stato del dispositivo
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+
+                final int bluetoothState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR);
+
+                switch (bluetoothState) {
+                    case BluetoothAdapter.STATE_ON:
+                        listenerBottoneSegnalazione();
+
+                        break;
+                    case BluetoothAdapter.STATE_OFF:
+                        finish();
+                        // Segalare all'utente che l'app non funziona senza ble
+                        break;
+                }
+            }
+        }
+    };
+
+    private boolean AbilitaBLE(){
+
+        boolean statoBLE = btAdapter.isEnabled();
+
+        if (btAdapter != null && !statoBLE) {
+
+            Intent enableIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);  //Messaggio
+            startActivityForResult(enableIntent,REQUEST_ENABLE_BT); //Metodo dell activity che permette di lanciare una dialogWindow,
+            // REQUEST_ENABLE_BT è il codice sopra definito che permette alla dialog
+            // di capire che la finestra da lancioare è quella per l attivazione del bluethooth
+
+        }
+
+        return statoBLE;
+
     }
 
     /**
@@ -149,55 +204,5 @@ public class MainActivity extends AppCompatActivity {
         else
             this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        if(requestCode == PERMISSION_REQUEST_COARSE_LOCATION)
-            bluetoothController.fornisciPermessi(grantResults[0]);
-    }
-
-    private boolean AbilitaBLE(){
-
-        boolean statoBLE = btAdapter.isEnabled();
-
-        if (btAdapter != null && !statoBLE) {
-
-            Intent enableIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);  //Messaggio
-            startActivityForResult(enableIntent,REQUEST_ENABLE_BT); //Metodo dell activity che permette di lanciare una dialogWindow,
-            // REQUEST_ENABLE_BT è il codice sopra definito che permette alla dialog
-            // di capire che la finestra da lancioare è quella per l attivazione del bluethooth
-
-        }
-
-        return statoBLE;
-
-    }
-
-    // Permette di ricevere notifice sullo stato del dispositivo
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-
-                final int bluetoothState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                        BluetoothAdapter.ERROR);
-
-                switch (bluetoothState) {
-                    case BluetoothAdapter.STATE_ON:
-                        listenerBottoneSegnalazione();
-
-                        break;
-                    case BluetoothAdapter.STATE_OFF:
-                        finish();
-                        // Segalare all'utente che l'app non funziona senza ble
-                        break;
-                }
-            }
-        }
-    };
 
 }
