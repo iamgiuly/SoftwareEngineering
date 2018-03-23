@@ -13,6 +13,7 @@ import com.ids.ids.boundary.BeaconScanner;
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.MappaDAO;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.entity.NodoDAO;
 import com.ids.ids.ui.EmergenzaActivity;
@@ -86,37 +87,24 @@ public class UserController extends Application{
      * @return true se l'operazione ha successo
      */
     public void inviaNodiSelezionati(){
-
         for(Nodo nodo : this.nodiSelezionati)
             nodoDAO.update(nodo);    //salvataggio in locale
-
         this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati, context);
-
         //TODO: RESULT
-       // if(result)
+        // if(result)
            // this.clearNodiSelezionati();
         //return result;
-
     }
 
     /**
-     * Recupera la mappa del piano in cui si trova l'utente in base alla sua posizione rilevata dal beacon
-     * @return mappa del piano in cui si trova l'utente
+     * Recupera la mappa del piano in cui si trova l'utente inviando una richiesta al server,
+     * passando a questo la posizione dell'utente raffigurata dall'id (MACaddress) del beacon
      */
-    public Mappa richiediMappa() {
-        int piano = 145;// TODO this.beaconScanner.getPianoUtente();
-        return this.communicationServer.richiediMappa(piano);
-    }
-
-    /**
-     * Recupera la mappa del piano in cui si trova l'utente in base alla sua posizione rilevata dal beacon
-     *
-     */
-    public void richiestaMappa(Context contxt,String MacAdrs) {
-
-        //Invio la richiesta al server passandogli la posizione dell utente raffigutrata dell id (MACaddress) del Beacon
-        communicationServer.richiestaMappa(contxt,MacAdrs);
-
+    public void caricaMappa(Context context, String macAddress) {
+        if(DebugSettings.SCAN_BLUETOOTH)
+            communicationServer.richiestaMappa(context, macAddress);
+        else
+            mappa = MappaDAO.getInstance(context).find(DebugSettings.PIANO_DEFAULT);
     }
 
     public void MandaEmergenzaActivity(){

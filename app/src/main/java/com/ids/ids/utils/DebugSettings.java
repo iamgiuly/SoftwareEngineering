@@ -19,16 +19,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DebugSettings {
-    public static boolean SEED_DB = false;
-    public static boolean SCAN_BLUETOOTH = true;
+
+    public static boolean SEED_DB = true;
+    public static boolean SCAN_BLUETOOTH = false;
     public static boolean CHECK_WIFI = false;
+
+    public static int PIANO_DEFAULT = 145;
+    public static int PIANO_DRAWABLE_DEFAULT = R.drawable.map145;
 
     private static boolean DB_SEEDED = false;
 
     public static void seedDb(Context context){
         if(DB_SEEDED) return;
 
-        int idMappa = 145;
+        int idMappa = PIANO_DEFAULT;
 
         ArrayList<Peso> pesi = new ArrayList<>();
         pesi.add(new Peso("Lunghezza", 3));

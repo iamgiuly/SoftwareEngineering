@@ -14,6 +14,7 @@ import com.ids.ids.control.UserController;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
+import com.ids.ids.utils.DebugSettings;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
 
         messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
 
+        if(!DebugSettings.SCAN_BLUETOOTH)
+            userController.caricaMappa(this, null);
         //this.mappa = userController.richiediMappa();
         this.mappaView = findViewById(R.id.mappaView);
         try {

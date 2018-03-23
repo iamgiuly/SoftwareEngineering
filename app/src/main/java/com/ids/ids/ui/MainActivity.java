@@ -62,32 +62,16 @@ public class MainActivity extends AppCompatActivity {
         if(DebugSettings.SCAN_BLUETOOTH) {
             //bluetoothController = BluetoothController.getInstance(this);
             this.initBluetooth();
-
-            segnalazioneButton = findViewById(R.id.segnalazioneButton);
-            segnalazioneButton.setOnClickListener(new View.OnClickListener(){
-                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                @Override
-                public void onClick(View v){
-                    listenerBottoneSegnalazione();
-                }
-            });
-
-
-            // Richiesta dei permessi di localizzazione approssimata
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (this.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                            PERMISSION_REQUEST_COARSE_LOCATION);
-                }
-            }
-
-
-            // Registra il ricevitore per le notifiche di stato
-            IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(receiver, filter);
         }
 
-
+        segnalazioneButton = findViewById(R.id.segnalazioneButton);
+        segnalazioneButton.setOnClickListener(new View.OnClickListener(){
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View v){
+                listenerBottoneSegnalazione();
+            }
+        });
 
         emergenzaButton = findViewById(R.id.emergenzaButton);
         emergenzaButton.setOnClickListener(new View.OnClickListener(){
@@ -107,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         // Cancella il ricevitore dalle notifiche di stato
         unregisterReceiver(receiver);
         //mDriverServer.mToServer.startAmb(false);
@@ -124,27 +107,35 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 final String action = intent.getAction();
-
                 if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-
                     final int bluetoothState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
                             BluetoothAdapter.ERROR);
-
                     switch (bluetoothState) {
                         case BluetoothAdapter.STATE_ON:
                             listenerBottoneSegnalazione();
-
                             break;
                         case BluetoothAdapter.STATE_OFF:
                             finish();
-                            // Segalare all'utente che l'app non funziona senza ble
+                            // segnalare all'utente che l'app non funziona senza BLE
                             break;
                     }
                 }
             }
         };
-    }
 
+        // richiesta dei permessi di localizzazione approssimata
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (this.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                        PERMISSION_REQUEST_COARSE_LOCATION);
+            }
+        }
+
+
+        // registra il ricevitore per le notifiche di stato
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(receiver, filter);
+    }
 
     /**
      * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:

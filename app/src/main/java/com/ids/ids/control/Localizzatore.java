@@ -83,7 +83,7 @@ public class Localizzatore {
                 loading_localizzazione.dismiss();
 
                 //Avvio l Activity passandogli il macAdrs
-                userController.richiestaMappa(context,macAdrs);
+                userController.caricaMappa(context,macAdrs);
 
 
                 // Fermo questo Runnable
