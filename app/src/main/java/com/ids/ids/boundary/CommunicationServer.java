@@ -2,6 +2,8 @@ package com.ids.ids.boundary;
 
 import android.content.Context;
 
+import com.ids.ids.boundary.ServerTask.DownloadMappaTask;
+import com.ids.ids.boundary.ServerTask.InvioNodiTask;
 import com.ids.ids.entity.MappaDAO;
 import com.ids.ids.ui.R;
 import com.ids.ids.entity.Mappa;
@@ -36,6 +38,20 @@ public class CommunicationServer{
     public Mappa richiediMappa(int piano){
         return MappaDAO.getInstance(this.context).find(piano);
     }
+
+    public void inviaNodiSottoIncendio(ArrayList<Nodo> nodi, Context contxt){
+
+        new InvioNodiTask(nodi,contxt).execute();
+
+    }
+
+
+    public void richiestaMappa(Context contxt,String posizioneU){
+
+        new DownloadMappaTask(contxt,posizioneU).execute();
+
+    }
+
 
     public static CommunicationServer getInstance(Context context){
         if(instance == null)

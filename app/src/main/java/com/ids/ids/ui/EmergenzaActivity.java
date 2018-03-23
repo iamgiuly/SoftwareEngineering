@@ -15,6 +15,7 @@ import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -60,27 +61,32 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
 
         messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
 
-        this.mappa = userController.richiediMappa();
+        //this.mappa = userController.richiediMappa();
         this.mappaView = findViewById(R.id.mappaView);
-        if(this.userController.getModalita() == this.userController.MODALITA_SEGNALAZIONE) {
-            this.mappaView.setMappa(this.mappa);
-            this.mappaView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    if (motionEvent.getAction() != MotionEvent.ACTION_DOWN)
+        try {
+            if (this.userController.getModalita() == this.userController.MODALITA_SEGNALAZIONE) {
+                //this.mappaView.setMappa(this.mappa);
+                this.mappaView.setMappa(userController.getMappa());
+                this.mappaView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        if (motionEvent.getAction() != MotionEvent.ACTION_DOWN)
+                            return true;
+                        NodoView nodoView = mappaView.getNodoPremuto((int) motionEvent.getX(), (int) motionEvent.getY());
+                        if (nodoView != null)
+                            listenerNodoSelezionato(nodoView);
+                        mappaView.invalidate();
                         return true;
-                    NodoView nodoView = mappaView.getNodoPremuto((int) motionEvent.getX(), (int) motionEvent.getY());
-                    if (nodoView != null)
-                        listenerNodoSelezionato(nodoView);
-                    mappaView.invalidate();
-                    return true;
-                }
-            });
-        }
-        else{
-            this.mappaView.setMappa(this.mappa, true);
-            this.threadRunning = true;
-            (new Thread(this)).start();
+                    }
+                });
+            } else {
+                //this.mappaView.setMappa(this.mappa, true);
+                this.mappaView.setMappa(userController.getMappa(), true);
+                this.threadRunning = true;
+                (new Thread(this)).start();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -91,8 +97,10 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
     }
 
     public void richiediRicalcolo(){
-        this.mappa = userController.richiediMappa();        // TODO serve per prendere i nodi sotto incendio aggiornati
+        //this.mappa = userController.richiediMappa();        // TODO serve per prendere i nodi sotto incendio aggiornati
                                                             // TODO e se la mappa cambia? (non dovrebbe succedere)
+        // TODO this.mappa = userController.richiediNodi();
+
         // TODO PROVA: aggiornare (dummy) nodi sotto incendio
         Nodo posUtente = userController.getPosizioneUtente();
         this.mappaView.setPosUtente(posUtente);

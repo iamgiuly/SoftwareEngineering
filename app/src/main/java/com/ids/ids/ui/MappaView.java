@@ -18,6 +18,7 @@ import com.ids.ids.entity.Nodo;
 import com.ids.ids.utils.DebugSettings;
 import com.ids.ids.utils.DecodedResources;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class MappaView extends View {
@@ -111,7 +112,7 @@ public class MappaView extends View {
         return null;
     }
 
-    public void setMappa(Mappa map){
+    public void setMappa(Mappa map) throws FileNotFoundException {
         this.setMappa(map, false);
     }
 
@@ -119,14 +120,15 @@ public class MappaView extends View {
         this.posUtente = posUtente;
     }
 
-    public void setMappa(Mappa map, boolean disegnaPercorso){
+    public void setMappa(Mappa map, boolean disegnaPercorso) throws FileNotFoundException {
         this.mappa = map;
         this.disegnaPercorso = disegnaPercorso;
         this.rendered = false;
         this.nodi.clear();
         this.percorso.clear();
 
-        image = DecodedResources.getInstance().getPreloadedImage(this.context, mappa);
+        image = BitmapFactory.decodeStream(context.openFileInput(mappa.nomePiantina+".png"));
+        //image = DecodedResources.getInstance().getPreloadedImage(this.context, mappa);
 
         ViewTreeObserver viewTree = this.getViewTreeObserver();
         viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {

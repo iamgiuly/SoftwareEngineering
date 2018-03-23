@@ -18,7 +18,6 @@ public class Nodo {
     private boolean tipoIncendio;
     private int mappaId;
 
-    private boolean posUtente = false;
     private boolean cambiato = false;       // se true significa che il valore di tipoIncendio è stato cambiato
                                             // (serve a decidere se mostrare il bottone "Invia Nodi")
 

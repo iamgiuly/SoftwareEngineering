@@ -3,6 +3,7 @@ package com.ids.ids.control;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Debug;
@@ -14,6 +15,7 @@ import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.entity.NodoDAO;
+import com.ids.ids.ui.EmergenzaActivity;
 import com.ids.ids.utils.DebugSettings;
 
 import java.util.ArrayList;
@@ -33,6 +35,8 @@ public class UserController extends Application{
     private ArrayList<Nodo> nodiSelezionati;
 
     private int modalita;
+
+    private Mappa mappa;
 
     public UserController(Activity context){
         this.context = context;
@@ -119,6 +123,24 @@ public class UserController extends Application{
         return this.communicationServer.richiediMappa(piano);
     }
 
+    /**
+     * Recupera la mappa del piano in cui si trova l'utente in base alla sua posizione rilevata dal beacon
+     *
+     */
+    public void richiestaMappa(Context contxt,String MacAdrs) {
+
+        //Invio la richiesta al server passandogli la posizione dell utente raffigutrata dell id (MACaddress) del Beacon
+        communicationServer.richiestaMappa(contxt,MacAdrs);
+
+    }
+
+    public void MandaEmergenzaActivity(){
+
+        Intent intent = new Intent(context , EmergenzaActivity.class);
+        context.startActivity(intent);
+
+    }
+
     public Nodo getPosizioneUtente() {
         // TODO dummy
         ArrayList<Nodo> nodi = nodoDAO.findAll();
@@ -154,6 +176,14 @@ public class UserController extends Application{
 
     public void clearNodiSelezionati() {
         this.nodiSelezionati.clear();
+    }
+
+    public Mappa getMappa() {
+        return mappa;
+    }
+
+    public void setMappa(Mappa mappa) {
+        this.mappa = mappa;
     }
 
     public static UserController getInstance(Activity context){

@@ -9,6 +9,8 @@ public class Mappa {
     private ArrayList<Nodo> nodi;   //TODO eliminare, avremo un getNodi() che recupera l'ArrayList dei nodi dagli archi
     private ArrayList<Arco> archi;
 
+    public String nomePiantina;
+
     public Mappa(int piano, int piantina, ArrayList<Nodo> nodi, ArrayList<Arco> archi) {
         this.piano = piano;
         this.piantina = piantina;
