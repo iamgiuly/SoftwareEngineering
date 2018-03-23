@@ -31,6 +31,7 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
     public DownloadPiantinaTask(Context ctx, Mappa mappa) {
 
+
         context = ctx;
         mappa_scaricata = mappa;
         usercontroller= UserController.getInstance((Activity)context);
