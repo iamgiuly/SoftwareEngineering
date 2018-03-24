@@ -31,11 +31,9 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
     public DownloadPiantinaTask(Context ctx, Mappa mappa) {
 
-
         context = ctx;
         mappa_scaricata = mappa;
         usercontroller= UserController.getInstance((Activity)context);
-
 
     }
 
@@ -44,7 +42,7 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
         super.onPreExecute();
         download_immagini_in_corso = new ProgressDialog(context);
-        download_immagini_in_corso.setMessage("Download della pioantina in corso...");
+        download_immagini_in_corso.setMessage("Download della piantina in corso...");
         download_immagini_in_corso.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         download_immagini_in_corso.setCancelable(false);
         download_immagini_in_corso.setCanceledOnTouchOutside(false);

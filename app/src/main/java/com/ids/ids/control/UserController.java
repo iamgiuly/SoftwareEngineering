@@ -66,6 +66,7 @@ public class UserController extends Application{
         nodo.setIncendio();
 
         if(nodo.isCambiato()) {
+            System.out.println("cambiato");
             if (!this.nodiSelezionati.contains(nodo)) {
                 this.nodiSelezionati.add(nodo);
             }
@@ -86,10 +87,10 @@ public class UserController extends Application{
      * quindi la lista dei nodi selezionati viene svuotata
      * @return true se l'operazione ha successo
      */
-    public void inviaNodiSelezionati(){
+    public void inviaNodiSelezionati(Context contx){
         for(Nodo nodo : this.nodiSelezionati)
             nodoDAO.update(nodo);    //salvataggio in locale
-        this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati, context);
+        this.communicationServer.inviaNodiSottoIncendio(this.nodiSelezionati, contx);
         //TODO: RESULT
         // if(result)
            // this.clearNodiSelezionati();

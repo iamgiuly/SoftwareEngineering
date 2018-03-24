@@ -21,7 +21,7 @@ import java.util.Map;
 public class DebugSettings {
 
     public static boolean SEED_DB = true;
-    public static boolean SCAN_BLUETOOTH = false;
+    public static boolean SCAN_BLUETOOTH = true;
     public static boolean CHECK_WIFI = false;
 
     public static int PIANO_DEFAULT = 145;

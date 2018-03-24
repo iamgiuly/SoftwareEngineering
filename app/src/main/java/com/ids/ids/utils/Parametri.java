@@ -21,7 +21,7 @@ public class Parametri {
 
         T_SCAN_PERIOD = 2000;
         FILTRO_BLE_DEVICE = "CC2650 SensorTag";
-        T_POSIZIONE_EMERGENZA = 12000;
+        T_POSIZIONE_EMERGENZA = 5000;
 
 
     }

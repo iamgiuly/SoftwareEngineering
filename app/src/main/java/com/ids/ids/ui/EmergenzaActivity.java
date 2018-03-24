@@ -133,14 +133,14 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
      */
     public void listenerBottoneInvioNodi(){
 
-        if(this.userController.controllaConnessione()){
+       // if(this.userController.controllaConnessione()){
 
-            userController.inviaNodiSelezionati();
+            userController.inviaNodiSelezionati(this);
 
             //this.finish();
-        }
-        else
-            this.messaggioErroreTextView.setVisibility(View.VISIBLE);
+       // }
+       // else
+         //   this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 
     public boolean isThreadRunning() {

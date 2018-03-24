@@ -96,10 +96,13 @@ public class Nodo {
     // (più valori possono essere true contemporaneamente)
     // TODO gestire anche posizione utente
     public int getImage(){
-        if(this.tipoIncendio)
+        if(this.tipoIncendio) {
+            System.out.println("Tipo incendio");
             return IMG_INCENDIO;
-        if(this.tipoUscita)
+        }
+        if(this.tipoUscita) {
             return IMG_USCITA;
+        }
         return IMG_BASE;
     }
 

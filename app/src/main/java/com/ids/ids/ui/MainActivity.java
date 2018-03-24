@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
      *  - se attiva viene avviata l'activity EmergenzaActivity
      *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
      */
-    public void listenerBottoneEmergenza(){
+   public void listenerBottoneEmergenza(){
         // TODO bluetooth
         if(this.userController.controllaConnessione()){
             this.userController.setModalita(this.userController.MODALITA_EMERGENZA);
@@ -176,7 +176,6 @@ public class MainActivity extends AppCompatActivity {
         else
             this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
-
     /**
      * Prova ad abilitare l'adapter del bluetooth
      * @return true se l'adapter è stato abilitato
