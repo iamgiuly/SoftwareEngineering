@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +34,8 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
     private TextView messaggioErroreTextView;       // invisibile all'inizio
     private MappaView mappaView;
 
+    private Mappa mappa;
+
     private boolean threadRunning;
 
     /**
@@ -60,13 +61,20 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
 
         messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
 
-        if(!DebugSettings.SCAN_BLUETOOTH)
-            userController.caricaMappa(this, null);
-        //this.mappa = userController.richiediMappa();
+        //TODO connessione attiva: viene ottenuta la posizione tramite bluetooth, inviata al server che invia la mappa
+        //TODO connessione non attiva: viene ottenuta la posizione tramite bluetooth e caricata la mappa dal db locale
+        mappa = userController.caricaMappa(this, null);
+        // mappa vale null se manca la connessione e non esiste una copia nel db locale
+        if(mappa == null)
+            visualizzaMessaggioErrore("La mappa non può essere caricata, verificare la connessione");
+            // TODO avviare coroutine che ricontrolla periodicamente lo stato della connessione
+            // TODO oppure visualizzare bottone "Riconnetti"
+
+        // inizializza la View della mappa
         this.mappaView = findViewById(R.id.mappaView);
         try {
             if (this.userController.getModalita() == this.userController.MODALITA_SEGNALAZIONE) {
-                this.mappaView.setMappa(userController.getMappa());
+                this.mappaView.setMappa(mappa);
                 this.mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -157,5 +165,14 @@ public class EmergenzaActivity extends AppCompatActivity implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void visualizzaMessaggioErrore(String messaggio){
+        messaggioErroreTextView.setText(messaggio);
+        messaggioErroreTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void nascondiMessaggioErrore(){
+        messaggioErroreTextView.setVisibility(View.INVISIBLE);
     }
 }

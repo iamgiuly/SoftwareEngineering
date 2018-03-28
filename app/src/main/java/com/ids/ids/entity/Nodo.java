@@ -1,6 +1,11 @@
 package com.ids.ids.entity;
 
+import android.util.Log;
+
 import com.ids.ids.ui.R;
+import com.ids.ids.utils.DebugSettings;
+
+import java.util.ArrayList;
 
 public class Nodo {
 
@@ -108,12 +113,24 @@ public class Nodo {
 
     @Override
     public boolean equals(Object o) {
-
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Nodo nodo = (Nodo) o;
 
-        return beaconId == nodo.beaconId;
+        return id == nodo.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    public ArrayList<Arco> getStella(ArrayList<Arco> archi) {
+        ArrayList<Arco> stella = new ArrayList<>();
+        for(Arco arco : archi)
+            if (arco.getNodoArrivo().equals(this) || arco.getNodoPartenza().equals(this))
+                stella.add(arco);
+        return stella;
     }
 }

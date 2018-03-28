@@ -1,14 +1,31 @@
 package com.ids.ids.entity;
 
-//TODO diverso dalla tabella, manca l'arco (Arco ha PesoArco), aggiungere id
 public class PesoArco {
 
+    private int id;
+    private int idArco;
     private Peso peso;
     private int valore;
 
-    public PesoArco(Peso peso, int valore) {
+    public PesoArco(int id, int idArco, Peso peso, int valore) {
+        this.id = id;
+        this.idArco = idArco;
         this.peso = peso;
         this.valore = valore;
+    }
+
+    public int getId(){
+        return this.id;
+    }
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public int getIdArco() {
+        return idArco;
+    }
+    public void setIdArco(int idArco) {
+        this.idArco = idArco;
     }
 
     public Peso getPeso() {

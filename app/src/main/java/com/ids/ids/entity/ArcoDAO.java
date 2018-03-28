@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.security.Key;
 import java.util.ArrayList;
@@ -51,10 +52,13 @@ public class ArcoDAO extends DAO<Arco> {
         Nodo nodoPartenza = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoPartenzaId)));
         Nodo nodoArrivo = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoArrivoId)));
 
-        //TODO TABLE PesoArco (togliere model, aggiungere PesoArcoDAO)
-        //TODO no, tenere PesoArco (problemi con il DAO altrimenti), anche in Arco al posto di HashMap
-//TODO        ArrayList<PesoArco> pesi = pesoArcoDAO.findAllByColumnValue("idArco", String.valueOf(id)); //TODO idArco nella tabella
-        Arco arco = new Arco(id, nodoPartenza, nodoArrivo, null);       //TODO pesi al posto di null
+        Log.i("idarco", ""+id);
+
+        ArrayList<PesoArco> pesi = pesoArcoDAO.findAllByColumnValue(PesoArcoDAO.KEY_idArco, String.valueOf(id));
+        for(PesoArco peso : pesi)
+            Log.i("Peso", ""+peso.getPeso().getPeso());
+
+        Arco arco = new Arco(id, nodoPartenza, nodoArrivo, pesi);
         return arco;
     }
 
@@ -68,7 +72,8 @@ public class ArcoDAO extends DAO<Arco> {
 
     @Override
     protected void cascadeInsert(Arco arco) {
-        //TODO inserire pesi
+        for(PesoArco peso : arco.getPesi())
+            pesoArcoDAO.insert(peso);
     }
 
     @Override

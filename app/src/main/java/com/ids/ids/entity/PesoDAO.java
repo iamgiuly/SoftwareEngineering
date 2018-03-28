@@ -6,8 +6,9 @@ import android.database.Cursor;
 
 public class PesoDAO extends DAO<Peso> {
 
-    public static final String TABLE = "Nodo";
+    public static final String TABLE = "Peso";
 
+    public static final String KEY_ID = "id";
     public static final String KEY_descrizione = "descrizione";
     public static final String KEY_peso = "peso";
 
@@ -24,23 +25,25 @@ public class PesoDAO extends DAO<Peso> {
 
     @Override
     protected String getIdColumn() {
-        return KEY_descrizione;
+        return KEY_ID;
     }
 
     @Override
     protected int getId(Peso peso) {
-        return peso.getDescrizione().hashCode();
-    }           //TODO ??
+        return peso.getId();
+    }
 
     @Override
     protected Peso getFromCursor(Cursor cursor) {
-        Peso peso = new Peso(   cursor.getString(cursor.getColumnIndex(KEY_descrizione)),
+        Peso peso = new Peso(   cursor.getInt(cursor.getColumnIndex(KEY_ID)),
+                                cursor.getString(cursor.getColumnIndex(KEY_descrizione)),
                                 cursor.getInt(cursor.getColumnIndex(KEY_peso)));
         return peso;
     }
 
     @Override
     protected void putValues(Peso peso, ContentValues values) {
+        values.put(KEY_ID, peso.getId());
         values.put(KEY_descrizione, peso.getDescrizione());
         values.put(KEY_peso, peso.getPeso());
     }

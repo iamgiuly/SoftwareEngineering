@@ -3,55 +3,70 @@ package com.ids.ids.entity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
-//TODO completare
-public class PesoArcoDAO extends DAO {
+public class PesoArcoDAO extends DAO<PesoArco> {
 
-    //TODO tra le chiavi inserire anche l'arco, anche se non è nel model
-    
+    public static final String TABLE = "PesoArco";
+
     private static PesoArcoDAO instance = null;
+
+    public static final String KEY_ID = "id";
+    public static final String KEY_idPeso = "idPeso";
+    public static final String KEY_idArco = "idArco";
+    public static final String KEY_valore = "valore";
+
+    private PesoDAO pesoDAO;
 
     public PesoArcoDAO(Context context) {
         super(context);
+        this.pesoDAO = PesoDAO.getInstance(context);
     }
 
     @Override
     protected String getTable() {
-        return null;
+        return TABLE;
     }
 
     @Override
     protected String getIdColumn() {
-        return null;
+        return KEY_ID;
     }
 
     @Override
-    protected int getId(Object o) {
-        return 0;
+    protected int getId(PesoArco pesoArco) {
+        return pesoArco.getId();
     }
 
     @Override
-    protected Object getFromCursor(Cursor cursor) {
-        return null;
+    protected PesoArco getFromCursor(Cursor cursor) {
+        int id = cursor.getInt(cursor.getColumnIndex(KEY_ID));
+        int idArco = cursor.getInt(cursor.getColumnIndex(KEY_idArco));
+        int idPeso = cursor.getInt(cursor.getColumnIndex(KEY_idPeso));
+        int valore = cursor.getInt(cursor.getColumnIndex(KEY_valore));
+        return new PesoArco(id, idArco, pesoDAO.find(idPeso), valore);
     }
 
     @Override
-    protected void putValues(Object o, ContentValues values) {
+    protected void putValues(PesoArco pesoArco, ContentValues values) {
+        values.put(KEY_ID, pesoArco.getId());
+        values.put(KEY_idArco, pesoArco.getIdArco());
+        values.put(KEY_idPeso, pesoArco.getPeso().getId());
+        values.put(KEY_valore, pesoArco.getValore());
+    }
+
+    @Override
+    protected void cascadeInsert(PesoArco pesoArco) {
 
     }
 
     @Override
-    protected void cascadeInsert(Object o) {
+    protected void cascadeUpdate(PesoArco pesoArco) {
 
     }
 
     @Override
-    protected void cascadeUpdate(Object o) {
-
-    }
-
-    @Override
-    protected void cascadeDelete(Object o) {
+    protected void cascadeDelete(PesoArco pesoArco) {
 
     }
 

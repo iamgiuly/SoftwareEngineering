@@ -2,12 +2,21 @@ package com.ids.ids.entity;
 
 public class Peso {
 
+    private int id;
     private String descrizione;
     private int peso;
 
-    public Peso(String descrizione, int peso) {
+    public Peso(int id, String descrizione, int peso) {
+        this.id = id;
         this.descrizione = descrizione;
         this.peso = peso;
+    }
+
+    public int getId(){
+        return this.id;
+    }
+    public void setId(int id){
+        this.id = id;
     }
 
     public String getDescrizione() {
@@ -31,7 +40,12 @@ public class Peso {
 
         Peso peso = (Peso) o;
 
-        return descrizione != null ? descrizione.equals(peso.descrizione) : peso.descrizione == null;
+        return id == peso.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
 }

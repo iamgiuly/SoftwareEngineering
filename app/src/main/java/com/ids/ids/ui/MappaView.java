@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -101,7 +100,7 @@ public class MappaView extends View {
     }
 
     private void disegnaArcoTraNodi(Canvas canvas, NodoView nodo1, NodoView nodo2, boolean percorso){
-        Paint p = percorso ? this.paintArcoNormale : this.paintArcoPercorso;
+        Paint p = percorso ? this.paintArcoPercorso : this.paintArcoNormale;
         canvas.drawLine(nodo1.getX(), nodo1.getY(), nodo2.getX(), nodo2.getY(), p);
     }
 

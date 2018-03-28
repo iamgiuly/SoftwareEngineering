@@ -12,6 +12,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             this.initBluetooth();
         }
 
+        // inizializza il bottone di segnalazione emergenza
         segnalazioneButton = findViewById(R.id.segnalazioneButton);
         segnalazioneButton.setOnClickListener(new View.OnClickListener(){
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // inizializza il bottone di avvio della modalità emergenza TODO temporaneo, in seguito useremo la notifica
         emergenzaButton = findViewById(R.id.emergenzaButton);
         emergenzaButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -91,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // Cancella il ricevitore dalle notifiche di stato
+        // cancella il ricevitore delle notifiche di stato
         unregisterReceiver(receiver);
         //mDriverServer.mToServer.startAmb(false);
     }
@@ -116,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case BluetoothAdapter.STATE_OFF:
                             finish();
-                            // segnalare all'utente che l'app non funziona senza BLE
+                            visualizzaMessaggioErrore("Impossibile connettersi al bluetooth");
+                            // TODO segnalare all'utente che l'app non funziona senza BLE
                             break;
                     }
                 }
@@ -130,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                         PERMISSION_REQUEST_COARSE_LOCATION);
             }
         }
-
 
         // registra il ricevitore per le notifiche di stato
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -162,24 +165,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
+     * Richiamato dal listener associato al bottone "Emergenza", viene controllata la connessione:
      *  - se attiva viene avviata l'activity EmergenzaActivity
      *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     *      (la connessione deve essere per forza attiva perché qui viene simulato il click sulla notifica,
+     *      che può essere ricevuta appunto solo se c'è connessione. Questo significa anche che il controllo
+     *      della connessione è ridondante, ma lo teniamo comunque per fini di debug)
      */
-   public void listenerBottoneEmergenza(){
-        // TODO bluetooth
+    public void listenerBottoneEmergenza(){
+        // TODO bluetooth (controllare nella EmergenzaActivity, per l'invio della posizione)
         if(this.userController.controllaConnessione()){
             this.userController.setModalita(this.userController.MODALITA_EMERGENZA);
             Intent intent = new Intent(this, EmergenzaActivity.class);
             startActivity(intent);
         }
         else
-            this.messaggioErroreTextView.setVisibility(View.VISIBLE);
+            visualizzaMessaggioErrore("Connessione assente, riprovare");
     }
+
     /**
-     * Prova ad abilitare l'adapter del bluetooth
-     * @return true se l'adapter è stato abilitato
-     */
+    * Prova ad abilitare l'adapter del bluetooth
+    * @return true se l'adapter è stato abilitato
+    */
     private boolean abilitaBLE(){
         boolean statoBLE = btAdapter.isEnabled();
         if (btAdapter != null && !statoBLE) {
@@ -187,6 +194,15 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
         return statoBLE;
+    }
+
+    private void visualizzaMessaggioErrore(String messaggio){
+        messaggioErroreTextView.setText(messaggio);
+        messaggioErroreTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void nascondiMessaggioErrore(){
+        messaggioErroreTextView.setVisibility(View.INVISIBLE);
     }
 
 }

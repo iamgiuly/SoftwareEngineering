@@ -7,11 +7,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.ids.ids.entity.ArcoDAO;
 import com.ids.ids.entity.MappaDAO;
 import com.ids.ids.entity.NodoDAO;
+import com.ids.ids.entity.PesoArcoDAO;
+import com.ids.ids.entity.PesoDAO;
 
 public class DBHelper extends SQLiteOpenHelper{
 
     // TODO incrementare ogni volta che si modifica la struttura del db (tabelle)
-    private static final int DATABASE_VERSION = 11;
+    private static final int DATABASE_VERSION = 14;
     private static final String DATABASE_NAME = "ids.db";
 
     public DBHelper(Context context){
@@ -43,18 +45,22 @@ public class DBHelper extends SQLiteOpenHelper{
                 ArcoDAO.KEY_nodoArrivoId + " INTEGER, " +
                 ArcoDAO.KEY_mappaId + " INTEGER)";
 
-        // TODO TABLE PESO
-        /*String CREATE_TABLE_PESO = "CREATE TABLE " + ArcoDAO.TABLE + "(" +
-                ArcoDAO.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                ArcoDAO.KEY_nodoPartenzaId + " INTEGER, " +
-                ArcoDAO.KEY_nodoArrivoId + " INTEGER, " +
-                ArcoDAO.KEY_mappaId + " INTEGER)";*/
+        String CREATE_TABLE_PESO = "CREATE TABLE " + PesoDAO.TABLE + "(" +
+                PesoDAO.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                PesoDAO.KEY_descrizione + " STRING, " +
+                PesoDAO.KEY_peso + " INTEGER)";
 
-        // TODO TABLE PESOARCO
+        String CREATE_TABLE_PESO_ARCO = "CREATE TABLE " + PesoArcoDAO.TABLE + "(" +
+                PesoArcoDAO.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                PesoArcoDAO.KEY_idArco + " INTEGER, " +
+                PesoArcoDAO.KEY_idPeso + " INTEGER, " +
+                PesoArcoDAO.KEY_valore + " INTEGER)";
 
         db.execSQL(CREATE_TABLE_MAPPA);
         db.execSQL(CREATE_TABLE_NODO);
         db.execSQL(CREATE_TABLE_ARCO);
+        db.execSQL(CREATE_TABLE_PESO);
+        db.execSQL(CREATE_TABLE_PESO_ARCO);
     }
 
     /**
@@ -68,6 +74,8 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS " + MappaDAO.TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + NodoDAO.TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + ArcoDAO.TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + PesoDAO.TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + PesoArcoDAO.TABLE);
         onCreate(db);
     }
 

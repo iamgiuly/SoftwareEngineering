@@ -1,5 +1,7 @@
 package com.ids.ids.entity;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -49,7 +51,7 @@ public class Arco {
 
     public int getCosto(){
         int costo = 0;
-        for(PesoArco pesoArco : this.pesi)
+        for (PesoArco pesoArco : this.pesi)
             costo += pesoArco.getPeso().getPeso() * pesoArco.getValore();
         return costo;
     }
@@ -71,4 +73,8 @@ public class Arco {
         return id == arco.id;
     }
 
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }
