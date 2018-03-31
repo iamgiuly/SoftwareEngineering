@@ -13,9 +13,6 @@ import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
-
-
-
 import com.ids.ids.utils.Parametri;
 
 import java.util.ArrayList;
@@ -24,10 +21,9 @@ import java.util.ArrayList;
  * La classe BeaconScanner presenta i metodi per effettuare la scansione periodica dei dispositivi
  * BLE (Bluetooth Low Energy) che si trovano nelle vicinanze
  */
-
 public class BeaconScanner {
 
-    private Handler scanH = new Handler();
+    private Handler scanH = new Handler();  //Utilizzato per la pianificazione del task di avio e stop
     private BluetoothAdapter btAdapter;
     private BluetoothManager btManager;
     private BluetoothLeScanner btScanner;  // il Bluetooth deve essere on altrimenti restituisce un null l adapter
@@ -70,17 +66,14 @@ public class BeaconScanner {
 
     }
 
-
     // Questo metodo avvia e ferma la scansione periodica, in base al booleano in ingresso
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void scansione(Boolean enable) {
-
 
         // Lo scanner è invocato solo prima della scansione per attendere che il ble sia attivo
 
         if (btScanner == null)
             btScanner = btAdapter.getBluetoothLeScanner();
-
 
         if (enable)
             scanH.post(start);
@@ -121,8 +114,6 @@ public class BeaconScanner {
                 RaccogliDevice.add(result);
 
         }
-
-
     }
 
 
@@ -148,7 +139,8 @@ public class BeaconScanner {
             btScanner.startScan(leScanCallback);
 
             Log.i("Scanning", "Start");
-            scanH.postDelayed(stop, mParametri.T_SCAN_PERIOD);
+            scanH.postDelayed(stop, mParametri.T_SCAN_PERIOD); //pianificazione messaggio di stop
+
         }
     };
 

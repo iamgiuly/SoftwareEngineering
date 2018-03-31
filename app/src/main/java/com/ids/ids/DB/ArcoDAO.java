@@ -1,4 +1,4 @@
-package com.ids.ids.entity;
+package com.ids.ids.DB;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,7 +9,10 @@ import android.util.Log;
 import java.security.Key;
 import java.util.ArrayList;
 
-import com.ids.ids.utils.DBHelper;
+import com.ids.ids.DB.DBHelper;
+import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.Nodo;
+import com.ids.ids.entity.PesoArco;
 
 public class ArcoDAO extends DAO<Arco> {
 

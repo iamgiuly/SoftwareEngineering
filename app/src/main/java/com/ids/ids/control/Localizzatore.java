@@ -1,6 +1,5 @@
 package com.ids.ids.control;
 
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,9 +8,12 @@ import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import java.util.ArrayList;
 
 import com.ids.ids.boundary.BeaconScanner;
-import com.ids.ids.boundary.CommunicationServer;
+import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.Nodo;
+import com.ids.ids.ui.MappaView;
 import com.ids.ids.utils.Parametri;
 
 /**
@@ -25,9 +27,10 @@ public class Localizzatore {
     private BeaconScanner Scanner;
     private Parametri mParametri;
     private Handler finder;
-    private CommunicationServer COMServer;
     private ProgressDialog loading_localizzazione;
     private UserController userController;
+    private ArrayList<Arco> percorso;
+    private MappaView mappaView;
 
 
     public Localizzatore(Context contxt, BeaconScanner scanner) {
@@ -36,11 +39,21 @@ public class Localizzatore {
         Scanner = scanner;
         mParametri = Parametri.getInstance();
         finder = new Handler();
-        COMServer = CommunicationServer.getInstance(contxt);
-        userController = UserController.getInstance((Activity)context);
+        userController = UserController.getInstance((Activity) context);
 
     }
 
+    public Localizzatore(MappaView mView, Context contxt, BeaconScanner scanner) {
+
+        context = contxt;
+        Scanner = scanner;
+        mParametri = Parametri.getInstance();
+        finder = new Handler();
+        userController = UserController.getInstance((Activity) context);
+        mappaView = mView;
+        percorso = new ArrayList<Arco>();
+
+    }
 
     /*
       Nota localizzazioni:
@@ -53,8 +66,6 @@ public class Localizzatore {
               Appena trovato il Beacon più vicino il BeaconScanner e il Runnable findMeONE vengono fermati
 
      */
-
-
     // FindMeONE viene è un Runnable utilizzato al click del bottone segnala emergenza
     // Appena la posizione dell utente è stata trovata termina la scansione
     private final Runnable findMeONE = new Runnable() {
@@ -62,39 +73,25 @@ public class Localizzatore {
         @Override
         public void run() {
 
-            Log.i("Localizzatore", "Inizio Ricerca pos");
+            Log.i("Localizzatore", "Inizio Ricerca pos ONE");
             String macAdrs = Scanner.BeaconVicino();
-
 
             if (macAdrs.equals("NN")) {
                 // Non è stato ancora trovato nessun Beacon dallo scanner
                 // Attendo nuovamente
-                finder.postDelayed(findMeONE, mParametri.T_POSIZIONE_EMERGENZA);
-
-
-
-            }else{
+                finder.postDelayed(findMeONE, mParametri.T_POSIZIONE_SEGNALAZIONE);
+            } else {
 
                 // E' stato trovato il beacon dallo scanner
-                System.out.println("MAC: "+macAdrs);
-                // Fermo la scansione dello scanner
-                Scanner.scansione(false);
-                // Tolgo il messaggio di localizzazione
-                loading_localizzazione.dismiss();
-
-                //Avvio l Activity passandogli il macAdrs
-                userController.caricaMappa(context,macAdrs);
-
-
-                // Fermo questo Runnable
-                stopFinderONE();
-
+                System.out.println("MAC: " + macAdrs);
+                Scanner.scansione(false);       // Fermo la scansione dello scanner
+                loading_localizzazione.dismiss();   // Tolgo il messaggio di localizzazione
+                userController.caricaMappa(context, macAdrs);  //Avvio l Activity passandogli il macAdrs
+                stopFinderONE();              // Fermo questo Runnable
 
             }
-
         }
     };
-
 
     // FindMeALWAYS è un Runnable utilizzato dalla mappa
     private final Runnable findMeALWAYS = new Runnable() {
@@ -102,15 +99,31 @@ public class Localizzatore {
         @Override
         public void run() {
 
-            Log.i("Localizzatore", "Inizio Ricerca pos");
+            Log.i("Localizzatore", "Inizio Ricerca pos ALWAYS");
             String macAdrs = Scanner.BeaconVicino();
 
-            if (!macAdrs.equals("NN")) {
+            if (macAdrs.equals("NN")) {
+                // Non è stato ancora trovato nessun Beacon dallo scanner
+                // Attendo nuovamente
+                finder.postDelayed(findMeONE, mParametri.T_POSIZIONE_EMERGENZA);
+            } else {
+                System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
 
-                //TODO: AGGIORNARE NODI MAPPA
+                percorso = userController.richiediPercorso(macAdrs, Localizzatore.this);
 
+                Nodo posUtente = userController.getMappa().getPosUtente(macAdrs);
+                mappaView.setPosUtente(posUtente);
+                mappaView.setPercorso(percorso);
+
+                try {
+                    mappaView.postInvalidate();
+                } catch (Exception e) {
+                }
+
+
+                System.out.println("ecco: " + percorso.size());
+                finder.postDelayed(findMeALWAYS, mParametri.T_POSIZIONE_EMERGENZA);
             }
-            finder.postDelayed(findMeALWAYS, mParametri.T_POSIZIONE_EMERGENZA);
         }
     };
 
@@ -120,9 +133,7 @@ public class Localizzatore {
     // Avvia la localizzazione ONE
     public void startFinderONE() {
 
-
         finder.postDelayed(findMeONE, mParametri.T_POSIZIONE_EMERGENZA);
-
         //visualizzazione messaggio di localizzazione
         loading_localizzazione = new ProgressDialog(context);
         loading_localizzazione.setIndeterminate(true);
@@ -131,14 +142,12 @@ public class Localizzatore {
         loading_localizzazione.setMessage("Non muoverti localizzazione in corso...");
         loading_localizzazione.show();
 
-
     }
 
     // Avvia la localizzazione ALWAYS
     public void startFinderALWAYS() {
 
         finder.postDelayed(findMeALWAYS, mParametri.T_POSIZIONE_EMERGENZA);
-
     }
 
 
@@ -148,14 +157,11 @@ public class Localizzatore {
     public void stopFinderALWAYS() {
 
         finder.removeCallbacks(findMeALWAYS);
-
     }
 
     // Ferma la localizzazione ONE
     private void stopFinderONE() {
 
         finder.removeCallbacks(findMeONE);
-
     }
-
 }

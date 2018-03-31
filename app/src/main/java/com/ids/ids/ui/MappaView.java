@@ -72,12 +72,12 @@ public class MappaView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if(this.image != null) {
+        if (this.image != null) {
             canvas.drawBitmap(this.image, null, new Rect(0, 0, this.width, this.height), this.paint);
             for (NodoView nodoView : this.nodi) {
                 Bitmap image = nodoView.getNodo().equals(this.posUtente)
-                ? BitmapFactory.decodeResource(context.getResources(), Nodo.IMG_UTENTE)
-                : nodoView.getImage();
+                        ? BitmapFactory.decodeResource(context.getResources(), Nodo.IMG_UTENTE)
+                        : nodoView.getImage();
                 canvas.drawBitmap(image, null, nodoView.getRect(), this.paint);
             }
             if (this.disegnaPercorso)
@@ -86,36 +86,39 @@ public class MappaView extends View {
     }
 
     public void setPercorso(ArrayList<Arco> percorso) {
+
         this.percorso = percorso;
     }
 
-    private void disegnaPercorso(Canvas canvas){
+    private void disegnaPercorso(Canvas canvas) {
         ArrayList<Arco> archi = this.mappa.getArchi();
-        if(archi == null) return;
-        for(Arco arco : archi)
+        if (archi == null) return;
+        for (Arco arco : archi)
             this.disegnaArcoTraNodi(canvas,
-                                    this.getNodoViewFromNodo(arco.getNodoPartenza()),
-                                    this.getNodoViewFromNodo(arco.getNodoArrivo()),
-                                    this.percorso.contains(arco));
+                    this.getNodoViewFromNodo(arco.getNodoPartenza()),
+                    this.getNodoViewFromNodo(arco.getNodoArrivo()),
+                    this.percorso.contains(arco));
     }
 
-    private void disegnaArcoTraNodi(Canvas canvas, NodoView nodo1, NodoView nodo2, boolean percorso){
+    private void disegnaArcoTraNodi(Canvas canvas, NodoView nodo1, NodoView nodo2, boolean percorso) {
         Paint p = percorso ? this.paintArcoPercorso : this.paintArcoNormale;
         canvas.drawLine(nodo1.getX(), nodo1.getY(), nodo2.getX(), nodo2.getY(), p);
     }
 
-    private NodoView getNodoViewFromNodo(Nodo nodo){
-        for(NodoView nodoView : this.nodi)
-            if(nodoView.getId() == nodo.getId())
+    private NodoView getNodoViewFromNodo(Nodo nodo) {
+        for (NodoView nodoView : this.nodi)
+            if (nodoView.getId() == nodo.getId())
                 return nodoView;
         return null;
     }
 
     public void setMappa(Mappa map) throws FileNotFoundException {
+
         this.setMappa(map, false);
     }
 
-    public void setPosUtente(Nodo posUtente){
+    public void setPosUtente(Nodo posUtente) {
+
         this.posUtente = posUtente;
     }
 
@@ -126,7 +129,7 @@ public class MappaView extends View {
         this.nodi.clear();
         this.percorso.clear();
 
-        if(DebugSettings.SCAN_BLUETOOTH)
+        if (DebugSettings.SCAN_BLUETOOTH)
             image = BitmapFactory.decodeStream(context.openFileInput(mappa.getPiantina() + ".png"));
         else
             image = DecodedResources.getInstance().getPreloadedImage(this.context, mappa);
@@ -134,7 +137,7 @@ public class MappaView extends View {
         ViewTreeObserver viewTree = this.getViewTreeObserver();
         viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             public boolean onPreDraw() {
-                if(!rendered) {
+                if (!rendered) {
                     width = getMeasuredWidth();
                     height = getMeasuredHeight();
                     for (Nodo nodo : mappa.getNodi()) {
@@ -148,11 +151,10 @@ public class MappaView extends View {
         });
     }
 
-    public NodoView getNodoPremuto(int x, int y){
-        for(NodoView nodo : this.nodi)
-            if(nodo.getRect().contains(x, y))
+    public NodoView getNodoPremuto(int x, int y) {
+        for (NodoView nodo : this.nodi)
+            if (nodo.getRect().contains(x, y))
                 return nodo;
         return null;
     }
-
 }

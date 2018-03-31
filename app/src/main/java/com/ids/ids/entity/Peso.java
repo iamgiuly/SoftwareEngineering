@@ -47,5 +47,4 @@ public class Peso {
     public int hashCode() {
         return id;
     }
-
 }

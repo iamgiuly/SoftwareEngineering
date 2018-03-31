@@ -2,27 +2,29 @@ package com.ids.ids.boundary;
 
 import android.content.Context;
 
-import com.ids.ids.boundary.ServerTask.DownloadMappaTask;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.ids.ids.boundary.ServerTask.DownloadPercorsoTask;
+import com.ids.ids.boundary.ServerTask.DownloadInfoMappaTask;
 import com.ids.ids.boundary.ServerTask.InvioNodiTask;
-import com.ids.ids.entity.MappaDAO;
-import com.ids.ids.ui.R;
-import com.ids.ids.entity.Mappa;
+import com.ids.ids.control.Localizzatore;
+import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.entity.NodoDAO;
+import com.ids.ids.DB.NodoDAO;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
-public class CommunicationServer{
+public class CommunicationServer {
 
     private static CommunicationServer instance = null;
 
     private Context context;
 
-    private NodoDAO nodoDAO;
+    public CommunicationServer(Context context) {
 
-    public CommunicationServer(Context context){
         this.context = context;
-        nodoDAO = NodoDAO.getInstance(context);
     }
 
     /**
@@ -30,32 +32,52 @@ public class CommunicationServer{
      * invia una richiesta RESTful con questi ID,
      * riceve come risposta l'eventuale successo dell'operazione
      */
-    public void inviaNodiSottoIncendio(ArrayList<Nodo> nodi, Context contxt){
+    public void inviaNodiSottoIncendio(ArrayList<Nodo> nodi, Context contxt) {
 
-        new InvioNodiTask(nodi,contxt).execute();
-
+        new InvioNodiTask(nodi, contxt).execute();
     }
 
-    public Mappa richiediMappa(int piano){
+    public ArrayList<Arco> richiediPercorso(String mac, int piano, Localizzatore l) {
 
-        return MappaDAO.getInstance(this.context).find(piano);
+        ArrayList<Arco> percorso = null;
 
+        try {
+
+            String dati_percorso = new DownloadPercorsoTask(mac, piano).execute().get();
+
+            if (dati_percorso != null) {
+
+                System.out.println("esterno " + dati_percorso.toString());
+
+                Type type = new TypeToken<ArrayList<Arco>>() {
+                }.getType();
+                // Estrazione dell ArrayList inviato dall app
+                percorso = new Gson().fromJson(dati_percorso, type);
+
+                System.out.println("percorso " + percorso.size());
+            } else {
+
+                //TODO: BISOGNA PRENDERE QUELLO LOCALE
+                System.out.println("Bisogna prendere il locale");
+                l.stopFinderALWAYS();
+            }
+
+        } catch (ExecutionException e) {
+
+        } catch (InterruptedException e) {
+
+        }
+        return percorso;
     }
 
+    public void richiestaMappa(Context contxt, String posizioneU) {
 
-
-
-    public void richiestaMappa(Context contxt,String posizioneU){
-
-        new DownloadMappaTask(contxt,posizioneU).execute();
-
+        new DownloadInfoMappaTask(contxt, posizioneU).execute();
     }
 
-
-    public static CommunicationServer getInstance(Context context){
-        if(instance == null)
+    public static CommunicationServer getInstance(Context context) {
+        if (instance == null)
             instance = new CommunicationServer(context);
         return instance;
     }
-
 }

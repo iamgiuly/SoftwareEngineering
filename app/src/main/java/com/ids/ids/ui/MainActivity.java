@@ -12,10 +12,8 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.ids.ids.boundary.BeaconScanner;
 import com.ids.ids.control.Localizzatore;
@@ -25,8 +23,8 @@ import com.ids.ids.utils.DebugSettings;
 /**
  * Questa activity viene mostrata all'apertura dell'applicazione, visualizza il bottone "Segnala Emergenza",
  * a tale bottone viene associato un listener, che al tap su di esso richiama il metodo listenerBottoneSegnalazione() il quale:
- *  - rimanda l'utente online alla EmergenzaActivity
- *  - mostra un messaggio di errore all'utente offline
+ * - rimanda l'utente online alla EmergenzaActivity
+ * - mostra un messaggio di errore all'utente offline
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -34,81 +32,75 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
     private UserController userController;
-   // private BluetoothController bluetoothController;
+    private Localizzatore localizzatore;
+    private BeaconScanner scanner;
 
     private Button segnalazioneButton;
     private Button emergenzaButton;
-    private TextView messaggioErroreTextView;       // invisibile all'inizio
 
     private BluetoothManager btManager;             // utilizzata per ottenere una istanza di Adapter
     private BluetoothAdapter btAdapter;             // adattatore Bluetooth del dispositivo locale,
-                                                    // consente di eseguire attività Bluetooth fondamentali
-                                                    // (es. avviare il rilevamento dei dispositivi)
+    // consente di eseguire attività Bluetooth fondamentali
+    // (es. avviare il rilevamento dei dispositivi)
     private BroadcastReceiver receiver;             // permette di ricevere notifice sullo stato del dispositivo
-    private BeaconScanner scanner;
-    private Localizzatore localizzatore;
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
      * viene inizializzato il Controller dell'utente
+     *
      * @param savedInstanceState
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         userController = UserController.getInstance(this);
-        if(DebugSettings.SCAN_BLUETOOTH) {
-            //bluetoothController = BluetoothController.getInstance(this);
+        if (DebugSettings.SCAN_BLUETOOTH) {
             this.initBluetooth();
         }
 
-        // inizializza il bottone di segnalazione emergenza
         segnalazioneButton = findViewById(R.id.segnalazioneButton);
-        segnalazioneButton.setOnClickListener(new View.OnClickListener(){
+        segnalazioneButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 listenerBottoneSegnalazione();
             }
         });
 
-        // inizializza il bottone di avvio della modalità emergenza TODO temporaneo, in seguito useremo la notifica
         emergenzaButton = findViewById(R.id.emergenzaButton);
-        emergenzaButton.setOnClickListener(new View.OnClickListener(){
+        emergenzaButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
+
                 listenerBottoneEmergenza();
             }
         });
-
-        messaggioErroreTextView = findViewById(R.id.messaggioErroreTextView);
-
-        if(DebugSettings.SEED_DB)
-            DebugSettings.seedDb(this);
     }
-
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // cancella il ricevitore delle notifiche di stato
+        // Cancella il ricevitore dalle notifiche di stato
         unregisterReceiver(receiver);
-        //mDriverServer.mToServer.startAmb(false);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private void initBluetooth(){
-        this.btManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE);
-        this.btAdapter = btManager.getAdapter();
-        this.scanner = new BeaconScanner(this);
-        this.localizzatore = new Localizzatore(this, scanner);
-        this.receiver = new BroadcastReceiver() {
+    private void initBluetooth() {
+
+        btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        btAdapter = btManager.getAdapter();
+        scanner = new BeaconScanner(this);
+        localizzatore = new Localizzatore(this, scanner);
+        receiver = new BroadcastReceiver() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onReceive(Context context, Intent intent) {
+
                 final String action = intent.getAction();
                 if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
                     final int bluetoothState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
@@ -119,8 +111,7 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case BluetoothAdapter.STATE_OFF:
                             finish();
-                            visualizzaMessaggioErrore("Impossibile connettersi al bluetooth");
-                            // TODO segnalare all'utente che l'app non funziona senza BLE
+                            // segnalare all'utente che l'app non funziona senza BLE
                             break;
                     }
                 }
@@ -142,67 +133,50 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
-     *  - se attiva viene avviata l'activity EmergenzaActivity
-     *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     * - se attiva viene avviata l'activity EmergenzaActivity
+     * - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void listenerBottoneSegnalazione(){
-        if(this.userController.controllaConnessione()) {
-            this.userController.setModalita(this.userController.MODALITA_SEGNALAZIONE);
-            if (DebugSettings.SCAN_BLUETOOTH) {
-                if(this.abilitaBLE()) {
-                    scanner.scansione(true);
-                    localizzatore.startFinderONE();
-                    segnalazioneButton.setVisibility(Button.INVISIBLE);
-                }
-            } else {
-                Intent intent = new Intent(this, EmergenzaActivity.class);
-                startActivity(intent);
+    public void listenerBottoneSegnalazione() {
+
+        userController.setModalita(userController.MODALITA_SEGNALAZIONE);
+        if (DebugSettings.SCAN_BLUETOOTH)
+            if (this.abilitaBLE()) {
+                scanner.scansione(true);
+                localizzatore.startFinderONE();
+            }
+    }
+
+    /**
+     * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
+     * - se attiva viene avviata l'activity EmergenzaActivity
+     * - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void listenerBottoneEmergenza() {
+
+        userController.setModalita(userController.MODALITA_EMERGENZA);
+        if (DebugSettings.SCAN_BLUETOOTH) {
+            if (this.abilitaBLE()) {
+                scanner.scansione(true);
+                localizzatore.startFinderONE();
             }
         }
-        else
-            this.messaggioErroreTextView.setVisibility(View.VISIBLE);
     }
 
     /**
-     * Richiamato dal listener associato al bottone "Emergenza", viene controllata la connessione:
-     *  - se attiva viene avviata l'activity EmergenzaActivity
-     *  - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
-     *      (la connessione deve essere per forza attiva perché qui viene simulato il click sulla notifica,
-     *      che può essere ricevuta appunto solo se c'è connessione. Questo significa anche che il controllo
-     *      della connessione è ridondante, ma lo teniamo comunque per fini di debug)
+     * Prova ad abilitare l'adapter del bluetooth
+     *
+     * @return true se l'adapter è stato abilitato
      */
-    public void listenerBottoneEmergenza(){
-        // TODO bluetooth (controllare nella EmergenzaActivity, per l'invio della posizione)
-        if(this.userController.controllaConnessione()){
-            this.userController.setModalita(this.userController.MODALITA_EMERGENZA);
-            Intent intent = new Intent(this, EmergenzaActivity.class);
-            startActivity(intent);
-        }
-        else
-            visualizzaMessaggioErrore("Connessione assente, riprovare");
-    }
+    private boolean abilitaBLE() {
 
-    /**
-    * Prova ad abilitare l'adapter del bluetooth
-    * @return true se l'adapter è stato abilitato
-    */
-    private boolean abilitaBLE(){
         boolean statoBLE = btAdapter.isEnabled();
         if (btAdapter != null && !statoBLE) {
             Intent enableIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
         return statoBLE;
-    }
-
-    private void visualizzaMessaggioErrore(String messaggio){
-        messaggioErroreTextView.setText(messaggio);
-        messaggioErroreTextView.setVisibility(View.VISIBLE);
-    }
-
-    private void nascondiMessaggioErrore(){
-        messaggioErroreTextView.setVisibility(View.INVISIBLE);
     }
 
 }

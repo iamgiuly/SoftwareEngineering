@@ -1,14 +1,9 @@
-package com.ids.ids.utils;
+package com.ids.ids.DB;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.ids.ids.entity.ArcoDAO;
-import com.ids.ids.entity.MappaDAO;
-import com.ids.ids.entity.NodoDAO;
-import com.ids.ids.entity.PesoArcoDAO;
-import com.ids.ids.entity.PesoDAO;
 
 public class DBHelper extends SQLiteOpenHelper{
 

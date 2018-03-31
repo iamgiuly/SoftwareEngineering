@@ -29,59 +29,79 @@ public class NodoView {
     }
 
     public Nodo getNodo() {
+
         return nodo;
     }
 
-    public int getId(){
+    public int getId() {
+
         return nodo.getId();
     }
 
-    public int getX(){
+    public int getX() {
+
         return xAssoluta(nodo.getX());
     }
+
     public int getXStart() {
+
         return this.getX() - Nodo.DIM / 2;
     }
+
     public int getXEnd() {
+
         return this.getX() + Nodo.DIM / 2;
     }
 
-    public int getY(){
+    public int getY() {
+
         return yAssoluta(nodo.getY());
     }
+
     public int getYStart() {
+
         return this.getY() - Nodo.DIM / 2;
     }
+
     public int getYEnd() {
+
         return this.getY() + Nodo.DIM / 2;
     }
 
     public Bitmap getImage() {
+
         return image;
     }
+
     public void setImage(int image) {
+
         this.image = BitmapFactory.decodeResource(context.getResources(), image);
     }
 
-    public Rect getRect(){
+    public Rect getRect() {
+
         return new Rect(this.getXStart(), this.getYStart(), this.getXEnd(), this.getYEnd());
     }
 
     /**
      * Calcola la coordinata X assoluta di un nodo
+     *
      * @param xNodoRelativa valore da 0 a 100 con riferimento alla posizione relativa alla lunghezza della mappa
      * @return coordinata X espressa in pixel sullo schermo
      */
-    private int xAssoluta(int xNodoRelativa){
+    private int xAssoluta(int xNodoRelativa) {
+
         return (this.lunghezzaMappa * xNodoRelativa) / 100;
     }
 
     /**
      * Calcola la coordinata Y assoluta di un nodo
+     *
      * @param yNodoRelativa valore da 0 a 100 con riferimento alla posizione relativa all'altezza della mappa
      * @return coordinata Y espressa in pixel sullo schermo
      */
-    private int yAssoluta(int yNodoRelativa){
+    private int yAssoluta(int yNodoRelativa) {
+
         return (this.altezzaMappa * yNodoRelativa) / 100;
     }
 }

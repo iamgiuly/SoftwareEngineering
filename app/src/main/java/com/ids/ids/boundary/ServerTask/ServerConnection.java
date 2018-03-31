@@ -2,19 +2,20 @@ package com.ids.ids.boundary.ServerTask;
 
 import android.os.AsyncTask;
 
+import com.ids.ids.utils.Parametri;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created by User on 24/03/2018.
+ * Classe che setta i valori per la connessione con il server
  */
-
 public class ServerConnection extends AsyncTask<Void, Void, Boolean> {
 
     private HttpURLConnection connection;
-    private final String PATH = "http://192.168.1.8:8080";
-    //private final String PATH = "http://172.23.128.184:8080";
+    private Parametri mParametri = Parametri.getInstance();
+    private final String PATH = mParametri.PATH;
 
     @Override
     protected void onPreExecute() {
@@ -23,16 +24,18 @@ public class ServerConnection extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... arg0) {
+
         try {
             connection = (HttpURLConnection) new URL(PATH + "/").openConnection();
-            connection.setConnectTimeout(3000);
-            connection.setReadTimeout(3000);
+            connection.setConnectTimeout(30000); //lancia una eccezione qualora la connessione non viene stabilita entro i tre secondi
+            connection.setReadTimeout(30000);    //lancia un eccezione se la lettura dal server non termina entro i 3 secondi
             connection.setRequestMethod("HEAD");
             int responseCode = connection.getResponseCode();
             return (200 <= responseCode && responseCode <= 399);
         } catch (IOException exception) {
             return false;
         }
+
     }
 
     @Override

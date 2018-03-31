@@ -1,4 +1,4 @@
-package com.ids.ids.entity;
+package com.ids.ids.DB;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.ids.ids.utils.DBHelper;
+import com.ids.ids.DB.DBHelper;
 
 import java.util.ArrayList;
 
@@ -111,4 +111,5 @@ public abstract class DAO<Table> {
     protected abstract void cascadeInsert(Table table);
     protected abstract void cascadeUpdate(Table table);
     protected abstract void cascadeDelete(Table table);
+
 }

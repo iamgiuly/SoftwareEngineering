@@ -6,10 +6,6 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.ids.ids.entity.Nodo;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,6 +15,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.ids.ids.entity.Nodo;
+import com.ids.ids.utils.Parametri;
 
 
 // AsyncTask consente di effettuare operazioni in background
@@ -30,8 +31,8 @@ import java.util.concurrent.ExecutionException;
 public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
-    private final String PATH = "http://192.168.1.8:8080";
-    //  private final String PATH = "http://172.23.128.184:8080";
+    private Parametri mParametri = Parametri.getInstance();
+    private final String PATH = mParametri.PATH;
 
     private ArrayList<Nodo> NodiSottoIncendio;
     private ProgressDialog loading_segnalazione;
@@ -68,7 +69,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
         try {
             connesso = execute.get();
-            System.out.println("Connesione: "+connesso);
+            System.out.println("Connesione: " + connesso);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -90,8 +91,8 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
                 Gson gson = new Gson();
                 String Data = gson.toJson(NodiSottoIncendio);
 
-                for (Nodo n : NodiSottoIncendio)
-                    System.out.println(n.getBeaconId());
+
+                System.out.println(Data);
 
                 // Create the request
                 //TODO: URL
@@ -139,7 +140,6 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
         }
 
-
         return null;
     }
 
@@ -153,7 +153,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
         super.onPostExecute(result);
 
-        System.out.println("ecco"+result);
+        System.out.println("ecco" + result);
 
 
         if (result == null) {
@@ -174,11 +174,11 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
                     });
             segnalazione_impossibile.show();
 
-        }  else{
+        } else {
             JsonObject jobj = new Gson().fromJson(result, JsonObject.class);
             String esito = jobj.get("esito").getAsString();
 
-            if(esito.equals("true")) {
+            if (esito.equals("true")) {
 
                 loading_segnalazione.dismiss();
 

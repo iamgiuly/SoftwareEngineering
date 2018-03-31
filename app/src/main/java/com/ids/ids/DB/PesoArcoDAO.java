@@ -1,4 +1,11 @@
-package com.ids.ids.entity;
+package com.ids.ids.DB;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+
+import com.ids.ids.entity.Peso;
+import com.ids.ids.entity.PesoArco;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -75,5 +82,4 @@ public class PesoArcoDAO extends DAO<PesoArco> {
             instance = new PesoArcoDAO(context);
         return instance;
     }
-
 }

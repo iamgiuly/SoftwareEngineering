@@ -1,11 +1,6 @@
 package com.ids.ids.entity;
 
-import android.util.Log;
-
 import com.ids.ids.ui.R;
-import com.ids.ids.utils.DebugSettings;
-
-import java.util.ArrayList;
 
 public class Nodo {
 
@@ -16,9 +11,9 @@ public class Nodo {
 
     public static final int DIM = 50;
 
-    private int id;
-    private String beaconId;
-    private int x, y;       // valori da 0 a 100 che indicano le coordinate relative alla mappa
+    private int Id;
+    private String BeaconId;
+    private int X, Y;       // valori da 0 a 100 che indicano le coordinate relative alla mappa
     private boolean tipoUscita;
     private boolean tipoIncendio;
     private int mappaId;
@@ -36,10 +31,10 @@ public class Nodo {
 
     public Nodo(int id, String beaconId, int x, int y, boolean tipoUscita, boolean tipoIncendio, int mappaId) {
 
-        this.id = id;
-        this.beaconId = beaconId;
-        this.x = x;
-        this.y = y;
+        this.Id = id;
+        this.BeaconId = beaconId;
+        this.X = x;
+        this.Y = y;
         this.tipoUscita = tipoUscita;
         this.tipoIncendio = tipoIncendio;
         this.mappaId = mappaId;
@@ -47,31 +42,31 @@ public class Nodo {
     }
 
     public int getId(){
-        return this.id;
+        return this.Id;
     }
     public void setId(int id){
-        this.id = id;
+        this.Id = id;
     }
 
     public String getBeaconId(){
-        return this.beaconId;
+        return this.BeaconId;
     }
     public void setId(String beaconId){
-        this.beaconId = beaconId;
+        this.BeaconId = beaconId;
     }
 
     public int getX(){
-        return this.x;
+        return this.X;
     }
     public void setX(int x){
-        this.x = x;
+        this.X = x;
     }
 
     public int getY(){
-        return this.y;
+        return this.Y;
     }
     public void setY(int y){
-        this.y = y;
+        this.Y = y;
     }
 
     public int getMappaId() {
@@ -113,24 +108,12 @@ public class Nodo {
 
     @Override
     public boolean equals(Object o) {
+
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Nodo nodo = (Nodo) o;
 
-        return id == nodo.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
-    public ArrayList<Arco> getStella(ArrayList<Arco> archi) {
-        ArrayList<Arco> stella = new ArrayList<>();
-        for(Arco arco : archi)
-            if (arco.getNodoArrivo().equals(this) || arco.getNodoPartenza().equals(this))
-                stella.add(arco);
-        return stella;
+        return BeaconId == nodo.BeaconId;
     }
 }

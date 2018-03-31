@@ -1,39 +1,35 @@
 package com.ids.ids.boundary.ServerTask;
 
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.ids.ids.control.UserController;
-import com.ids.ids.entity.Mappa;
-import com.ids.ids.ui.EmergenzaActivity;
-
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.ids.ids.control.UserController;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.utils.Parametri;
+
 public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
     private HttpURLConnection connection;
-    private final String PATH = "http://192.168.1.8:8080";
-   // private final String PATH = "http://172.23.128.184:8080";
-
+    private Parametri mParametri = Parametri.getInstance();
+    private final String PATH = mParametri.PATH;
     private Context context;
     private Mappa mappa_scaricata;
     private ProgressDialog download_immagini_in_corso;
-
     private UserController usercontroller;
 
     public DownloadPiantinaTask(Context ctx, Mappa mappa) {
 
         context = ctx;
         mappa_scaricata = mappa;
-        usercontroller= UserController.getInstance((Activity)context);
+        usercontroller = UserController.getInstance((Activity) context);
 
     }
 
@@ -64,7 +60,7 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
 
             System.out.println(mappa_scaricata.getPiantina());
-            URL url = new URL(PATH+"/FireExit/services/maps/downloadPiantina/"+mappa_scaricata.getPiantina());
+            URL url = new URL(PATH + "/FireExit/services/maps/downloadPiantina/" + mappa_scaricata.getPiantina());
             System.out.println(url);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -72,7 +68,7 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
             int lunghezza_file = connection.getContentLength();
 
             InputStream input = connection.getInputStream();
-            FileOutputStream output = context.openFileOutput(mappa_scaricata.getPiantina()+".png" ,Context.MODE_PRIVATE);
+            FileOutputStream output = context.openFileOutput(mappa_scaricata.getPiantina() + ".png", Context.MODE_PRIVATE);
 
             int read;
             long total = 0;
@@ -115,8 +111,13 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
         super.onPostExecute(arg0);
         download_immagini_in_corso.dismiss();
-
         System.out.println("Piantina scaricata");
+
+        if (usercontroller.getModalita() == usercontroller.MODALITA_EMERGENZA) {
+
+            usercontroller.salvataggioDB(mappa_scaricata);  //PRIMO SALVATAGGIO
+        }
+
         usercontroller.setMappa(mappa_scaricata);
         usercontroller.MandaEmergenzaActivity();
 

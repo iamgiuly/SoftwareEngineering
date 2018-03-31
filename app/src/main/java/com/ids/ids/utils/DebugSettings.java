@@ -5,16 +5,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.ids.ids.DB.DBHelper;
 import com.ids.ids.entity.Arco;
-import com.ids.ids.entity.ArcoDAO;
+import com.ids.ids.DB.ArcoDAO;
 import com.ids.ids.entity.Mappa;
-import com.ids.ids.entity.MappaDAO;
+import com.ids.ids.DB.MappaDAO;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.entity.NodoDAO;
+import com.ids.ids.DB.NodoDAO;
 import com.ids.ids.entity.Peso;
 import com.ids.ids.entity.PesoArco;
-import com.ids.ids.entity.PesoArcoDAO;
-import com.ids.ids.entity.PesoDAO;
+import com.ids.ids.DB.PesoArcoDAO;
+import com.ids.ids.DB.PesoDAO;
 import com.ids.ids.ui.R;
 
 import java.util.ArrayList;

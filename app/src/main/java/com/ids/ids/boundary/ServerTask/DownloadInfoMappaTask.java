@@ -7,20 +7,6 @@ import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
-import com.google.gson.reflect.TypeToken;
-import com.ids.ids.boundary.MappaServer;
-import com.ids.ids.boundary.NodoServer;
-import com.ids.ids.entity.Mappa;
-import com.ids.ids.entity.Nodo;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.gson.Gson;
-import com.ids.ids.ui.MainActivity;
-import com.ids.ids.ui.R;
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,29 +15,35 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.google.gson.Gson;
+
+import com.google.gson.reflect.TypeToken;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.ui.MainActivity;
+import com.ids.ids.ui.R;
+import com.ids.ids.utils.Parametri;
 
 // AsyncTask consente di effettuare operazioni in background
 // in thread separati e poi restituire il risultato al thread dell'interfaccia utente.
 // Per richiamare questa classe basta creare un'istanza della stessa e chiamare il suo metodo execute.
 // < parametri pasati al doBack, progresso , result passato al post >
 
-
-public class DownloadMappaTask extends AsyncTask<Void, Void, String> {
-
+public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
-    private final String PATH = "http://192.168.1.8:8080";
-    //private final String PATH = "http://172.23.128.184:8080";
+    private Parametri mParametri = Parametri.getInstance();
+    private final String PATH = mParametri.PATH;
     private String PosizioneU;
     private Context context;
     private ProgressDialog download_mappa_in_corso;
     private AsyncTask<Void, Void, Boolean> execute;
 
-
-    public DownloadMappaTask(Context contxt, String posizioneU) {
+    public DownloadInfoMappaTask(Context contxt, String posizioneU) {
 
         context = contxt;
         PosizioneU = posizioneU;
@@ -90,6 +82,7 @@ public class DownloadMappaTask extends AsyncTask<Void, Void, String> {
         if (!connesso)
             return null;
         else {
+            System.out.println("connesso");
 
             try {
                 Thread.sleep(1500);
@@ -190,61 +183,14 @@ public class DownloadMappaTask extends AsyncTask<Void, Void, String> {
 
             System.out.println("ciao: " + result.toString());
 
-            Type type = new TypeToken<MappaServer>() {
+            Type type = new TypeToken<Mappa>() {
             }.getType();
 
-            MappaServer dati_mappa = new Gson().fromJson(result, type);
+            Mappa mappa_scaricata = new Gson().fromJson(result, type);
 
-            int piano = dati_mappa.getPiano();
-            String nome_piantina = dati_mappa.getPiantina();
+            System.out.println("ecco: " + mappa_scaricata.getPiantina());
+            System.out.println("ecco: " + mappa_scaricata.getNodi().size());
 
-            ArrayList<NodoServer> nodiServer = dati_mappa.getNodi();
-            ArrayList<Nodo> nodi = new ArrayList<Nodo>();
-
-            for (NodoServer n : nodiServer) {
-
-                int p = n.getPiano();
-                String beaconID = n.getBeaconId();
-                int x = n.getX();
-                int y = n.getY();
-                int id = 0;
-
-                boolean tipoIncendio;
-                boolean tipoUscita;
-                Nodo nodo;
-
-                switch (n.getTipo()) {
-
-                    case 1:
-                        nodo = new Nodo(id, beaconID, x, y, p);
-                        nodi.add(nodo);
-                        break;
-
-                    case 2:
-                        tipoUscita = false;
-                        tipoIncendio = true;
-                        System.out.println("s2");
-                        nodo = new Nodo(id, beaconID, x, y, tipoUscita, tipoIncendio, p);
-                        nodi.add(nodo);
-                        break;
-
-                    case 3:
-                        tipoUscita = true;
-                        tipoIncendio = false;
-                        System.out.println("s3");
-                        nodo = new Nodo(id, beaconID, x, y, tipoUscita, tipoIncendio, p);
-                        nodi.add(nodo);
-                        break;
-                }
-
-                //   nodo = new Nodo(id , beaconID , x , y , p );
-                //   nodi.add(nodo);
-            }
-
-
-            System.out.println("ecco: " + nodi.size());
-
-            Mappa mappa_scaricata = new Mappa(piano, nome_piantina, nodi, null);
             download_mappa_in_corso.dismiss();
             new DownloadPiantinaTask(context, mappa_scaricata).execute();
 

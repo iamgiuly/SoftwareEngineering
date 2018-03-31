@@ -1,8 +1,10 @@
-package com.ids.ids.entity;
+package com.ids.ids.DB;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+
+import com.ids.ids.entity.Peso;
 
 public class PesoDAO extends DAO<Peso> {
 
@@ -36,8 +38,8 @@ public class PesoDAO extends DAO<Peso> {
     @Override
     protected Peso getFromCursor(Cursor cursor) {
         Peso peso = new Peso(   cursor.getInt(cursor.getColumnIndex(KEY_ID)),
-                                cursor.getString(cursor.getColumnIndex(KEY_descrizione)),
-                                cursor.getInt(cursor.getColumnIndex(KEY_peso)));
+                cursor.getString(cursor.getColumnIndex(KEY_descrizione)),
+                cursor.getInt(cursor.getColumnIndex(KEY_peso)));
         return peso;
     }
 

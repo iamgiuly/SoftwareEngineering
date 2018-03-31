@@ -4,16 +4,17 @@ import java.util.ArrayList;
 
 public class Mappa {
 
-    private int piano;
-    private String piantina;        //nome dell'immagine
-    private ArrayList<Nodo> nodi;   //TODO eliminare, avremo un getNodi() che recupera l'ArrayList dei nodi dagli archi
-    private ArrayList<Arco> archi;
+    private int Piano;
+    private String Piantina;        //nome dell'immagine
+    private ArrayList<Nodo> Nodi;   //TODO eliminare, avremo un getNodi() che recupera l'ArrayList dei nodi dagli archi
+    private ArrayList<Arco> Archi;
 
     public Mappa(int piano, String piantina, ArrayList<Nodo> nodi, ArrayList<Arco> archi) {
-        this.piano = piano;
-        this.piantina = piantina;
-        this.nodi = nodi;
-        this.archi = archi;
+
+        Piano = piano;
+        Piantina = piantina;
+        Nodi = nodi;
+        Archi = archi;
     }
 
     public ArrayList<Arco> calcolaPercorso(){
@@ -22,30 +23,38 @@ public class Mappa {
     }
 
     public int getPiano(){
-        return this.piano;
+
+        return Piano;
     }
+
     public void setPiano(int piano){
-        this.piano = piano;
+
+        Piano = piano;
     }
 
     public String getPiantina(){
-        return this.piantina;
+
+        return Piantina;
     }
     public void setPiantina(String piantina){
-        this.piantina = piantina;
+
+        Piantina = piantina;
     }
 
     public ArrayList<Nodo> getNodi(){
-        return this.nodi;
+
+        return Nodi;
     }
+
     public void setNodi(ArrayList<Nodo> nodi){
-        this.nodi = nodi;
+
+        Nodi = nodi;
     }
 
     //TODO sostituirà getNodi()
     public ArrayList<Nodo> getNodiFromArchi(){
         ArrayList<Nodo> nodi = new ArrayList<>();
-        for(Arco arco : this.archi){
+        for(Arco arco : Archi){
             Nodo nodoPartenza = arco.getNodoPartenza();
             if(!isNodoInArrayList(nodoPartenza, nodi))
                 nodi.add(nodoPartenza);
@@ -54,8 +63,9 @@ public class Mappa {
                 nodi.add(nodoArrivo);
             nodi.add(arco.getNodoArrivo());
         }
-        return this.nodi;
+        return Nodi;
     }
+
     private boolean isNodoInArrayList(Nodo nodo, ArrayList<Nodo> nodi){
         for(Nodo n : nodi)
             if(n.getId() == nodo.getId())
@@ -65,17 +75,20 @@ public class Mappa {
 
     public ArrayList<Nodo> getNodiUscita() {
         ArrayList<Nodo> uscite = new ArrayList<>();
-        for(Nodo nodo : this.nodi)
+        for(Nodo nodo : Nodi)
             if(nodo.isTipoUscita())
                 uscite.add(nodo);
         return uscite;
     }
 
     public ArrayList<Arco> getArchi() {
-        return archi;
+
+        return Archi;
     }
+
     public void setArchi(ArrayList<Arco> archi) {
-        this.archi = archi;
+
+        Archi = archi;
     }
 
     @Override
@@ -85,6 +98,18 @@ public class Mappa {
 
         Mappa mappa = (Mappa) o;
 
-        return piano == mappa.piano;
+        return Piano == mappa.Piano;
+    }
+
+    public Nodo getPosUtente(String macAdrs){
+
+        Nodo result = null;
+
+        for(Nodo n: Nodi)
+            if(n.getBeaconId().equals(macAdrs))
+                result = n;
+
+        return result;
+
     }
 }

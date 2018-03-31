@@ -1,4 +1,4 @@
-package com.ids.ids.entity;
+package com.ids.ids.DB;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 
-import com.ids.ids.utils.DBHelper;
+import com.ids.ids.entity.Nodo;
 
 public class NodoDAO extends DAO<Nodo> {
 

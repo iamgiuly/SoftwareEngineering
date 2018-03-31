@@ -1,9 +1,13 @@
-package com.ids.ids.entity;
+package com.ids.ids.DB;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+
+import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.Nodo;
 
 import java.util.ArrayList;
 
