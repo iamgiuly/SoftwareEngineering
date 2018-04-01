@@ -75,6 +75,7 @@ public abstract class DAO<Table> {
         ContentValues values = new ContentValues();
         this.putValues(table, values);
         long id = db.insert(this.getTable(), null, values);
+        System.out.println("inserimento"+this.getTable()+" con valori "+values);
         db.close();
         this.cascadeInsert(table);
         return (int) id;

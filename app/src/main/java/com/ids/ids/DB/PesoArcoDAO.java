@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.ids.ids.entity.Nodo;
 import com.ids.ids.entity.Peso;
 import com.ids.ids.entity.PesoArco;
 
@@ -11,6 +12,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+
+import java.util.ArrayList;
 
 public class PesoArcoDAO extends DAO<PesoArco> {
 
@@ -65,6 +68,14 @@ public class PesoArcoDAO extends DAO<PesoArco> {
     @Override
     protected void cascadeInsert(PesoArco pesoArco) {
 
+        ArrayList<Peso> result;
+        //vediamo se i pesi sono già stati inseriti
+        result = pesoDAO.findAllByColumnValue("descrizione", "'"+pesoArco.getPeso().getDescrizione()+"'");
+        System.out.println(result.size());
+        //se non sono stati inseriti li inseriamo
+        if(result.size() == 0){
+            pesoDAO.insert(pesoArco.getPeso());
+        }
     }
 
     @Override
@@ -77,8 +88,8 @@ public class PesoArcoDAO extends DAO<PesoArco> {
 
     }
 
-    public static PesoArcoDAO getInstance(Context context){
-        if(instance == null)
+    public static PesoArcoDAO getInstance(Context context) {
+        if (instance == null)
             instance = new PesoArcoDAO(context);
         return instance;
     }

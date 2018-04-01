@@ -4,11 +4,13 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.ids.ids.DB.MappaDAO;
 import com.ids.ids.boundary.ServerTask.DownloadPercorsoTask;
 import com.ids.ids.boundary.ServerTask.DownloadInfoMappaTask;
 import com.ids.ids.boundary.ServerTask.InvioNodiTask;
 import com.ids.ids.control.Localizzatore;
 import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.DB.NodoDAO;
 
@@ -37,7 +39,15 @@ public class CommunicationServer {
         new InvioNodiTask(nodi, contxt).execute();
     }
 
-    public ArrayList<Arco> richiediPercorso(String mac, int piano, Localizzatore l) {
+    /**
+     * Avvia il task per la richiesta del percorso e una volta ricevuto, se non è null,
+     * lo mappa lato App
+     *
+     * @param mac , piano
+     * @return percorso --> null se la connessione è caduta
+     */
+
+    public ArrayList<Arco> richiediPercorso(String mac, int piano) {
 
         ArrayList<Arco> percorso = null;
 
@@ -55,11 +65,6 @@ public class CommunicationServer {
                 percorso = new Gson().fromJson(dati_percorso, type);
 
                 System.out.println("percorso " + percorso.size());
-            } else {
-
-                //TODO: BISOGNA PRENDERE QUELLO LOCALE
-                System.out.println("Bisogna prendere il locale");
-                l.stopFinderALWAYS();
             }
 
         } catch (ExecutionException e) {
@@ -67,6 +72,7 @@ public class CommunicationServer {
         } catch (InterruptedException e) {
 
         }
+
         return percorso;
     }
 

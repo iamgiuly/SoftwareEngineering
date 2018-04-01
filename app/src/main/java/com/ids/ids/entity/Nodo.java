@@ -2,6 +2,8 @@ package com.ids.ids.entity;
 
 import com.ids.ids.ui.R;
 
+import java.util.ArrayList;
+
 public class Nodo {
 
     public static final int IMG_BASE = R.drawable.nodo_base;
@@ -106,14 +108,26 @@ public class Nodo {
         return IMG_BASE;
     }
 
+    public ArrayList<Arco> getStella(ArrayList<Arco> archi) {
+        ArrayList<Arco> stella = new ArrayList<>();
+        for(Arco arco : archi)
+            if (arco.getNodoArrivo().equals(this) || arco.getNodoPartenza().equals(this))
+                stella.add(arco);
+        return stella;
+    }
+
     @Override
     public boolean equals(Object o) {
-
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Nodo nodo = (Nodo) o;
 
-        return BeaconId == nodo.BeaconId;
+        return Id == nodo.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Id;
     }
 }

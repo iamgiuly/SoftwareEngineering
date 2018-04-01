@@ -13,6 +13,7 @@ import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.DB.NodoDAO;
+import com.ids.ids.entity.Percorso;
 import com.ids.ids.ui.EmergenzaActivity;
 import com.ids.ids.utils.DebugSettings;
 
@@ -41,9 +42,29 @@ public class UserController extends Application {
         modalita = MODALITA_SEGNALAZIONE;
     }
 
-    public ArrayList<Arco> richiediPercorso(String mac, Localizzatore l) {
+    public ArrayList<Arco> richiediPercorso(String mac) {
 
-        return communicationServer.richiediPercorso(mac, mappa.getPiano(), l);
+        ArrayList<Arco> percorso = null;
+        ArrayList<Arco> result = null;
+
+        //TODO:MIGLIORARE PERCHè IN MAPPA IO HO QUELLA SCARICATA AL PRIMO ACCESSO
+        percorso = communicationServer.richiediPercorso(mac, mappa.getPiano());
+
+        if(percorso != null)
+            result = percorso;
+        else {
+
+            //TODO: MIGLIORARE ANCHE PERCHE mappa è QUELLA SCARICATA A PRIMO ACCESSO
+            System.out.println("Bisogna prendere il locale");
+            Mappa mappaAggiornata = MappaDAO.getInstance(context).find( mappa.getPiano());
+
+            System.out.println("mappa"+mappaAggiornata);
+            Percorso p  = Percorso.getInstance();
+            result = p.calcolaPercorso(mappaAggiornata,mappaAggiornata.getPosUtente(mac));
+            System.out.println("percorso: "+result.size());
+        }
+
+        return result;
     }
 
     public void salvataggioDB(Mappa mappa_scaricata) {

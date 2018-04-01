@@ -109,7 +109,7 @@ public class Localizzatore {
             } else {
                 System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
 
-                percorso = userController.richiediPercorso(macAdrs, Localizzatore.this);
+                percorso = userController.richiediPercorso(macAdrs);
 
                 Nodo posUtente = userController.getMappa().getPosUtente(macAdrs);
                 mappaView.setPosUtente(posUtente);

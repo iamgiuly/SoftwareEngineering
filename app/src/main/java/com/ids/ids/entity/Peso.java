@@ -45,6 +45,7 @@ public class Peso {
 
     @Override
     public int hashCode() {
+
         return id;
     }
 }
