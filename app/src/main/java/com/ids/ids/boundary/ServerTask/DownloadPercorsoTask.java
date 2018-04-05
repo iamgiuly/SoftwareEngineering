@@ -22,8 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
-    private Parametri mParametri = Parametri.getInstance();
-    private final String PATH = mParametri.PATH;
+    private final String PATH = Parametri.PATH;
     private String Mac;
     private int piano;
     private AsyncTask<Void, Void, Boolean> execute;

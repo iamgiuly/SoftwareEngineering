@@ -65,6 +65,8 @@ public class EmergenzaActivity extends AppCompatActivity {
         mappaView = findViewById(R.id.mappaView);
 
         try {
+
+            // CASO SEGNALAZIONE
             if (userController.getModalita() == userController.MODALITA_SEGNALAZIONE) {
 
                 localizzatore = new Localizzatore(this, scanner);
@@ -83,14 +85,15 @@ public class EmergenzaActivity extends AppCompatActivity {
 
                     }
                 });
-            } else {  //CASO EMERGENZA
+            } else {
+                //CASO EMERGENZA
 
                 localizzatore = new Localizzatore(mappaView, this, scanner);
                 mappaView.setMappa(userController.getMappa(), true);
-                scanner.scansione(true);
-                localizzatore.startFinderALWAYS();
+                scanner.scansione(true);                                  //Avvio scansione BLE
+                localizzatore.startFinderALWAYS();                               //Avvio localizzazione
                 //Avvia aggiornamento db locale
-                userController.richiestaAggiornamento(true);
+                userController.richiestaAggiornamento(true);             //Avvio richiesta aggiornamento
             }
 
         } catch (FileNotFoundException e) {
@@ -108,15 +111,6 @@ public class EmergenzaActivity extends AppCompatActivity {
        // userController.DropDB();
     }
 
-   /* public void Ricalcolo(ArrayList<Arco> percorso, String macAdrs){
-
-        Nodo posUtente = userController.getMappa().getPosUtente(macAdrs);
-        this.mappaView.setPosUtente(posUtente);
-        this.mappaView.setPercorso(percorso);
-        try {
-            this.mappaView.postInvalidate();
-        } catch (Exception e) { }
-    }*/
 
     /**
      * Richiamato dal listener associato ad un nodo, tale nodo deve essere opportunamente contrassegnato

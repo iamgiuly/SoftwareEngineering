@@ -36,8 +36,7 @@ import com.ids.ids.utils.Parametri;
 public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
-    private Parametri mParametri = Parametri.getInstance();
-    private final String PATH = mParametri.PATH;
+    private final String PATH = Parametri.PATH;
     private String PosizioneU;
     private Context context;
     private ProgressDialog download_mappa_in_corso;

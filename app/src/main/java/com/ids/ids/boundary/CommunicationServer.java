@@ -4,19 +4,15 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.ids.ids.DB.MappaDAO;
 import com.ids.ids.boundary.ServerTask.DownloadPercorsoTask;
 import com.ids.ids.boundary.ServerTask.DownloadInfoMappaTask;
 import com.ids.ids.boundary.ServerTask.InvioNodiTask;
-import com.ids.ids.control.Localizzatore;
 import com.ids.ids.entity.Arco;
-import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.DB.NodoDAO;
+import com.ids.ids.utils.Parametri;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -27,8 +23,7 @@ public class CommunicationServer {
     private static CommunicationServer instance = null;
 
     private Context context;
-
-    final Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     public CommunicationServer(Context context) {
 
@@ -52,7 +47,6 @@ public class CommunicationServer {
      * @param mac , piano
      * @return percorso --> null se la connessione è caduta
      */
-
     public ArrayList<Arco> richiediPercorso(String mac, int piano) {
 
         ArrayList<Arco> percorso = null;
@@ -82,21 +76,33 @@ public class CommunicationServer {
         return percorso;
     }
 
+    /**
+     * Avvia il task per la richiesta della mappa
+     *
+     * @param contxt, posizioneU
+     *
+     */
     public void richiestaMappa(Context contxt, String posizioneU) {
 
         new DownloadInfoMappaTask(contxt, posizioneU).execute();
     }
 
+    /**
+     * In base all enable avvia o ferma il runnable relativo alla richiesta di aggiornamenti al server
+     *
+     * @param enable
+     *
+     */
     public void richiestaAggiornamenti(Boolean enable) {
 
         if(enable)
-            handler.postDelayed(Aggiorna, 2000);
+            handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI );
         else
             handler.removeCallbacks(Aggiorna);
 
     }
 
-    // FindMeALWAYS è un Runnable utilizzato dalla mappa
+    // Runnable per l aggiornamento
     private final Runnable Aggiorna = new Runnable() {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
@@ -104,7 +110,7 @@ public class CommunicationServer {
 
             System.out.println("RichiestaAggiornamenti");
             // new aggiornaDatiMappaTask().execute();
-            handler.postDelayed(Aggiorna, 2000);
+            handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI );
 
         }
     };

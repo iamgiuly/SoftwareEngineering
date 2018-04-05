@@ -8,11 +8,7 @@ import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
-import java.util.ArrayList;
-
 import com.ids.ids.boundary.BeaconScanner;
-import com.ids.ids.entity.Arco;
-import com.ids.ids.entity.Nodo;
 import com.ids.ids.ui.MappaView;
 import com.ids.ids.utils.Parametri;
 
@@ -25,11 +21,9 @@ public class Localizzatore {
 
     private Context context;
     private BeaconScanner Scanner;
-    private Parametri mParametri;
     private Handler finder;
     private ProgressDialog loading_localizzazione;
     private UserController userController;
-    private ArrayList<Arco> percorso;
     private MappaView mappaView;
 
 
@@ -37,7 +31,6 @@ public class Localizzatore {
 
         context = contxt;
         Scanner = scanner;
-        mParametri = Parametri.getInstance();
         finder = new Handler();
         userController = UserController.getInstance((Activity) context);
 
@@ -47,15 +40,14 @@ public class Localizzatore {
 
         context = contxt;
         Scanner = scanner;
-        mParametri = Parametri.getInstance();
         finder = new Handler();
         userController = UserController.getInstance((Activity) context);
         mappaView = mView;
-        percorso = new ArrayList<Arco>();
-
     }
 
     /*
+    =========================================================================================================
+
       Nota localizzazioni:
 
       ALWAYS: Utilizzata dalla mappa
@@ -65,7 +57,9 @@ public class Localizzatore {
       ONE:    Utilizzato al click del bottone SegnalaEmergenza
               Appena trovato il Beacon più vicino il BeaconScanner e il Runnable findMeONE vengono fermati
 
+     ========================================================================================================
      */
+
     // FindMeONE viene è un Runnable utilizzato al click del bottone segnala emergenza
     // Appena la posizione dell utente è stata trovata termina la scansione
     private final Runnable findMeONE = new Runnable() {
@@ -79,16 +73,14 @@ public class Localizzatore {
             if (macAdrs.equals("NN")) {
                 // Non è stato ancora trovato nessun Beacon dallo scanner
                 // Attendo nuovamente
-                finder.postDelayed(findMeONE, mParametri.T_POSIZIONE_SEGNALAZIONE);
+                finder.postDelayed(findMeONE, Parametri.T_POSIZIONE_SEGNALAZIONE);
             } else {
-
                 // E' stato trovato il beacon dallo scanner
                 System.out.println("MAC: " + macAdrs);
-                Scanner.scansione(false);       // Fermo la scansione dello scanner
-                loading_localizzazione.dismiss();   // Tolgo il messaggio di localizzazione
-                userController.caricaMappa(context, macAdrs);  //Avvio l Activity passandogli il macAdrs
-                stopFinderONE();              // Fermo questo Runnable
-
+                Scanner.scansione(false);                //  Fermo la scansione dello scanner
+                loading_localizzazione.dismiss();               //  Tolgo il messaggio di localizzazione
+                userController.richiestaMappa(context, macAdrs);  //   Avvio l Activity passandogli il macAdrs
+                stopFinderONE();                              //    Fermo questo Runnable
             }
         }
     };
@@ -105,35 +97,26 @@ public class Localizzatore {
             if (macAdrs.equals("NN")) {
                 // Non è stato ancora trovato nessun Beacon dallo scanner
                 // Attendo nuovamente
-                finder.postDelayed(findMeALWAYS, mParametri.T_POSIZIONE_EMERGENZA);
+                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
             } else {
                 System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
-
-                percorso = userController.richiediPercorso(macAdrs);
-
-                Nodo posUtente = userController.getMappa().getPosUtente(macAdrs);
-                mappaView.setPosUtente(posUtente);
-                mappaView.setPercorso(percorso);
-
-                try {
-                    mappaView.postInvalidate();
-                } catch (Exception e) {
-                }
-
-
-                System.out.println("ecco: " + percorso.size());
-                finder.postDelayed(findMeALWAYS, mParametri.T_POSIZIONE_EMERGENZA);
+                userController.richiediPercorso(macAdrs, mappaView);
+                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
             }
         }
     };
 
-    ////AVVIO RUNNABLE///
+    /*
+    ========================================================================================================
+     AVVIO RUNNABLE
+     =======================================================================================================
+     */
 
 
     // Avvia la localizzazione ONE
     public void startFinderONE() {
 
-        finder.postDelayed(findMeONE, mParametri.T_POSIZIONE_EMERGENZA);
+        finder.postDelayed(findMeONE, Parametri.T_POSIZIONE_EMERGENZA);
         //visualizzazione messaggio di localizzazione
         loading_localizzazione = new ProgressDialog(context);
         loading_localizzazione.setIndeterminate(true);
@@ -147,11 +130,16 @@ public class Localizzatore {
     // Avvia la localizzazione ALWAYS
     public void startFinderALWAYS() {
 
-        finder.postDelayed(findMeALWAYS, mParametri.T_POSIZIONE_EMERGENZA);
+        finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
     }
 
 
-    /////STOP RUNNABLE////
+     /*
+    ========================================================================================================
+     STOP RUNNABLE
+     =======================================================================================================
+     */
+
 
     // Ferma la localizzazione ALWAYS
     public void stopFinderALWAYS() {

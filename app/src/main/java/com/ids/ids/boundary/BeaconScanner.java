@@ -29,7 +29,6 @@ public class BeaconScanner {
     private BluetoothLeScanner btScanner;  // il Bluetooth deve essere on altrimenti restituisce un null l adapter
     private ScanCallback leScanCallback;
     private ArrayList<ScanResult> RaccogliDevice = new ArrayList<>();
-    private Parametri mParametri;
     private int refresh = 0;
 
 
@@ -42,7 +41,6 @@ public class BeaconScanner {
         // consente di eseguire attività Bluetooth fondamentali, come avviare il rilevamento dei dispositivi,
         btManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);//Ottengo BluethoothManager e lo salvo in locale
         btAdapter = btManager.getAdapter();                                        //richiamo l adapter e lo salvo in locale,
-        mParametri = Parametri.getInstance();
 
 
         leScanCallback = new ScanCallback() {
@@ -101,7 +99,7 @@ public class BeaconScanner {
             nomeDevice = "NN";
 
         // - Vengono considerati solo i dispositivi bluetooth con nome definito nel filtro
-        if (mParametri.FILTRO_BLE_DEVICE.equals(nomeDevice)) {
+        if (Parametri.FILTRO_BLE_DEVICE.equals(nomeDevice)) {
             // - Confronto il Device appena trovato (Device) con i Device appena raccolti fino ad ora (DeviceRac)
             // - il confronto avviene grazie al MACaddress che identifica univocamente il Device
             for (ScanResult DeviceRaccolto : RaccogliDevice)
@@ -139,7 +137,7 @@ public class BeaconScanner {
             btScanner.startScan(leScanCallback);
 
             Log.i("Scanning", "Start");
-            scanH.postDelayed(stop, mParametri.T_SCAN_PERIOD); //pianificazione messaggio di stop
+            scanH.postDelayed(stop, Parametri.T_SCAN_PERIOD); //pianificazione messaggio di stop
 
         }
     };
@@ -167,7 +165,7 @@ public class BeaconScanner {
 
 
             Log.i("Scanning", "Stop");
-            scanH.postDelayed(start, mParametri.T_SCAN_PERIOD);
+            scanH.postDelayed(start, Parametri.T_SCAN_PERIOD);
 
         }
     };

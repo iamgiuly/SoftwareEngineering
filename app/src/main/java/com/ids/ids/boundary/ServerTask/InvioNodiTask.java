@@ -31,8 +31,7 @@ import com.ids.ids.utils.Parametri;
 public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
-    private Parametri mParametri = Parametri.getInstance();
-    private final String PATH = mParametri.PATH;
+    private final String PATH = Parametri.PATH;
 
     private ArrayList<Nodo> NodiSottoIncendio;
     private ProgressDialog loading_segnalazione;

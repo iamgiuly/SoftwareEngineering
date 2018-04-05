@@ -14,8 +14,7 @@ import java.net.URL;
 public class ServerConnection extends AsyncTask<Void, Void, Boolean> {
 
     private HttpURLConnection connection;
-    private Parametri mParametri = Parametri.getInstance();
-    private final String PATH = mParametri.PATH;
+    private final String PATH = Parametri.PATH;
 
     @Override
     protected void onPreExecute() {

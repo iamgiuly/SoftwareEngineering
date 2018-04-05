@@ -18,8 +18,7 @@ import com.ids.ids.utils.Parametri;
 public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
     private HttpURLConnection connection;
-    private Parametri mParametri = Parametri.getInstance();
-    private final String PATH = mParametri.PATH;
+    private final String PATH = Parametri.PATH;
     private Context context;
     private Mappa mappa_scaricata;
     private ProgressDialog download_immagini_in_corso;

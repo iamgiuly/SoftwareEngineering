@@ -10,9 +10,9 @@ import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.DB.NodoDAO;
 import com.ids.ids.entity.Percorso;
 import com.ids.ids.ui.EmergenzaActivity;
+import com.ids.ids.ui.MappaView;
 import com.ids.ids.utils.DebugSettings;
 
 import java.util.ArrayList;
@@ -32,10 +32,10 @@ public class UserController extends Application {
     private Mappa mappa;
     private int PianoUtente;
 
+
     public UserController(Activity contxt) {
         context = contxt;
         communicationServer = CommunicationServer.getInstance(context.getApplicationContext());
-        // nodoDAO = NodoDAO.getInstance(context.getApplicationContext());
         nodiSelezionati = new ArrayList<>();
         modalita = MODALITA_SEGNALAZIONE;
     }
@@ -45,54 +45,59 @@ public class UserController extends Application {
 
     }
 
-    public ArrayList<Arco> richiediPercorso(String mac) {
+    /**
+     * Recupera la mappa del piano in cui si trova l'utente inviando una richiesta al server,
+     * passando a questo la posizione dell'utente raffigurata dall'id (MACaddress) del beacon
+     */
+    public void richiestaMappa(Context context, String macAddress) {
 
-        ArrayList<Arco> percorso = null;
-        ArrayList<Arco> result = null;
+        communicationServer.richiestaMappa(context, macAddress);
+    }
+
+    /**
+     * I nodi selezionati vengono settati nel db locale come sotto incendio,
+     * viene fatto lo stesso nel db remoto inviando una richiesta RESTful al server,
+     * quindi la lista dei nodi selezionati viene svuotata
+     *
+     * @return true se l'operazione ha successo
+     */
+    public void inviaNodiSelezionati(Context contx) {
+
+        communicationServer.inviaNodiSottoIncendio(nodiSelezionati, contx);
+    }
+
+    public void richiediPercorso(String mac, MappaView mappaView) {
+
+        ArrayList<Arco> percorso;
 
         //TODO:MIGLIORARE PERCHè IN MAPPA IO HO QUELLA SCARICATA AL PRIMO ACCESSO
         percorso = communicationServer.richiediPercorso(mac, PianoUtente);
 
-        if (percorso != null)
-            result = percorso;
-        else {
+        if (percorso == null) {
 
             //TODO: MIGLIORARE ANCHE PERCHE mappa è QUELLA SCARICATA A PRIMO ACCESSO
-            System.out.println("Bisogna prendere il locale");
+            System.out.println("Connessione caduta --> Bisogna prendere il locale");
             Mappa mappaAggiornata = MappaDAO.getInstance(context).find(PianoUtente);
 
-            System.out.println("mappa" + mappaAggiornata);
             Percorso p = Percorso.getInstance();
-            result = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getPosUtente(mac));
-            System.out.println("percorso: " + result.size());
+            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getPosUtente(mac));
+            System.out.println("percorso preso in locale size: " + percorso.size());
         }
 
-        return result;
+        Nodo posUtente = mappa.getPosUtente(mac);
+        mappaView.setPosUtente(posUtente);
+        mappaView.setPercorso(percorso);
+
+        try {
+            mappaView.postInvalidate();
+        } catch (Exception e) {
+        }
     }
 
-    public void richiestaAggiornamento(Boolean enable){
+    public void richiestaAggiornamento(Boolean enable) {
 
         communicationServer.richiestaAggiornamenti(enable);
     }
-
-   /* public void salvataggioDB(Mappa mappa_scaricata) {
-
-        System.out.println("Salvataggio");
-        MappaDAO.getInstance(context).insert(mappa_scaricata);
-    }*/
-
-
-/*
-    /**
-     * Verifica che l'utente sia connesso alla rete Wi-Fi
-     *
-     * @return true se l'utente è connesso al Wi-Fi
-
-    public boolean controllaConnessione() {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return !DebugSettings.CHECK_WIFI || activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-    }*/
 
     /**
      * Aggiunge o rimuove dalla lista dei nodi selezionati il nodo con l'id passato come parametro
@@ -118,26 +123,6 @@ public class UserController extends Application {
         return !this.nodiSelezionati.isEmpty();
     }
 
-    /**
-     * I nodi selezionati vengono settati nel db locale come sotto incendio,
-     * viene fatto lo stesso nel db remoto inviando una richiesta RESTful al server,
-     * quindi la lista dei nodi selezionati viene svuotata
-     *
-     * @return true se l'operazione ha successo
-     */
-    public void inviaNodiSelezionati(Context contx) {
-
-        communicationServer.inviaNodiSottoIncendio(nodiSelezionati, contx);
-    }
-
-    /**
-     * Recupera la mappa del piano in cui si trova l'utente inviando una richiesta al server,
-     * passando a questo la posizione dell'utente raffigurata dall'id (MACaddress) del beacon
-     */
-    public void caricaMappa(Context context, String macAddress) {
-
-        communicationServer.richiestaMappa(context, macAddress);
-    }
 
     public void MandaEmergenzaActivity() {
 
@@ -145,13 +130,10 @@ public class UserController extends Application {
         context.startActivity(intent);
     }
 
- /*   public Nodo getPosizioneUtente() {
-        // TODO dummy
-        ArrayList<Nodo> nodi = nodoDAO.findAll();
-        Random random = new Random();
-        return nodoDAO.findAll().get(random.nextInt(nodi.size()));
+    public void clearNodiSelezionati() {
+
+        this.nodiSelezionati.clear();
     }
-*/
 
     public int getModalita() {
 
@@ -161,11 +143,6 @@ public class UserController extends Application {
     public void setModalita(int modalita) {
 
         this.modalita = modalita;
-    }
-
-    public void clearNodiSelezionati() {
-
-        this.nodiSelezionati.clear();
     }
 
     public Mappa getMappa() {
