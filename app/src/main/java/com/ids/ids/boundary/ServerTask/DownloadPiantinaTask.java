@@ -113,13 +113,11 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
         download_immagini_in_corso.dismiss();
         System.out.println("Piantina scaricata");
 
-        if (usercontroller.getModalita() == usercontroller.MODALITA_EMERGENZA) {
-
-            usercontroller.salvataggioDB(mappa_scaricata);  //PRIMO SALVATAGGIO
-        }
+        if (usercontroller.getModalita() == usercontroller.MODALITA_EMERGENZA)
+            mappa_scaricata.salvataggioLocale(context);  //PRIMO SALVATAGGIO in locale
 
         usercontroller.setMappa(mappa_scaricata);
+        usercontroller.setPianoUtente(mappa_scaricata.getPiano());  //resterà questoi fino al cambio piano
         usercontroller.MandaEmergenzaActivity();
-
     }
 }

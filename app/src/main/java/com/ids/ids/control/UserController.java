@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 
 import com.ids.ids.DB.MappaDAO;
 import com.ids.ids.boundary.CommunicationServer;
@@ -30,9 +28,9 @@ public class UserController extends Application {
     private int modalita;
 
     private CommunicationServer communicationServer;
-    private NodoDAO nodoDAO;
     private ArrayList<Nodo> nodiSelezionati; // nodi di cui bisogna cambiare il flag "sotto incendio"
     private Mappa mappa;
+    private int PianoUtente;
 
     public UserController(Activity contxt) {
         context = contxt;
@@ -42,36 +40,41 @@ public class UserController extends Application {
         modalita = MODALITA_SEGNALAZIONE;
     }
 
+    public void DropDB() {
+
+
+    }
+
     public ArrayList<Arco> richiediPercorso(String mac) {
 
         ArrayList<Arco> percorso = null;
         ArrayList<Arco> result = null;
 
         //TODO:MIGLIORARE PERCHè IN MAPPA IO HO QUELLA SCARICATA AL PRIMO ACCESSO
-        percorso = communicationServer.richiediPercorso(mac, mappa.getPiano());
+        percorso = communicationServer.richiediPercorso(mac, PianoUtente);
 
-        if(percorso != null)
+        if (percorso != null)
             result = percorso;
         else {
 
             //TODO: MIGLIORARE ANCHE PERCHE mappa è QUELLA SCARICATA A PRIMO ACCESSO
             System.out.println("Bisogna prendere il locale");
-            Mappa mappaAggiornata = MappaDAO.getInstance(context).find( mappa.getPiano());
+            Mappa mappaAggiornata = MappaDAO.getInstance(context).find(PianoUtente);
 
-            System.out.println("mappa"+mappaAggiornata);
-            Percorso p  = Percorso.getInstance();
-            result = p.calcolaPercorso(mappaAggiornata,mappaAggiornata.getPosUtente(mac));
-            System.out.println("percorso: "+result.size());
+            System.out.println("mappa" + mappaAggiornata);
+            Percorso p = Percorso.getInstance();
+            result = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getPosUtente(mac));
+            System.out.println("percorso: " + result.size());
         }
 
         return result;
     }
 
-    public void salvataggioDB(Mappa mappa_scaricata) {
+   /* public void salvataggioDB(Mappa mappa_scaricata) {
 
         System.out.println("Salvataggio");
         MappaDAO.getInstance(context).insert(mappa_scaricata);
-    }
+    }*/
 
 
 /*
@@ -168,6 +171,11 @@ public class UserController extends Application {
     public void setMappa(Mappa mappa) {
 
         this.mappa = mappa;
+    }
+
+    public void setPianoUtente(int piano) {
+
+        this.PianoUtente = piano;
     }
 
     public static UserController getInstance(Activity context) {

@@ -102,6 +102,8 @@ public class EmergenzaActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         scanner.scansione(false);
+        localizzatore.stopFinderALWAYS();
+        userController.DropDB();
     }
 
    /* public void Ricalcolo(ArrayList<Arco> percorso, String macAdrs){

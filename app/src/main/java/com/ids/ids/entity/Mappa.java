@@ -1,5 +1,9 @@
 package com.ids.ids.entity;
 
+import android.content.Context;
+
+import com.ids.ids.DB.MappaDAO;
+
 import java.util.ArrayList;
 
 public class Mappa {
@@ -110,6 +114,23 @@ public class Mappa {
                 result = n;
 
         return result;
+    }
+
+    public void salvataggioLocale(Context contxt){
+
+        ArrayList<Mappa>  esito;
+
+        MappaDAO m = MappaDAO.getInstance(contxt);
+        esito = m.findAllByColumnValue("piano",String.valueOf(this.Piano));
+
+        if(esito.size() == 0 ){
+            System.out.println("Salvataggio");
+            m.insert(this);
+        }
+        else {
+            System.out.println("Update");
+            m.update(this);
+        }
 
     }
 }
