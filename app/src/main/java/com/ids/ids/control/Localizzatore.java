@@ -105,7 +105,7 @@ public class Localizzatore {
             if (macAdrs.equals("NN")) {
                 // Non è stato ancora trovato nessun Beacon dallo scanner
                 // Attendo nuovamente
-                finder.postDelayed(findMeONE, mParametri.T_POSIZIONE_EMERGENZA);
+                finder.postDelayed(findMeALWAYS, mParametri.T_POSIZIONE_EMERGENZA);
             } else {
                 System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
 

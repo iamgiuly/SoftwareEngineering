@@ -70,6 +70,11 @@ public class UserController extends Application {
         return result;
     }
 
+    public void richiestaAggiornamento(Boolean enable){
+
+        communicationServer.richiestaAggiornamenti(enable);
+    }
+
    /* public void salvataggioDB(Mappa mappa_scaricata) {
 
         System.out.println("Salvataggio");

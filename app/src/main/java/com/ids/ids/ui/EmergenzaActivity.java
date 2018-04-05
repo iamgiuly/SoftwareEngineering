@@ -90,6 +90,7 @@ public class EmergenzaActivity extends AppCompatActivity {
                 scanner.scansione(true);
                 localizzatore.startFinderALWAYS();
                 //Avvia aggiornamento db locale
+                userController.richiestaAggiornamento(true);
             }
 
         } catch (FileNotFoundException e) {
@@ -103,7 +104,8 @@ public class EmergenzaActivity extends AppCompatActivity {
         super.onDestroy();
         scanner.scansione(false);
         localizzatore.stopFinderALWAYS();
-        userController.DropDB();
+        userController.richiestaAggiornamento(false);
+       // userController.DropDB();
     }
 
    /* public void Ricalcolo(ArrayList<Arco> percorso, String macAdrs){

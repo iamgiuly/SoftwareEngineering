@@ -1,6 +1,10 @@
 package com.ids.ids.boundary;
 
 import android.content.Context;
+import android.os.Build;
+import android.os.Handler;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -23,6 +27,8 @@ public class CommunicationServer {
     private static CommunicationServer instance = null;
 
     private Context context;
+
+    final Handler handler = new Handler();
 
     public CommunicationServer(Context context) {
 
@@ -80,6 +86,28 @@ public class CommunicationServer {
 
         new DownloadInfoMappaTask(contxt, posizioneU).execute();
     }
+
+    public void richiestaAggiornamenti(Boolean enable) {
+
+        if(enable)
+            handler.postDelayed(Aggiorna, 2000);
+        else
+            handler.removeCallbacks(Aggiorna);
+
+    }
+
+    // FindMeALWAYS è un Runnable utilizzato dalla mappa
+    private final Runnable Aggiorna = new Runnable() {
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public void run() {
+
+            System.out.println("RichiestaAggiornamenti");
+            // new aggiornaDatiMappaTask().execute();
+            handler.postDelayed(Aggiorna, 2000);
+
+        }
+    };
 
     public static CommunicationServer getInstance(Context context) {
         if (instance == null)
