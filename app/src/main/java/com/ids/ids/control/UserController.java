@@ -11,9 +11,9 @@ import android.util.Log;
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
-import com.ids.ids.entity.MappaDAO;
+import com.ids.ids.DB.MappaDAO;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.entity.NodoDAO;
+import com.ids.ids.DB.NodoDAO;
 import com.ids.ids.ui.EmergenzaActivity;
 import com.ids.ids.utils.DebugSettings;
 
