@@ -25,7 +25,7 @@ import static android.content.ContentValues.TAG;
 public class DebugSettings {
 
     public static boolean SEED_DB = true;
-    public static boolean SCAN_BLUETOOTH = true;
+    public static boolean SCAN_BLUETOOTH = false;
     public static boolean CHECK_WIFI = false;
 
     public static int PIANO_DEFAULT = 145;
@@ -55,7 +55,7 @@ public class DebugSettings {
         ArrayList<Nodo> nodi = new ArrayList<>();
         Nodo nodo1 = new Nodo(1, "1", 10, 20, idMappa);
         Nodo nodo2 = new Nodo(2, "2", 20, 10, idMappa);
-        Nodo nodo3 = new Nodo(3, "3", 50, 60, idMappa);
+        Nodo nodo3 = new Nodo(3, "3", 50, 60, false, true, idMappa);
         Nodo nodo4 = new Nodo(4, "4", 60, 50, true, idMappa);
         Nodo nodo5 = new Nodo(5, "5", 10, 80, idMappa);
         Nodo nodo6 = new Nodo(6, "6", 80, 10, idMappa);
