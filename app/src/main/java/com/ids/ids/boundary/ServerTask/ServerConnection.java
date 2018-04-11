@@ -25,9 +25,9 @@ public class ServerConnection extends AsyncTask<Void, Void, Boolean> {
     protected Boolean doInBackground(Void... arg0) {
 
         try {
-            connection = (HttpURLConnection) new URL(PATH + "/").openConnection();
-            connection.setConnectTimeout(30000); //lancia una eccezione qualora la connessione non viene stabilita entro i tre secondi
-            connection.setReadTimeout(30000);    //lancia un eccezione se la lettura dal server non termina entro i 3 secondi
+            connection = (HttpURLConnection) new URL(PATH + "/FireExit").openConnection();
+            connection.setConnectTimeout(100000); //lancia una eccezione qualora la connessione non viene stabilita entro i tre secondi
+            connection.setReadTimeout(40000);    //lancia un eccezione se la lettura dal server non termina entro i 3 secondi
             connection.setRequestMethod("HEAD");
             int responseCode = connection.getResponseCode();
             return (200 <= responseCode && responseCode <= 399);

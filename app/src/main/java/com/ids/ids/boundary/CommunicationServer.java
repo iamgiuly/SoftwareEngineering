@@ -1,5 +1,6 @@
 package com.ids.ids.boundary;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -7,10 +8,13 @@ import android.support.annotation.RequiresApi;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.ids.ids.boundary.ServerTask.AggiornaDatiMappaTask;
 import com.ids.ids.boundary.ServerTask.DownloadPercorsoTask;
 import com.ids.ids.boundary.ServerTask.DownloadInfoMappaTask;
 import com.ids.ids.boundary.ServerTask.InvioNodiTask;
+import com.ids.ids.control.UserController;
 import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.utils.Parametri;
 
@@ -24,6 +28,8 @@ public class CommunicationServer {
 
     private Context context;
     private final Handler handler = new Handler();
+
+    private int piano;
 
     public CommunicationServer(Context context) {
 
@@ -93,8 +99,9 @@ public class CommunicationServer {
      * @param enable
      *
      */
-    public void richiestaAggiornamenti(Boolean enable) {
+    public void richiestaAggiornamenti(Boolean enable, int PianoUtente) {
 
+        piano = PianoUtente;
         if(enable)
             handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI );
         else
@@ -109,8 +116,35 @@ public class CommunicationServer {
         public void run() {
 
             System.out.println("RichiestaAggiornamenti");
-            // new aggiornaDatiMappaTask().execute();
-            handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI );
+            String dati_mappa_aggiornata = null;
+            try {
+                dati_mappa_aggiornata = new AggiornaDatiMappaTask(piano).execute().get();
+
+                if(dati_mappa_aggiornata != null){
+
+                    //  System.out.println("ciao: " + dati_mappa_aggiornata.toString());
+
+                    Type type = new TypeToken<Mappa>() {
+                    }.getType();
+
+                    Mappa mappa_aggiornata = new Gson().fromJson(dati_mappa_aggiornata, type);
+                    mappa_aggiornata.salvataggioLocale(context);
+                    //TODO:RISOLVERE cast non funziona
+                    //   UserController.getInstance((Activity)context).setMappa(mappa_aggiornata);
+
+                }
+
+                handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI );
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
+
+
+
 
         }
     };
