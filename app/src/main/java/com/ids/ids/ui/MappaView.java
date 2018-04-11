@@ -129,10 +129,7 @@ public class MappaView extends View {
         this.nodi.clear();
         this.percorso.clear();
 
-        if (DebugSettings.SCAN_BLUETOOTH)
-            image = BitmapFactory.decodeStream(context.openFileInput(mappa.getPiantina() + ".png"));
-        else
-            image = DecodedResources.getInstance().getPreloadedImage(this.context, mappa);
+        image = BitmapFactory.decodeStream(context.openFileInput(mappa.getPiantina() + ".png"));
 
         ViewTreeObserver viewTree = this.getViewTreeObserver();
         viewTree.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {

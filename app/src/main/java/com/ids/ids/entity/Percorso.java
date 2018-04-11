@@ -20,8 +20,13 @@ public class Percorso {
 
         ArrayList<Nodo> uscite = mappa.getNodiUscita();
         ArrayList<Nodo> nodi = mappa.getNodi();
+        ArrayList<Arco> archiGrafo = mappa.getArchi();
+        ArrayList<Arco> archi = new ArrayList<>();
 
-        ArrayList<Arco> archi = mappa.getArchi();
+        // considera solo gli archi non incidenti a nodi sotto incendio
+        for (Arco arco : archiGrafo)
+            if(!arco.getNodoPartenza().isTipoIncendio() && !arco.getNodoArrivo().isTipoIncendio())
+                archi.add(arco);
         Nodo migliorUscita = null;
 
         // algoritmo di Dijkstra: inizializza valori

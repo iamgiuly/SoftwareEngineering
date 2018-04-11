@@ -58,9 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         userController = UserController.getInstance(this);
-        if (DebugSettings.SCAN_BLUETOOTH) {
-            this.initBluetooth();
-        }
+        this.initBluetooth();
 
         segnalazioneButton = findViewById(R.id.segnalazioneButton);
         segnalazioneButton.setOnClickListener(new View.OnClickListener() {
@@ -138,13 +136,11 @@ public class MainActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneSegnalazione() {
-
         userController.setModalita(userController.MODALITA_SEGNALAZIONE);
-        if (DebugSettings.SCAN_BLUETOOTH)
-            if (this.abilitaBLE()) {
-                scanner.scansione(true);
-                localizzatore.startFinderONE();
-            }
+        if (this.abilitaBLE()) {
+            scanner.scansione(true);
+            localizzatore.startFinderONE();
+        }
     }
 
     /**
@@ -156,11 +152,9 @@ public class MainActivity extends AppCompatActivity {
     public void listenerBottoneEmergenza() {
 
         userController.setModalita(userController.MODALITA_EMERGENZA);
-        if (DebugSettings.SCAN_BLUETOOTH) {
-            if (this.abilitaBLE()) {
-                scanner.scansione(true);
-                localizzatore.startFinderONE();
-            }
+        if (this.abilitaBLE()) {
+            scanner.scansione(true);
+            localizzatore.startFinderONE();
         }
     }
 
