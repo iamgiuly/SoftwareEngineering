@@ -59,7 +59,7 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
 
             System.out.println(mappa_scaricata.getPiantina());
-            URL url = new URL(PATH + "/FireExit/services/maps/downloadPiantina/" + mappa_scaricata.getPiantina());
+            URL url = new URL(PATH + "/fireexit/services/maps/downloadPiantina/" + mappa_scaricata.getPiantina());
             System.out.println(url);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
