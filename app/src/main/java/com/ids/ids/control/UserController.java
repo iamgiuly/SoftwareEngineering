@@ -12,6 +12,7 @@ import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.entity.Percorso;
 import com.ids.ids.ui.EmergenzaActivity;
+import com.ids.ids.ui.MainActivity;
 import com.ids.ids.ui.MappaView;
 import com.ids.ids.utils.DebugSettings;
 
@@ -128,6 +129,14 @@ public class UserController extends Application {
 
         Intent intent = new Intent(context, EmergenzaActivity.class);
         context.startActivity(intent);
+    }
+
+    public void MandaMainActivity() {
+
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("AvviaTastoEmergenza",true);
+        context.startActivity(intent);
+
     }
 
     public void clearNodiSelezionati() {

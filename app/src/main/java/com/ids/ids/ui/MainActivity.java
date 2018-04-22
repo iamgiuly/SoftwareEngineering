@@ -1,5 +1,6 @@
 package com.ids.ids.ui;
 
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void initBluetooth() {
 
@@ -127,6 +129,11 @@ public class MainActivity extends AppCompatActivity {
         // registra il ricevitore per le notifiche di stato
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(receiver, filter);
+
+        Bundle datipassati = getIntent().getExtras();
+        if(datipassati != null) {
+            this.listenerBottoneEmergenza();
+        }
     }
 
     /**

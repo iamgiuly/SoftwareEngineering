@@ -75,7 +75,7 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
 
                 //TODO: URL
 
-                URL url = new URL(PATH + "/fireexit/services/percorso/getPercorsoMinimo");
+                URL url = new URL(PATH + "/FireExit/services/percorso/getPercorsoMinimo");
                 connection = (HttpURLConnection) url.openConnection();
                 // connection.setDoOutput(true);
                 connection.setDoInput(true);

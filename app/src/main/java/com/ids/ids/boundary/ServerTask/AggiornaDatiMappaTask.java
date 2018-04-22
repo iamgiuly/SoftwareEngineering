@@ -85,7 +85,7 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
                 System.out.println("   " + Data.toString());
 
                 //Create the request
-                URL url = new URL(PATH + "/fireexit/services/maps/downloadAggiornamenti");
+                URL url = new URL(PATH + "/FireExit/services/maps/downloadAggiornamenti");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
                 connection.setDoInput(true);

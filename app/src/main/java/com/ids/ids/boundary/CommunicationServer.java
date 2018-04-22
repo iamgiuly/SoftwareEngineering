@@ -74,9 +74,10 @@ public class CommunicationServer {
             }
 
         } catch (ExecutionException e) {
+            e.printStackTrace();
 
         } catch (InterruptedException e) {
-
+            e.printStackTrace();
         }
 
         return percorso;
@@ -86,7 +87,6 @@ public class CommunicationServer {
      * Avvia il task per la richiesta della mappa
      *
      * @param contxt, posizioneU
-     *
      */
     public void richiestaMappa(Context contxt, String posizioneU) {
 
@@ -97,13 +97,12 @@ public class CommunicationServer {
      * In base all enable avvia o ferma il runnable relativo alla richiesta di aggiornamenti al server
      *
      * @param enable
-     *
      */
     public void richiestaAggiornamenti(Boolean enable, int PianoUtente) {
 
         piano = PianoUtente;
-        if(enable)
-            handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI );
+        if (enable)
+            handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI);
         else
             handler.removeCallbacks(Aggiorna);
 
@@ -120,7 +119,7 @@ public class CommunicationServer {
             try {
                 dati_mappa_aggiornata = new AggiornaDatiMappaTask(piano).execute().get();
 
-                if(dati_mappa_aggiornata != null){
+                if (dati_mappa_aggiornata != null) {
 
                     //  System.out.println("ciao: " + dati_mappa_aggiornata.toString());
 
@@ -134,16 +133,13 @@ public class CommunicationServer {
 
                 }
 
-                handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI );
+                handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI);
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-
-
-
 
 
         }

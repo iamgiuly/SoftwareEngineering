@@ -100,7 +100,7 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
                 //Create the request
                 //TODO: URL
 
-                URL url = new URL(PATH + "/fireexit/services/maps/getMappa");
+                URL url = new URL(PATH + "/FireExit/services/maps/getMappa");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
                 connection.setDoInput(true);

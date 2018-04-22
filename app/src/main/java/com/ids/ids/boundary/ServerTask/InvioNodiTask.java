@@ -95,7 +95,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
                 // Create the request
                 //TODO: URL
-                URL url = new URL(PATH + "/fireexit/services/maps/segnalazione");
+                URL url = new URL(PATH + "/FireExit/services/maps/segnalazione");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
