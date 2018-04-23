@@ -31,7 +31,7 @@ public class CommunicationServer {
 
     private int piano;
 
-    public CommunicationServer(Context context) {
+    private CommunicationServer(Context context) {
 
         this.context = context;
     }
@@ -86,6 +86,9 @@ public class CommunicationServer {
     /**
      * Avvia il task per la richiesta della mappa
      *
+     * Recupera la mappa del piano in cui si trova l'utente inviando una richiesta al server,
+     * passando a questo la posizione dell'utente raffigurata dall'id (MACaddress) del beacon
+     *
      * @param contxt, posizioneU
      */
     public void richiestaMappa(Context contxt, String posizioneU) {
@@ -105,6 +108,10 @@ public class CommunicationServer {
             handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI);
         else
             handler.removeCallbacks(Aggiorna);
+
+    }
+
+    public void aggiornaDbLocale(){
 
     }
 

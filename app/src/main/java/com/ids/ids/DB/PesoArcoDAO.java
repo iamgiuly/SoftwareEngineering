@@ -28,7 +28,7 @@ public class PesoArcoDAO extends DAO<PesoArco> {
 
     private PesoDAO pesoDAO;
 
-    public PesoArcoDAO(Context context) {
+    private PesoArcoDAO(Context context) {
         super(context);
         this.pesoDAO = PesoDAO.getInstance(context);
     }

@@ -3,13 +3,10 @@ package com.ids.ids.DB;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import java.security.Key;
 import java.util.ArrayList;
 
-import com.ids.ids.DB.DBHelper;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.entity.PesoArco;
@@ -28,7 +25,7 @@ public class ArcoDAO extends DAO<Arco> {
     private NodoDAO nodoDAO;
     private PesoArcoDAO pesoArcoDAO;
 
-    public ArcoDAO(Context context) {
+    private ArcoDAO(Context context) {
         super(context);
         this.nodoDAO = NodoDAO.getInstance(context);
         this.pesoArcoDAO = PesoArcoDAO.getInstance(context);
@@ -54,15 +51,9 @@ public class ArcoDAO extends DAO<Arco> {
         int id = cursor.getInt(cursor.getColumnIndex(KEY_ID));
         Nodo nodoPartenza = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoPartenzaId)));
         Nodo nodoArrivo = nodoDAO.find(cursor.getInt(cursor.getColumnIndex(KEY_nodoArrivoId)));
-
-        Log.i("idarco", ""+id);
-
         ArrayList<PesoArco> pesi = pesoArcoDAO.findAllByColumnValue(PesoArcoDAO.KEY_idArco, String.valueOf(id));
-        for(PesoArco peso : pesi)
-            Log.i("Peso", ""+peso.getPeso().getPeso());
 
-        Arco arco = new Arco(id, nodoPartenza, nodoArrivo, pesi);
-        return arco;
+        return new Arco(id, nodoPartenza, nodoArrivo, pesi);
     }
 
     @Override
@@ -81,12 +72,14 @@ public class ArcoDAO extends DAO<Arco> {
 
     @Override
     protected void cascadeUpdate(Arco arco) {
-        //TODO aggiornare pesi
+        for(PesoArco peso : arco.getPesi())
+            pesoArcoDAO.update(peso);
     }
 
     @Override
     protected void cascadeDelete(Arco arco) {
-        //TODO eliminare pesi
+        for(PesoArco peso : arco.getPesi())
+            pesoArcoDAO.delete(peso.getId());
     }
 
     public static ArcoDAO getInstance(Context context){

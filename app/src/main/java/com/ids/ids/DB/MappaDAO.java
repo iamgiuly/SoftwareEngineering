@@ -23,7 +23,7 @@ public class MappaDAO extends DAO<Mappa>{
     private NodoDAO nodoDAO;
     private ArcoDAO arcoDAO;
 
-    public MappaDAO(Context context) {
+    private MappaDAO(Context context) {
         super(context);
         this.nodoDAO = NodoDAO.getInstance(context);
         this.arcoDAO = ArcoDAO.getInstance(context);

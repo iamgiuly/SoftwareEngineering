@@ -16,7 +16,7 @@ public class PesoDAO extends DAO<Peso> {
 
     private static PesoDAO instance = null;
 
-    public PesoDAO(Context context) {
+    private PesoDAO(Context context) {
         super(context);
     }
 

@@ -12,7 +12,7 @@ public class Percorso {
 
     private static Percorso instance = null;
 
-    public Percorso (){
+    private Percorso (){
 
     }
 

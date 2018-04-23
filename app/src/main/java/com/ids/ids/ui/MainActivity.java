@@ -19,7 +19,6 @@ import android.widget.Button;
 import com.ids.ids.boundary.BeaconScanner;
 import com.ids.ids.control.Localizzatore;
 import com.ids.ids.control.UserController;
-import com.ids.ids.utils.DebugSettings;
 
 /**
  * Questa activity viene mostrata all'apertura dell'applicazione, visualizza il bottone "Segnala Emergenza",
@@ -33,33 +32,35 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
     private UserController userController;
+    private BluetoothAdapter btAdapter;             // adattatore Bluetooth del dispositivo locale,
+    // consente di eseguire attività Bluetooth fondamentali
+    // (es. avviare il rilevamento dei dispositivi)
+
     private Localizzatore localizzatore;
-    private BeaconScanner scanner;
+    private BroadcastReceiver receiver;             // permette di ricevere notifice sullo stato del dispositivo
 
     private Button segnalazioneButton;
     private Button emergenzaButton;
 
-    private BluetoothManager btManager;             // utilizzata per ottenere una istanza di Adapter
-    private BluetoothAdapter btAdapter;             // adattatore Bluetooth del dispositivo locale,
-    // consente di eseguire attività Bluetooth fondamentali
-    // (es. avviare il rilevamento dei dispositivi)
-    private BroadcastReceiver receiver;             // permette di ricevere notifice sullo stato del dispositivo
-
     /**
-     * Vengono visualizzati gli elementi della UI e settati i listener,
-     * viene inizializzato il Controller dell'utente
-     *
+     * Visualizza gli elementi della UI e setta i listener,
+     * inizializza il Controller dell'utente,
+     * inizializza il bluetooth
      * @param savedInstanceState
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         userController = UserController.getInstance(this);
-        this.initBluetooth();
+
+        BluetoothManager btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        btAdapter = btManager.getAdapter();
+        localizzatore = Localizzatore.getInstance(this);
+        this.richiediPermessi();
+        this.initReceiver();
 
         segnalazioneButton = findViewById(R.id.segnalazioneButton);
         segnalazioneButton.setOnClickListener(new View.OnClickListener() {
@@ -75,27 +76,33 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-
                 listenerBottoneEmergenza();
             }
         });
     }
 
+    private void richiediPermessi() {
+        // richiesta dei permessi di localizzazione approssimata
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (this.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                        PERMISSION_REQUEST_COARSE_LOCATION);
+            }
+        }
+    }
+
+    /**
+     * Cancella il ricevitore dalle notifiche di stato
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // Cancella il ricevitore dalle notifiche di stato
         unregisterReceiver(receiver);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private void initBluetooth() {
-
-        btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        btAdapter = btManager.getAdapter();
-        scanner = new BeaconScanner(this);
-        localizzatore = new Localizzatore(this, scanner);
+    private void initReceiver() {
         receiver = new BroadcastReceiver() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -107,24 +114,15 @@ public class MainActivity extends AppCompatActivity {
                             BluetoothAdapter.ERROR);
                     switch (bluetoothState) {
                         case BluetoothAdapter.STATE_ON:
-                            listenerBottoneSegnalazione();
+                            listenerBottoneSegnalazione();      // TODO togliere listener?
                             break;
                         case BluetoothAdapter.STATE_OFF:
-                            finish();
-                            // segnalare all'utente che l'app non funziona senza BLE
+                            finish();                           // TODO segnalare all'utente che l'app non funziona senza BLE
                             break;
                     }
                 }
             }
         };
-
-        // richiesta dei permessi di localizzazione approssimata
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (this.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                        PERMISSION_REQUEST_COARSE_LOCATION);
-            }
-        }
 
         // registra il ricevitore per le notifiche di stato
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -143,11 +141,8 @@ public class MainActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneSegnalazione() {
-        userController.setModalita(userController.MODALITA_SEGNALAZIONE);
-        if (this.abilitaBLE()) {
-            scanner.scansione(true);
-            localizzatore.startFinderONE();
-        }
+        userController.setModalita(UserController.MODALITA_SEGNALAZIONE);
+        this.abilitaBLE();
     }
 
     /**
@@ -157,12 +152,8 @@ public class MainActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneEmergenza() {
-
-        userController.setModalita(userController.MODALITA_EMERGENZA);
-        if (this.abilitaBLE()) {
-            scanner.scansione(true);
-            localizzatore.startFinderONE();
-        }
+        userController.setModalita(UserController.MODALITA_EMERGENZA);
+        this.abilitaBLE();
     }
 
     /**
@@ -170,14 +161,17 @@ public class MainActivity extends AppCompatActivity {
      *
      * @return true se l'adapter è stato abilitato
      */
-    private boolean abilitaBLE() {
-
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void abilitaBLE() {
         boolean statoBLE = btAdapter.isEnabled();
         if (btAdapter != null && !statoBLE) {
-            Intent enableIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
-        return statoBLE;
+        if(statoBLE) {
+            localizzatore.startFinderONE();
+        }
     }
 
 }

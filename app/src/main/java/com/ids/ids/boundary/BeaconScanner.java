@@ -23,9 +23,10 @@ import java.util.ArrayList;
  */
 public class BeaconScanner {
 
+    private static BeaconScanner instance = null;
+
     private Handler scanH = new Handler();  //Utilizzato per la pianificazione del task di avio e stop
     private BluetoothAdapter btAdapter;
-    private BluetoothManager btManager;
     private BluetoothLeScanner btScanner;  // il Bluetooth deve essere on altrimenti restituisce un null l adapter
     private ScanCallback leScanCallback;
     private ArrayList<ScanResult> RaccogliDevice = new ArrayList<>();
@@ -34,12 +35,12 @@ public class BeaconScanner {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public BeaconScanner(Context context) {
+    private BeaconScanner(Context context) {
 
         //BluethoothManager è utilizzata per ottenere una istanza di Adapter
         //Bluethooth adapter rappresenta l'adattatore Bluetooth del dispositivo locale. BluetoothAdapter
         // consente di eseguire attività Bluetooth fondamentali, come avviare il rilevamento dei dispositivi,
-        btManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);//Ottengo BluethoothManager e lo salvo in locale
+        BluetoothManager btManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);//Ottengo BluethoothManager e lo salvo in locale
         btAdapter = btManager.getAdapter();                                        //richiamo l adapter e lo salvo in locale,
 
 
@@ -64,24 +65,17 @@ public class BeaconScanner {
 
     }
 
-    // Questo metodo avvia e ferma la scansione periodica, in base al booleano in ingresso
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void scansione(Boolean enable) {
-
+    public void avviaScansione(){
         // Lo scanner è invocato solo prima della scansione per attendere che il ble sia attivo
-
         if (btScanner == null)
             btScanner = btAdapter.getBluetoothLeScanner();
+        scanH.post(start);
+    }
 
-        if (enable)
-            scanH.post(start);
-        else {
-
-            scanH.removeCallbacks(start);
-            scanH.removeCallbacks(stop);
-
-        }
-
+    public void fermaScansione(){
+        scanH.removeCallbacks(start);
+        scanH.removeCallbacks(stop);
     }
 
     // Aggiunge ciclicamente i nuovi disp. BLE senza ripetizioni
@@ -195,6 +189,14 @@ public class BeaconScanner {
 
         return macAdrs;  //ID del beacon
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public static BeaconScanner getInstance(Context context) {
+        if (instance == null)
+            instance = new BeaconScanner(context);
+        return instance;
     }
 
 }

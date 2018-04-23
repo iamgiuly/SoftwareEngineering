@@ -1,5 +1,6 @@
 package com.ids.ids.control;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -14,38 +15,38 @@ import com.ids.ids.utils.Parametri;
 
 /**
  * La classe Localizzatore presenta i metodi per localizzare l utente grazie ai risultati (MAC address)
- * forniti dallo Scanner
+ * forniti dallo scanner
  */
 
 public class Localizzatore {
 
+    private static Localizzatore instance = null;
+
     private Context context;
-    private BeaconScanner Scanner;
+    private BeaconScanner scanner;
     private Handler finder;
     private ProgressDialog loading_localizzazione;
     private UserController userController;
     private MappaView mappaView;
 
+    private boolean nuovoPercorso;      // per richiedere il ricalcolo del percorso
 
-    public Localizzatore(Context contxt, BeaconScanner scanner) {
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private Localizzatore(Context contxt) {
         context = contxt;
-        Scanner = scanner;
+        scanner = BeaconScanner.getInstance(contxt);
         finder = new Handler();
         userController = UserController.getInstance((Activity) context);
 
+        nuovoPercorso = false;
     }
 
-    public Localizzatore(MappaView mView, Context contxt, BeaconScanner scanner) {
-
-        context = contxt;
-        Scanner = scanner;
-        finder = new Handler();
-        userController = UserController.getInstance((Activity) context);
-        mappaView = mView;
+    public void setMappaView(MappaView mappaView) {
+        this.mappaView = mappaView;
     }
-
-    /*
+/*
     =========================================================================================================
 
       Nota localizzazioni:
@@ -60,6 +61,11 @@ public class Localizzatore {
      ========================================================================================================
      */
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public String calcolaPosizione(){
+        return scanner.BeaconVicino();
+    }
+
     // FindMeONE viene è un Runnable utilizzato al click del bottone segnala emergenza
     // Appena la posizione dell utente è stata trovata termina la scansione
     private final Runnable findMeONE = new Runnable() {
@@ -68,7 +74,7 @@ public class Localizzatore {
         public void run() {
 
             Log.i("Localizzatore", "Inizio Ricerca pos ONE");
-            String macAdrs = Scanner.BeaconVicino();
+            String macAdrs = scanner.BeaconVicino();
 
             if (macAdrs.equals("NN")) {
                 // Non è stato ancora trovato nessun Beacon dallo scanner
@@ -77,7 +83,6 @@ public class Localizzatore {
             } else {
                 // E' stato trovato il beacon dallo scanner
                 System.out.println("MAC: " + macAdrs);
-                Scanner.scansione(false);                //  Fermo la scansione dello scanner
                 loading_localizzazione.dismiss();               //  Tolgo il messaggio di localizzazione
                 userController.richiestaMappa(context, macAdrs);  //   Avvio l Activity passandogli il macAdrs
                 stopFinderONE();                              //    Fermo questo Runnable
@@ -85,36 +90,15 @@ public class Localizzatore {
         }
     };
 
-    // FindMeALWAYS è un Runnable utilizzato dalla mappa
-    private final Runnable findMeALWAYS = new Runnable() {
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void run() {
 
-            Log.i("Localizzatore", "Inizio Ricerca pos ALWAYS");
-            String macAdrs = Scanner.BeaconVicino();
-
-            if (macAdrs.equals("NN")) {
-                // Non è stato ancora trovato nessun Beacon dallo scanner
-                // Attendo nuovamente
-                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
-            } else {
-                System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
-                userController.richiediPercorso(macAdrs, mappaView);
-                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
-            }
-        }
-    };
-
-    /*
-    ========================================================================================================
-     AVVIO RUNNABLE
-     =======================================================================================================
-     */
-
+    public BeaconScanner getScanner() {
+        return scanner;
+    }
 
     // Avvia la localizzazione ONE
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void startFinderONE() {
+        scanner.avviaScansione();
 
         finder.postDelayed(findMeONE, Parametri.T_POSIZIONE_EMERGENZA);
         //visualizzazione messaggio di localizzazione
@@ -127,29 +111,30 @@ public class Localizzatore {
 
     }
 
-    // Avvia la localizzazione ALWAYS
-    public void startFinderALWAYS() {
-
-        finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
-    }
-
-
      /*
     ========================================================================================================
      STOP RUNNABLE
      =======================================================================================================
      */
 
-
-    // Ferma la localizzazione ALWAYS
-    public void stopFinderALWAYS() {
-
-        finder.removeCallbacks(findMeALWAYS);
-    }
-
     // Ferma la localizzazione ONE
     private void stopFinderONE() {
-
+        scanner.fermaScansione();
         finder.removeCallbacks(findMeONE);
+    }
+
+
+    public boolean isNuovoPercorso() {
+        return nuovoPercorso;
+    }
+    public void setNuovoPercorso(boolean nuovoPercorso) {
+        this.nuovoPercorso = nuovoPercorso;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public static Localizzatore getInstance(Context context) {
+        if (instance == null)
+            instance = new Localizzatore(context);
+        return instance;
     }
 }

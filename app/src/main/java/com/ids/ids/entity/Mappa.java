@@ -14,48 +14,33 @@ public class Mappa {
     private ArrayList<Arco> Archi;
 
     public Mappa(int piano, String piantina, ArrayList<Nodo> nodi, ArrayList<Arco> archi) {
-
         Piano = piano;
         Piantina = piantina;
         Nodi = nodi;
         Archi = archi;
     }
 
-    public ArrayList<Arco> calcolaPercorso(){
-        //TODO Dijkstra
-        return null;
-    }
-
     public int getPiano(){
-
         return Piano;
     }
-
     public void setPiano(int piano){
-
         Piano = piano;
     }
 
     public String getPiantina(){
-
         return Piantina;
     }
     public void setPiantina(String piantina){
-
         Piantina = piantina;
     }
 
     public ArrayList<Nodo> getNodi(){
-
         return Nodi;
     }
-
     public void setNodi(ArrayList<Nodo> nodi){
-
         Nodi = nodi;
     }
 
-    //TODO sostituirà getNodi()
     public ArrayList<Nodo> getNodiFromArchi(){
         ArrayList<Nodo> nodi = new ArrayList<>();
         for(Arco arco : Archi){

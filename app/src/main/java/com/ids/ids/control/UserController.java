@@ -33,8 +33,7 @@ public class UserController extends Application {
     private Mappa mappa;
     private int PianoUtente;
 
-
-    public UserController(Activity contxt) {
+    private UserController(Activity contxt) {
         context = contxt;
         communicationServer = CommunicationServer.getInstance(context.getApplicationContext());
         nodiSelezionati = new ArrayList<>();
@@ -53,18 +52,6 @@ public class UserController extends Application {
     public void richiestaMappa(Context context, String macAddress) {
 
         communicationServer.richiestaMappa(context, macAddress);
-    }
-
-    /**
-     * I nodi selezionati vengono settati nel db locale come sotto incendio,
-     * viene fatto lo stesso nel db remoto inviando una richiesta RESTful al server,
-     * quindi la lista dei nodi selezionati viene svuotata
-     *
-     * @return true se l'operazione ha successo
-     */
-    public void inviaNodiSelezionati(Context contx) {
-
-        communicationServer.inviaNodiSottoIncendio(nodiSelezionati, contx);
     }
 
     public void richiediPercorso(String mac, MappaView mappaView) {
@@ -93,11 +80,6 @@ public class UserController extends Application {
             mappaView.postInvalidate();
         } catch (Exception e) {
         }
-    }
-
-    public void richiestaAggiornamento(Boolean enable) {
-
-        communicationServer.richiestaAggiornamenti(enable,PianoUtente);
     }
 
     /**
@@ -142,6 +124,10 @@ public class UserController extends Application {
     public void clearNodiSelezionati() {
 
         this.nodiSelezionati.clear();
+    }
+
+    public ArrayList<Nodo> getNodiSelezionati() {
+        return nodiSelezionati;
     }
 
     public int getModalita() {
