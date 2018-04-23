@@ -1,21 +1,27 @@
 package com.ids.ids.ui;
 
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 import com.ids.ids.boundary.BeaconScanner;
+import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.control.Localizzatore;
 import com.ids.ids.control.UserController;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.utils.DebugSettings;
+import com.ids.ids.utils.Parametri;
 
 
 /**
@@ -30,10 +36,14 @@ public class EmergenzaActivity extends AppCompatActivity {
 
     private UserController userController;
     private Localizzatore localizzatore;
-    private BeaconScanner scanner;
+    private CommunicationServer communicationServer;
 
     private Button inviaNodiButton;                 // invisibile all'inizio
+    private Button cambiapianoButton;
     private MappaView mappaView;
+
+    private Thread update;
+    private boolean updating = true;
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
@@ -47,9 +57,12 @@ public class EmergenzaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergenza);
+        System.out.println("ONDESTROY");
 
         userController = UserController.getInstance(this);
         userController.clearNodiSelezionati();
+        localizzatore = Localizzatore.getInstance(this);
+        communicationServer = CommunicationServer.getInstance(this);
 
         inviaNodiButton = findViewById(R.id.inviaNodiButton);
         inviaNodiButton.setOnClickListener(new View.OnClickListener() {
@@ -59,17 +72,13 @@ public class EmergenzaActivity extends AppCompatActivity {
             }
         });
 
-        scanner = new BeaconScanner(this);
-
         // inizializza la View della mappa
         mappaView = findViewById(R.id.mappaView);
 
         try {
 
             // CASO SEGNALAZIONE
-            if (userController.getModalita() == userController.MODALITA_SEGNALAZIONE) {
-
-                localizzatore = new Localizzatore(this, scanner);
+            if (userController.getModalita() == UserController.MODALITA_SEGNALAZIONE) {
                 mappaView.setMappa(userController.getMappa());
                 mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -82,18 +91,24 @@ public class EmergenzaActivity extends AppCompatActivity {
                             listenerNodoSelezionato(nodoView);
                         mappaView.invalidate();
                         return true;
-
                     }
                 });
             } else {
                 //CASO EMERGENZA
 
-                localizzatore = new Localizzatore(mappaView, this, scanner);
+                localizzatore.setMappaView(mappaView);      //TODO temporaneo (vedere in Localizzatore perché)
                 mappaView.setMappa(userController.getMappa(), true);
-                scanner.scansione(true);                                  //Avvio scansione BLE
-                localizzatore.startFinderALWAYS();                               //Avvio localizzazione
-                //Avvia aggiornamento db locale
-                userController.richiestaAggiornamento(true);             //Avvio richiesta aggiornamento
+                update();
+
+                cambiapianoButton = findViewById(R.id.CambiaPianoButton);
+                cambiapianoButton.setVisibility(View.VISIBLE);
+                cambiapianoButton.setOnClickListener(new View.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onClick(View v) {
+                        listenerBottoneCambiaPiano();
+                    }
+                });
             }
 
         } catch (FileNotFoundException e) {
@@ -101,16 +116,48 @@ public class EmergenzaActivity extends AppCompatActivity {
         }
     }
 
+    private void update(){
+        updating = true;
+        update = new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            public void run(){
+                //TODO possibilmente un unico thread nell'activity che sostituisce gli altri
+                //TODO (richiamando gli appositi metodi delle classi che attualmente usano threads)
+
+                localizzatore.getScanner().avviaScansione();
+                int pianoUtente = userController.getPianoUtente();              // TODO temporaneo
+                communicationServer.richiestaAggiornamenti(true, pianoUtente);  //Avvio richiesta aggiornamento
+
+                Log.i("Localizzatore", "Inizio Ricerca pos ALWAYS");
+
+                while(updating){
+                    String pos = localizzatore.calcolaPosizione();
+                    if (!pos.equals("NN")) {
+                        System.out.println("MAC: " + pos);     // E' stato trovato il beacon dallo scanner
+                        userController.richiediPercorso(pos, mappaView);
+                    }
+
+                    try {
+                        Thread.sleep(Parametri.T_POSIZIONE_EMERGENZA);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                localizzatore.getScanner().fermaScansione();
+                communicationServer.richiestaAggiornamenti(false, pianoUtente);
+            }
+        });
+        update.start();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        scanner.scansione(false);
-        localizzatore.stopFinderALWAYS();
-        userController.richiestaAggiornamento(false);
-       // userController.DropDB();
+        updating = false;
+        // userController.DropDB();
     }
-
 
     /**
      * Richiamato dal listener associato ad un nodo, tale nodo deve essere opportunamente contrassegnato
@@ -135,9 +182,44 @@ public class EmergenzaActivity extends AppCompatActivity {
      * - se attiva viene chiesto al Controller di inviare al server i nodi selezionati
      * e viene avviata l'activity MainActivity
      * - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     *
+     *
+     * I nodi selezionati vengono settati nel db locale come sotto incendio,
+     * viene fatto lo stesso nel db remoto inviando una richiesta RESTful al server,
+     * quindi la lista dei nodi selezionati viene svuotata
      */
     public void listenerBottoneInvioNodi() {
-
-        userController.inviaNodiSelezionati(this);
+        ArrayList<Nodo> nodi = userController.getNodiSelezionati();
+        communicationServer.inviaNodiSottoIncendio(nodi, this);
     }
+
+    private void listenerBottoneCambiaPiano() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+
+    }
+
+    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public void onClick(DialogInterface dialog, int response) {
+            switch (response) {
+                case DialogInterface.BUTTON_POSITIVE: {
+                    dialog.cancel();
+                    updating = false;
+                    finish();
+                    userController.MandaMainActivity();
+                    System.out.println("CLICK");
+                    break;
+                }
+
+                case DialogInterface.BUTTON_NEGATIVE: {
+                    dialog.cancel();
+                    break;
+                }
+            }
+        }
+    };
 }
