@@ -1,9 +1,7 @@
 package com.ids.ids.boundary.ServerTask;
 
 import android.os.AsyncTask;
-
 import com.ids.ids.utils.Parametri;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -46,5 +44,4 @@ public class ServerConnection extends AsyncTask<Void, Void, Boolean> {
     protected void onPostExecute(Boolean result) {
 
     }
-
 }

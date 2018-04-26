@@ -1,9 +1,13 @@
 package com.ids.ids.control;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+
+import java.util.ArrayList;
 
 import com.ids.ids.DB.MappaDAO;
 import com.ids.ids.boundary.CommunicationServer;
@@ -14,26 +18,23 @@ import com.ids.ids.entity.Percorso;
 import com.ids.ids.ui.EmergenzaActivity;
 import com.ids.ids.ui.MainActivity;
 import com.ids.ids.ui.MappaView;
-import com.ids.ids.utils.DebugSettings;
-
-import java.util.ArrayList;
 
 public class UserController extends Application {
 
     public static final int MODALITA_SEGNALAZIONE = 0;
     public static final int MODALITA_EMERGENZA = 1;
 
-    private static UserController instance = null;
-
     private Activity context;
-    private int modalita;
 
+    private static UserController instance = null;
     private CommunicationServer communicationServer;
     private ArrayList<Nodo> nodiSelezionati; // nodi di cui bisogna cambiare il flag "sotto incendio"
     private Mappa mappa;
+    private Localizzatore localizzatore;
     private int PianoUtente;
+    private int modalita;
 
-    private UserController(Activity contxt) {
+    public UserController(Activity contxt) {
         context = contxt;
         communicationServer = CommunicationServer.getInstance(context.getApplicationContext());
         nodiSelezionati = new ArrayList<>();
@@ -54,16 +55,27 @@ public class UserController extends Application {
         communicationServer.richiestaMappa(context, macAddress);
     }
 
+    /**
+     * I nodi selezionati vengono settati nel db locale come sotto incendio,
+     * viene fatto lo stesso nel db remoto inviando una richiesta RESTful al server,
+     * quindi la lista dei nodi selezionati viene svuotata
+     *
+     * @return true se l'operazione ha successo
+     */
+    public void inviaNodiSelezionati(Context contx) {
+
+        communicationServer.inviaNodiSottoIncendio(nodiSelezionati, contx);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void richiediPercorso(String mac, MappaView mappaView) {
 
         ArrayList<Arco> percorso;
 
-        //TODO:MIGLIORARE PERCHè IN MAPPA IO HO QUELLA SCARICATA AL PRIMO ACCESSO
         percorso = communicationServer.richiediPercorso(mac, PianoUtente);
 
         if (percorso == null) {
 
-            //TODO: MIGLIORARE ANCHE PERCHE mappa è QUELLA SCARICATA A PRIMO ACCESSO
             System.out.println("Connessione caduta --> Bisogna prendere il locale");
             Mappa mappaAggiornata = MappaDAO.getInstance(context).find(PianoUtente);
 
@@ -72,14 +84,29 @@ public class UserController extends Application {
             System.out.println("percorso preso in locale size: " + percorso.size());
         }
 
-        Nodo posUtente = mappa.getPosUtente(mac);
-        mappaView.setPosUtente(posUtente);
+        mappaView.setPosUtente(mappa.getPosUtente(mac));
         mappaView.setPercorso(percorso);
+        //Nel caso in cui il percorso sia zero significa che
+        //l utente ha raggiunto l uscita
+        //per questo lo avvisiamo attraverso un messaggio
+        if (percorso.size() == 0) {
+            localizzatore.stopFinderALWAYS();
+            richiestaAggiornamento(false);
+            mappaView.messaggio("Sei sicuro", "Hai raggiunto l uscita");
+        }
 
         try {
+
             mappaView.postInvalidate();
+
         } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    public void richiestaAggiornamento(Boolean enable) {
+
+        communicationServer.richiestaAggiornamenti(enable, PianoUtente);
     }
 
     /**
@@ -92,16 +119,10 @@ public class UserController extends Application {
         nodo.setIncendio();
 
         if (nodo.isCambiato()) {
-            System.out.println("cambiato");
-            if (!this.nodiSelezionati.contains(nodo)) {
+            if (!this.nodiSelezionati.contains(nodo))
                 this.nodiSelezionati.add(nodo);
-            }
-        } else {
-            System.out.println(" non Cambiato");
-            if (this.nodiSelezionati.contains(nodo)) {
-                this.nodiSelezionati.remove(nodo);
-            }
-        }
+        } else if (this.nodiSelezionati.contains(nodo))
+            this.nodiSelezionati.remove(nodo);
 
         return !this.nodiSelezionati.isEmpty();
     }
@@ -116,18 +137,13 @@ public class UserController extends Application {
     public void MandaMainActivity() {
 
         Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("AvviaTastoEmergenza",true);
+        intent.putExtra("AvviaTastoEmergenza", true);
         context.startActivity(intent);
-
     }
 
     public void clearNodiSelezionati() {
 
         this.nodiSelezionati.clear();
-    }
-
-    public ArrayList<Nodo> getNodiSelezionati() {
-        return nodiSelezionati;
     }
 
     public int getModalita() {
@@ -152,14 +168,13 @@ public class UserController extends Application {
 
     public void setPianoUtente(int piano) {
 
-        this.PianoUtente = piano;
+        PianoUtente = piano;
     }
 
-    public int getPianoUtente() {
+    public void setLocalizzatore(Localizzatore loc){
 
-        return this.PianoUtente;
+        localizzatore = loc;
     }
-
 
     public static UserController getInstance(Activity context) {
         if (instance == null)

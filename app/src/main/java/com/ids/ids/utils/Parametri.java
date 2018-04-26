@@ -5,7 +5,6 @@ package com.ids.ids.utils;
  */
 public class Parametri {
 
-
     // Filtro dispositivi BLE,
     // specificare il nome comune ai beacon a cui ci si vuole collegare
     public  static  String FILTRO_BLE_DEVICE = "CC2650 SensorTag";
@@ -18,7 +17,6 @@ public class Parametri {
     // periodo di richiesta aggiornamenti al server
     public static int T_AGGIORNAMENTI  = 60000; //ogni due minuti
     // Hosting Server
-    public static String PATH = "http://192.168.1.12:8080";
-
+    public static String PATH = "http://192.168.1.8:8080";
 
 }

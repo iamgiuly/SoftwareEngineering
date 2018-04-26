@@ -20,8 +20,6 @@ import com.ids.ids.utils.Parametri;
 
 public class Localizzatore {
 
-    private static Localizzatore instance = null;
-
     private Context context;
     private BeaconScanner scanner;
     private Handler finder;
@@ -29,24 +27,29 @@ public class Localizzatore {
     private UserController userController;
     private MappaView mappaView;
 
-    private boolean nuovoPercorso;      // per richiedere il ricalcolo del percorso
-
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private Localizzatore(Context contxt) {
+    public Localizzatore(Context contxt) {
+
         context = contxt;
         scanner = BeaconScanner.getInstance(contxt);
         finder = new Handler();
         userController = UserController.getInstance((Activity) context);
 
-        nuovoPercorso = false;
     }
 
-    public void setMappaView(MappaView mappaView) {
-        this.mappaView = mappaView;
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public Localizzatore(Context contxt, MappaView mView) {
+
+        context = contxt;
+        scanner = BeaconScanner.getInstance(contxt);
+        finder = new Handler();
+        userController = UserController.getInstance((Activity) context);
+        mappaView = mView;
     }
-/*
+
+
+    /*
     =========================================================================================================
 
       Nota localizzazioni:
@@ -60,11 +63,6 @@ public class Localizzatore {
 
      ========================================================================================================
      */
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public String calcolaPosizione(){
-        return scanner.BeaconVicino();
-    }
 
     // FindMeONE viene è un Runnable utilizzato al click del bottone segnala emergenza
     // Appena la posizione dell utente è stata trovata termina la scansione
@@ -90,16 +88,40 @@ public class Localizzatore {
         }
     };
 
+    // FindMeALWAYS è un Runnable utilizzato dalla mappa
+    private final Runnable findMeALWAYS = new Runnable() {
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public void run() {
 
-    public BeaconScanner getScanner() {
-        return scanner;
-    }
+            Log.i("Localizzatore", "Inizio Ricerca pos ALWAYS");
+            String macAdrs = scanner.BeaconVicino();
+
+            if (macAdrs.equals("NN")) {
+                // Non è stato ancora trovato nessun Beacon dallo scanner
+                // Attendo nuovamente
+                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
+            } else {
+                System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
+                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
+                userController.richiediPercorso(macAdrs, mappaView);
+
+            }
+        }
+    };
+
+    /*
+    ========================================================================================================
+     AVVIO RUNNABLE
+     =======================================================================================================
+     */
+
 
     // Avvia la localizzazione ONE
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void startFinderONE() {
-        scanner.avviaScansione();
 
+        scanner.scansione(true);
         finder.postDelayed(findMeONE, Parametri.T_POSIZIONE_EMERGENZA);
         //visualizzazione messaggio di localizzazione
         loading_localizzazione = new ProgressDialog(context);
@@ -111,30 +133,36 @@ public class Localizzatore {
 
     }
 
+    // Avvia la localizzazione ALWAYS
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void startFinderALWAYS() {
+
+        scanner.scansione(true);                                  //Avvio scansione BLE
+        finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
+    }
+
+
      /*
     ========================================================================================================
      STOP RUNNABLE
      =======================================================================================================
      */
 
+
+    // Ferma la localizzazione ALWAYS
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void stopFinderALWAYS() {
+
+        scanner.scansione(false);                //  Fermo la scansione dello scanner
+        finder.removeCallbacks(findMeALWAYS);
+    }
+
     // Ferma la localizzazione ONE
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void stopFinderONE() {
-        scanner.fermaScansione();
+
+        scanner.scansione(false);                //  Fermo la scansione dello scanner
         finder.removeCallbacks(findMeONE);
-    }
 
-
-    public boolean isNuovoPercorso() {
-        return nuovoPercorso;
-    }
-    public void setNuovoPercorso(boolean nuovoPercorso) {
-        this.nuovoPercorso = nuovoPercorso;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public static Localizzatore getInstance(Context context) {
-        if (instance == null)
-            instance = new Localizzatore(context);
-        return instance;
     }
 }

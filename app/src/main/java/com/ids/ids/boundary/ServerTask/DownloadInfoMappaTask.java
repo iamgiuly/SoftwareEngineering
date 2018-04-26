@@ -94,12 +94,9 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
                 //creo il JSON as a key value pair.
                 JSONObject Data = new JSONObject();
                 Data.put("mac_beacon", PosizioneU);
-                System.out.println("Ciao");
-                System.out.println("   " + Data.toString());
+                System.out.println("Json:  " + Data.toString());
 
                 //Create the request
-                //TODO: URL
-
                 URL url = new URL(PATH + "/FireExit/services/maps/getMappa");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);

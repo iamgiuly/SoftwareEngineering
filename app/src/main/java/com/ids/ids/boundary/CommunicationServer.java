@@ -1,34 +1,34 @@
 package com.ids.ids.boundary;
 
-import android.app.Activity;
+import android.support.annotation.RequiresApi;
+
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+
 import com.ids.ids.boundary.ServerTask.AggiornaDatiMappaTask;
 import com.ids.ids.boundary.ServerTask.DownloadPercorsoTask;
 import com.ids.ids.boundary.ServerTask.DownloadInfoMappaTask;
 import com.ids.ids.boundary.ServerTask.InvioNodiTask;
+
 import com.ids.ids.control.UserController;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.utils.Parametri;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-
 public class CommunicationServer {
 
     private static CommunicationServer instance = null;
-
-    private Context context;
     private final Handler handler = new Handler();
-
+    private Context context;
     private int piano;
 
     private CommunicationServer(Context context) {
@@ -63,7 +63,7 @@ public class CommunicationServer {
 
             if (dati_percorso != null) {
 
-                System.out.println("esterno " + dati_percorso.toString());
+                System.out.println("Percorso esterno " + dati_percorso.toString());
 
                 Type type = new TypeToken<ArrayList<Arco>>() {
                 }.getType();
@@ -108,7 +108,6 @@ public class CommunicationServer {
             handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI);
         else
             handler.removeCallbacks(Aggiorna);
-
     }
 
     public void aggiornaDbLocale(){
@@ -128,15 +127,14 @@ public class CommunicationServer {
 
                 if (dati_mappa_aggiornata != null) {
 
-                    //  System.out.println("ciao: " + dati_mappa_aggiornata.toString());
-
                     Type type = new TypeToken<Mappa>() {
                     }.getType();
 
                     Mappa mappa_aggiornata = new Gson().fromJson(dati_mappa_aggiornata, type);
                     mappa_aggiornata.salvataggioLocale(context);
-                    //TODO:RISOLVERE cast non funziona
-                    //   UserController.getInstance((Activity)context).setMappa(mappa_aggiornata);
+
+                    UserController u = UserController.getInstance(null);
+                    u.setMappa(mappa_aggiornata);
 
                 }
 
@@ -147,8 +145,6 @@ public class CommunicationServer {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-
-
         }
     };
 

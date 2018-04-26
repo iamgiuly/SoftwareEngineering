@@ -1,9 +1,5 @@
 package com.ids.ids.entity;
 
-import android.content.Context;
-
-import com.ids.ids.boundary.CommunicationServer;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

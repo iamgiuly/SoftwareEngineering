@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -146,6 +147,16 @@ public class MappaView extends View {
                 return true;
             }
         });
+    }
+
+    public void messaggio(String titolo,String messaggio){
+
+        AlertDialog avviso = new AlertDialog.Builder(context).create();
+        avviso.setTitle(titolo);
+        avviso.setMessage(messaggio);
+        avviso.setCanceledOnTouchOutside(false);
+        avviso.show();
+
     }
 
     public NodoView getNodoPremuto(int x, int y) {

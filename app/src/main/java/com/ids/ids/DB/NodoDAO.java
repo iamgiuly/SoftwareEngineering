@@ -24,6 +24,7 @@ public class NodoDAO extends DAO<Nodo> {
     private static NodoDAO instance = null;
 
     private NodoDAO(Context context) {
+
         super(context);
     }
 
