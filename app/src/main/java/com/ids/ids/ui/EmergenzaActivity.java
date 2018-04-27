@@ -119,7 +119,7 @@ public class EmergenzaActivity extends AppCompatActivity {
         if (localizzatore != null)
             localizzatore.stopFinderALWAYS();
         userController.richiestaAggiornamento(false);
-        // userController.DropDB();
+        userController.DropDB();
     }
 
     //per finish()
@@ -161,9 +161,8 @@ public class EmergenzaActivity extends AppCompatActivity {
     private void listenerBottoneCambiaPiano() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+        builder.setMessage("Sei sicuro di voler cambiare piano?").setPositiveButton("Si", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
-
     }
 
     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -176,10 +175,11 @@ public class EmergenzaActivity extends AppCompatActivity {
 
                     localizzatore.stopFinderALWAYS();
                     userController.richiestaAggiornamento(false);
+                   // userController.DropDB();
 
                     finish();
                     userController.MandaMainActivity();
-                    System.out.println("CLICK");
+                    //System.out.println("CLICK");
                     break;
                 }
 

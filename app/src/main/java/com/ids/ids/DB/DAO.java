@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.ids.ids.DB.DBHelper;
+import com.ids.ids.control.UserController;
 
 import java.util.ArrayList;
 
@@ -24,8 +25,9 @@ public abstract class DAO<Table> {
                 " FROM " + this.getTable() +
                 " WHERE " + this.getIdColumn() + " = ?";   // "?" è un parametro che verrà inserito alla chiamata di db.rawQuery()
 
-        Cursor cursor = db.rawQuery(selectQuery, new String[] { String.valueOf(id) } );
+        Cursor cursor = db.rawQuery(selectQuery,  new String[] { String.valueOf(id) } );
         cursor.moveToFirst();
+        System.out.println(cursor.toString());
 
         Table elem = this.getFromCursor(cursor);
 
@@ -91,9 +93,9 @@ public abstract class DAO<Table> {
     }
 
     public void delete(int id){
+        this.cascadeDelete(this.find(id));
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete(this.getTable(), this.getIdColumn() + " = ?", new String[] { String.valueOf(id) });
-        this.cascadeDelete(this.find(id));
         db.close();
     }
 

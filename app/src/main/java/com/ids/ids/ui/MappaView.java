@@ -15,8 +15,6 @@ import android.view.ViewTreeObserver;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.utils.DebugSettings;
-import com.ids.ids.utils.DecodedResources;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

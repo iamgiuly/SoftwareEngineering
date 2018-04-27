@@ -9,6 +9,7 @@ import android.os.Build;
 
 import java.util.ArrayList;
 
+import com.ids.ids.DB.DBHelper;
 import com.ids.ids.DB.MappaDAO;
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.entity.Arco;
@@ -31,6 +32,7 @@ public class UserController extends Application {
     private ArrayList<Nodo> nodiSelezionati; // nodi di cui bisogna cambiare il flag "sotto incendio"
     private Mappa mappa;
     private Localizzatore localizzatore;
+    private DBHelper db;
     private int PianoUtente;
     private int modalita;
 
@@ -43,7 +45,7 @@ public class UserController extends Application {
 
     public void DropDB() {
 
-
+        mappa.deletemappa(context);
     }
 
     /**
@@ -174,6 +176,10 @@ public class UserController extends Application {
     public void setLocalizzatore(Localizzatore loc){
 
         localizzatore = loc;
+    }
+
+    public void setDb(DBHelper d){
+        db = d;
     }
 
     public static UserController getInstance(Activity context) {
