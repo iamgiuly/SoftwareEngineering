@@ -72,7 +72,6 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
         try {
             connesso = execute.get();
-            System.out.println("Connesione: " + connesso);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -94,11 +93,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
                 Gson gson = new Gson();
                 String Data = gson.toJson(NodiSottoIncendio);
 
-
-                System.out.println(Data);
-
                 // Create the request
-                //TODO: URL
                 URL url = new URL(PATH + "/FireExit/services/maps/segnalazione");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
@@ -140,9 +135,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
                     }
                 }
             }
-
         }
-
         return null;
     }
 
@@ -200,11 +193,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
                         });
                 segnalazione_avvenuta.show();
-
-            } else {
-                System.out.println("errore server");
             }
         }
-
     }
 }

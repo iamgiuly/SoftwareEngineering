@@ -30,12 +30,11 @@ import com.ids.ids.entity.Nodo;
  */
 public class EmergenzaActivity extends AppCompatActivity {
 
+    private MappaView mappaView;
     private UserController userController;
     private Localizzatore localizzatore;
     private Button inviaNodiButton;                 // invisibile all'inizio
     private Button cambiapianoButton;
-    private MappaView mappaView;
-
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
@@ -49,10 +48,10 @@ public class EmergenzaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergenza);
-        System.out.println("ONDESTROY");
 
         userController = UserController.getInstance(this);
         userController.clearNodiSelezionati();
+        localizzatore = Localizzatore.getInstance(this);
         CommunicationServer.getInstance(this);
 
         inviaNodiButton = findViewById(R.id.inviaNodiButton);
@@ -90,9 +89,7 @@ public class EmergenzaActivity extends AppCompatActivity {
             } else {
                 //CASO EMERGENZA
 
-                localizzatore = new Localizzatore(this);
                 mappaView.setMappa(userController.getMappa(), true);
-
                 localizzatore.startFinderALWAYS();                               //Avvio localizzazione
                 //Avvia aggiornamento db locale
                 userController.richiestaAggiornamento(true);             //Avvio richiesta aggiornamento
@@ -121,6 +118,7 @@ public class EmergenzaActivity extends AppCompatActivity {
             localizzatore.stopFinderALWAYS();
         userController.richiestaAggiornamento(false);
         userController.DropDB();
+        mappaView.deleteImagePiantina();
     }
 
     //per finish()
@@ -142,9 +140,9 @@ public class EmergenzaActivity extends AppCompatActivity {
         Nodo nodo = nodoView.getNodo();
 
         if (userController.selezionaNodo(nodo))
-            this.inviaNodiButton.setVisibility(View.VISIBLE);
+            inviaNodiButton.setVisibility(View.VISIBLE);
         else
-            this.inviaNodiButton.setVisibility(View.INVISIBLE);
+            inviaNodiButton.setVisibility(View.INVISIBLE);
 
         nodoView.setImage(nodo.getImage());
     }
@@ -171,17 +169,15 @@ public class EmergenzaActivity extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void onClick(DialogInterface dialog, int response) {
+
             switch (response) {
+
                 case DialogInterface.BUTTON_POSITIVE: {
                     dialog.cancel();
-
                     localizzatore.stopFinderALWAYS();
                     userController.richiestaAggiornamento(false);
-                   // userController.DropDB();
-
                     finish();
                     userController.MandaMainActivity();
-                    //System.out.println("CLICK");
                     break;
                 }
 

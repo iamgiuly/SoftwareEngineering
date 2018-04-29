@@ -1,6 +1,7 @@
 package com.ids.ids.ui;
 
 import android.annotation.TargetApi;
+import android.support.annotation.RequiresApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -9,14 +10,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.ids.ids.boundary.BeaconScanner;
 import com.ids.ids.control.Localizzatore;
 import com.ids.ids.control.UserController;
 
@@ -34,16 +33,14 @@ public class MainActivity extends AppCompatActivity {
 
     private UserController userController;
     private Localizzatore localizzatore;
-    private BeaconScanner scanner;
-
-    private Button segnalazioneButton;
-    private Button emergenzaButton;
 
     private BluetoothManager btManager;             // utilizzata per ottenere una istanza di Adapter
     private BluetoothAdapter btAdapter;             // adattatore Bluetooth del dispositivo locale,
     // consente di eseguire attività Bluetooth fondamental
     // (es. avviare il rilevamento dei dispositivi)
     private BroadcastReceiver receiver;             // permette di ricevere notifice sullo stato del dispositivo
+    private Button segnalazioneButton;
+    private Button emergenzaButton;
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
@@ -93,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         btAdapter = btManager.getAdapter();
-        localizzatore = new Localizzatore(this);
+        localizzatore = Localizzatore.getInstance(this);
         receiver = new BroadcastReceiver() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override

@@ -6,10 +6,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-
+import android.util.Log;
 import java.util.ArrayList;
 
-import com.ids.ids.DB.DBHelper;
 import com.ids.ids.DB.MappaDAO;
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.entity.Arco;
@@ -22,18 +21,18 @@ import com.ids.ids.ui.MappaView;
 
 public class UserController extends Application {
 
+    private static UserController instance = null;
+    private static final String TAG = "UserController";
+
     public static final int MODALITA_SEGNALAZIONE = 0;
     public static final int MODALITA_EMERGENZA = 1;
 
     private Activity context;
-
-    private static UserController instance = null;
-    private CommunicationServer communicationServer;
-    private ArrayList<Nodo> nodiSelezionati; // nodi di cui bisogna cambiare il flag "sotto incendio"
-    private Mappa mappa;
-    private Localizzatore localizzatore;
-    private DBHelper db;
     private MappaView mappaView;
+    private CommunicationServer communicationServer;
+    private Localizzatore localizzatore;
+    private Mappa mappa;
+    private ArrayList<Nodo> nodiSelezionati; // nodi di cui bisogna cambiare il flag "sotto incendio"
     private int PianoUtente;
     private int modalita;
 
@@ -41,7 +40,6 @@ public class UserController extends Application {
         context = contxt;
         communicationServer = CommunicationServer.getInstance(context.getApplicationContext());
         nodiSelezionati = new ArrayList<>();
-        modalita = MODALITA_SEGNALAZIONE;
     }
 
     public void DropDB() {
@@ -79,12 +77,11 @@ public class UserController extends Application {
 
         if (percorso == null) {
 
-            System.out.println("Connessione caduta --> Bisogna prendere il locale");
+            Log.i(TAG, "Percorso in locale");
             Mappa mappaAggiornata = MappaDAO.getInstance(context).find(PianoUtente);
 
             Percorso p = Percorso.getInstance();
             percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getPosUtente(mac));
-            System.out.println("percorso preso in locale size: " + percorso.size());
         }
 
         mappaView.setPosUtente(mappa.getPosUtente(mac));
@@ -96,7 +93,7 @@ public class UserController extends Application {
         if (percorso.size() == 0) {
             localizzatore.stopFinderALWAYS();
             richiestaAggiornamento(false);
-            mappaView.messaggio("Sei sicuro", "Hai raggiunto l uscita");
+            mappaView.messaggio("Sei al sicuro", "Hai raggiunto l uscita");
         }
 
         try {
@@ -123,12 +120,12 @@ public class UserController extends Application {
         nodo.setIncendio();
 
         if (nodo.isCambiato()) {
-            if (!this.nodiSelezionati.contains(nodo))
-                this.nodiSelezionati.add(nodo);
-        } else if (this.nodiSelezionati.contains(nodo))
-            this.nodiSelezionati.remove(nodo);
+            if (!nodiSelezionati.contains(nodo))
+                nodiSelezionati.add(nodo);
+        } else if (nodiSelezionati.contains(nodo))
+            nodiSelezionati.remove(nodo);
 
-        return !this.nodiSelezionati.isEmpty();
+        return !nodiSelezionati.isEmpty();
     }
 
 
@@ -147,7 +144,7 @@ public class UserController extends Application {
 
     public void clearNodiSelezionati() {
 
-        this.nodiSelezionati.clear();
+        nodiSelezionati.clear();
     }
 
     public int getModalita() {
@@ -155,9 +152,9 @@ public class UserController extends Application {
         return modalita;
     }
 
-    public void setModalita(int modalita) {
+    public void setModalita(int mod) {
 
-        this.modalita = modalita;
+        modalita = mod;
     }
 
     public Mappa getMappa() {
@@ -165,19 +162,19 @@ public class UserController extends Application {
         return mappa;
     }
 
-    public void setMappa(Mappa mappa) {
+    public void setMappa(Mappa map) {
 
-        this.mappa = mappa;
+        mappa = map;
     }
 
-    public void setMappaView(MappaView mappaView) {
+    public void setMappaView(MappaView mV) {
 
-        this.mappaView = mappaView;
+        mappaView = mV;
     }
 
     public MappaView getMappaView() {
 
-      return mappaView;
+        return mappaView;
     }
 
     public void setPianoUtente(int piano) {
@@ -185,7 +182,7 @@ public class UserController extends Application {
         PianoUtente = piano;
     }
 
-    public void setLocalizzatore(Localizzatore loc){
+    public void setLocalizzatore(Localizzatore loc) {
 
         localizzatore = loc;
     }

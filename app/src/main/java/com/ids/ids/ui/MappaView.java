@@ -84,12 +84,6 @@ public class MappaView extends View {
         }
     }
 
-
-    public void setPercorso(ArrayList<Arco> percorso) {
-
-        this.percorso = percorso;
-    }
-
     private void disegnaPercorso(Canvas canvas) {
         ArrayList<Arco> archi = this.mappa.getArchi();
         if (archi == null) return;
@@ -156,7 +150,11 @@ public class MappaView extends View {
             NodoView nodoView = new NodoView(nodo, width, height, context);
             nodi.add(nodoView);
         }
+    }
 
+    public void setPercorso(ArrayList<Arco> percorso) {
+
+        this.percorso = percorso;
     }
 
     public void messaggio(String titolo,String messaggio){
@@ -174,5 +172,10 @@ public class MappaView extends View {
             if (nodo.getRect().contains(x, y))
                 return nodo;
         return null;
+    }
+
+    public void deleteImagePiantina(){
+
+        context.deleteFile(mappa.getPiantina() + ".png");
     }
 }

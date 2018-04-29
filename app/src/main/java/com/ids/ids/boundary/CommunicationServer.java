@@ -5,6 +5,7 @@ import android.support.annotation.RequiresApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -28,13 +29,17 @@ import com.ids.ids.utils.Parametri;
 public class CommunicationServer {
 
     private static CommunicationServer instance = null;
-    private final Handler handler = new Handler();
+    private static final String TAG = "CommunicationServer";
+
     private Context context;
+    private UserController userController;
+    private final Handler handler = new Handler();
     private int piano;
 
     private CommunicationServer(Context context) {
 
         this.context = context;
+
     }
 
     /**
@@ -64,14 +69,12 @@ public class CommunicationServer {
 
             if (dati_percorso != null) {
 
-                System.out.println("Percorso esterno " + dati_percorso.toString());
+                Log.i(TAG, "Percorso del Server"+dati_percorso.toString());
 
                 Type type = new TypeToken<ArrayList<Arco>>() {
                 }.getType();
                 // Estrazione dell ArrayList inviato dall app
                 percorso = new Gson().fromJson(dati_percorso, type);
-
-                System.out.println("percorso " + percorso.size());
             }
 
         } catch (ExecutionException e) {
@@ -80,7 +83,6 @@ public class CommunicationServer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         return percorso;
     }
 
@@ -111,17 +113,13 @@ public class CommunicationServer {
             handler.removeCallbacks(Aggiorna);
     }
 
-    public void aggiornaDbLocale(){
-
-    }
-
     // Runnable per l aggiornamento
     private final Runnable Aggiorna = new Runnable() {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void run() {
 
-            System.out.println("Richiesta Aggiornamenti");
+            Log.i(TAG,"Richiesta Aggiornamenti");
             String dati_mappa_aggiornata = null;
             try {
                 dati_mappa_aggiornata = new AggiornaDatiMappaTask(piano).execute().get();
@@ -134,9 +132,9 @@ public class CommunicationServer {
                     Mappa mappa_aggiornata = new Gson().fromJson(dati_mappa_aggiornata, type);
                     mappa_aggiornata.salvataggioLocale(context);
 
-                    UserController u = UserController.getInstance(null);
-                    u.setMappa(mappa_aggiornata);
-                    MappaView m = u.getMappaView();
+                    userController = UserController.getInstance(null);
+                    userController.setMappa(mappa_aggiornata);
+                    MappaView m = userController.getMappaView();
 
                     try {
                         m.setNodi(mappa_aggiornata.getNodi());

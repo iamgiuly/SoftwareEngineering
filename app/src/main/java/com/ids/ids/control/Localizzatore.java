@@ -20,6 +20,9 @@ import com.ids.ids.utils.Parametri;
 
 public class Localizzatore {
 
+    private static Localizzatore instance = null;
+    private static final String TAG = "Localizzatore";
+
     private Context context;
     private BeaconScanner scanner;
     private Handler finder;
@@ -28,7 +31,7 @@ public class Localizzatore {
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public Localizzatore(Context contxt) {
+    private Localizzatore(Context contxt) {
 
         context = contxt;
         scanner = BeaconScanner.getInstance(contxt);
@@ -59,7 +62,7 @@ public class Localizzatore {
         @Override
         public void run() {
 
-            Log.i("Localizzatore", "Inizio Ricerca pos ONE");
+            Log.i(TAG, "Inizio Ricerca pos ONE");
             String macAdrs = scanner.BeaconVicino();
 
             if (macAdrs.equals("NN")) {
@@ -68,7 +71,6 @@ public class Localizzatore {
                 finder.postDelayed(findMeONE, Parametri.T_POSIZIONE_SEGNALAZIONE);
             } else {
                 // E' stato trovato il beacon dallo scanner
-                System.out.println("MAC: " + macAdrs);
                 loading_localizzazione.dismiss();               //  Tolgo il messaggio di localizzazione
                 userController.richiestaMappa(context, macAdrs);  //   Avvio l Activity passandogli il macAdrs
                 stopFinderONE();                              //    Fermo questo Runnable
@@ -82,7 +84,7 @@ public class Localizzatore {
         @Override
         public void run() {
 
-            Log.i("Localizzatore", "Inizio Ricerca pos ALWAYS");
+            Log.i(TAG, "Inizio Ricerca pos ALWAYS");
             String macAdrs = scanner.BeaconVicino();
 
             if (macAdrs.equals("NN")) {
@@ -93,7 +95,6 @@ public class Localizzatore {
                 System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
                 finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
                 userController.richiediPercorso(macAdrs);
-
             }
         }
     };
@@ -136,7 +137,6 @@ public class Localizzatore {
      =======================================================================================================
      */
 
-
     // Ferma la localizzazione ALWAYS
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void stopFinderALWAYS() {
@@ -151,6 +151,11 @@ public class Localizzatore {
 
         scanner.scansione(false);                //  Fermo la scansione dello scanner
         finder.removeCallbacks(findMeONE);
+    }
 
+    public static Localizzatore getInstance(Activity context) {
+        if (instance == null)
+            instance = new Localizzatore(context);
+        return instance;
     }
 }

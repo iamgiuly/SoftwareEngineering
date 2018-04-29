@@ -1,17 +1,9 @@
 package com.ids.ids.boundary.ServerTask;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
-import android.view.View;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.ids.ids.entity.Mappa;
-import com.ids.ids.ui.MainActivity;
-import com.ids.ids.ui.R;
+import android.os.AsyncTask;
+import android.util.Log;
+
 import com.ids.ids.utils.Parametri;
 
 import org.json.JSONException;
@@ -22,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
@@ -49,7 +40,6 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
 
         super.onPreExecute();
         execute = new ServerConnection().execute();
-        System.out.println("onPreExecute");
     }
 
     // tutto il codice da eseguire in modo asincrono deve essere inserito nel metodo doInBackground
@@ -70,7 +60,6 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
         if (!connesso)
             return null;
         else {
-            System.out.println("connesso");
 
             try {
                 Thread.sleep(1500);

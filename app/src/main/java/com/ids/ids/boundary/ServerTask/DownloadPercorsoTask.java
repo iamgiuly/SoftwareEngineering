@@ -70,10 +70,8 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
 
                 //Create the request
                 JSONObject Data = new JSONObject();
-                Data.put("posUtente", this.Mac);
-                Data.put("piano", this.piano);
-
-                //TODO: URL
+                Data.put("posUtente", Mac);
+                Data.put("piano", piano);
 
                 URL url = new URL(PATH + "/FireExit/services/percorso/getPercorsoMinimo");
                 connection = (HttpURLConnection) url.openConnection();

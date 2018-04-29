@@ -1,6 +1,8 @@
 package com.ids.ids.boundary.ServerTask;
 
 import android.os.AsyncTask;
+import android.util.Log;
+
 import com.ids.ids.utils.Parametri;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -10,6 +12,8 @@ import java.net.URL;
  * Classe che setta i valori per la connessione con il server
  */
 public class ServerConnection extends AsyncTask<Void, Void, Boolean> {
+
+    private static final String TAG = "ServerConnection";
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
@@ -30,6 +34,7 @@ public class ServerConnection extends AsyncTask<Void, Void, Boolean> {
             int responseCode = connection.getResponseCode();
             return (200 <= responseCode && responseCode <= 399);
         } catch (IOException exception) {
+            Log.e(TAG,"Server non raggiungibile");
             return false;
         }
 

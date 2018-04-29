@@ -26,6 +26,7 @@ import com.ids.ids.utils.Parametri;
 public class BeaconScanner {
 
     private static BeaconScanner instance = null;
+    private static final String TAG = "BeaconScanner";
 
     private Handler scanH = new Handler();  //Utilizzato per la pianificazione del task di avio e stop
     private BluetoothAdapter btAdapter;
@@ -59,7 +60,7 @@ public class BeaconScanner {
             // Se fallisce la scansione
             @Override
             public void onScanFailed(int errorCode) {
-                Log.e("Scan Failed", "Error Code: " + errorCode);
+                Log.e(TAG, "Scansione fallita! Error Code: " + errorCode);
             }
         };
     }
@@ -112,9 +113,7 @@ public class BeaconScanner {
         }
     }
 
-
     ///AVVIO E STOP SCANNER////
-
 
     // Codice task avvia scanner
     private final Runnable start = new Runnable() {
@@ -133,7 +132,7 @@ public class BeaconScanner {
 
             btScanner.startScan(leScanCallback);
 
-            Log.i("Scanning", "Start");
+            Log.i(TAG, "Start");
             scanH.postDelayed(stop, Parametri.T_SCAN_PERIOD); //pianificazione messaggio di stop
 
         }
@@ -146,21 +145,14 @@ public class BeaconScanner {
         @Override
         public void run() {
 
-            System.out.println("-Stampo risultati");
-
             if (btAdapter.isEnabled()) {
                 btScanner.stopScan(leScanCallback);
-
-                for (ScanResult device : RaccogliDevice) {
-
-                    System.out.println("OGGETTO:");
-                    System.out.println(device.getDevice().getName());
-                    System.out.println(device.getDevice().getAddress());
-                    System.out.println(device.getRssi());
-                }
+                for (ScanResult device : RaccogliDevice)
+                    Log.i(TAG,"Device: \n Nome ="+device.getDevice().getName()+"\n MacAdrs ="+device.getDevice().getAddress()+
+                    " \n Rssi = "+device.getRssi());
             }
 
-            Log.i("Scanning", "Stop");
+            Log.i(TAG, "Stop");
             scanH.postDelayed(start, Parametri.T_SCAN_PERIOD);
         }
     };

@@ -82,7 +82,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
         if (!connesso)
             return null;
         else {
-            System.out.println("connesso");
 
             try {
                 Thread.sleep(1500);
@@ -94,7 +93,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
                 //creo il JSON as a key value pair.
                 JSONObject Data = new JSONObject();
                 Data.put("mac_beacon", PosizioneU);
-                System.out.println("Json:  " + Data.toString());
 
                 //Create the request
                 URL url = new URL(PATH + "/FireExit/services/maps/getMappa");

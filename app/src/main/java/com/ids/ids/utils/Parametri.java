@@ -18,5 +18,4 @@ public class Parametri {
     public static int T_AGGIORNAMENTI  = 60000; //ogni due minuti
     // Hosting Server
     public static String PATH = "http://192.168.137.1:8080";
-
 }

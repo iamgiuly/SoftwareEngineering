@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -110,7 +111,7 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
         super.onPostExecute(arg0);
         download_immagini_in_corso.dismiss();
-        System.out.println("Piantina scaricata");
+        Log.i("DownloadPiantinaTask","Piantina scaricata");
 
         if (usercontroller.getModalita() == UserController.MODALITA_EMERGENZA)
             mappa_scaricata.salvataggioLocale(context);  //PRIMO SALVATAGGIO in locale
