@@ -22,6 +22,7 @@ import com.ids.ids.control.UserController;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
+import com.ids.ids.ui.MappaView;
 import com.ids.ids.utils.Parametri;
 
 public class CommunicationServer {
@@ -120,7 +121,7 @@ public class CommunicationServer {
         @Override
         public void run() {
 
-            System.out.println("RichiestaAggiornamenti");
+            System.out.println("Richiesta Aggiornamenti");
             String dati_mappa_aggiornata = null;
             try {
                 dati_mappa_aggiornata = new AggiornaDatiMappaTask(piano).execute().get();
@@ -135,7 +136,14 @@ public class CommunicationServer {
 
                     UserController u = UserController.getInstance(null);
                     u.setMappa(mappa_aggiornata);
+                    MappaView m = u.getMappaView();
 
+                    try {
+                        m.setNodi(mappa_aggiornata.getNodi());
+                        m.postInvalidate();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI);

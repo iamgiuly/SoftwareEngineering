@@ -65,6 +65,7 @@ public class EmergenzaActivity extends AppCompatActivity {
 
         // inizializza la View della mappa
         mappaView = findViewById(R.id.mappaView);
+        userController.setMappaView(mappaView);
 
         try {
 
@@ -89,7 +90,7 @@ public class EmergenzaActivity extends AppCompatActivity {
             } else {
                 //CASO EMERGENZA
 
-                localizzatore = new Localizzatore(this, mappaView);
+                localizzatore = new Localizzatore(this);
                 mappaView.setMappa(userController.getMappa(), true);
 
                 localizzatore.startFinderALWAYS();                               //Avvio localizzazione
@@ -126,6 +127,7 @@ public class EmergenzaActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onStop() {
+
         super.onStop();
     }
 

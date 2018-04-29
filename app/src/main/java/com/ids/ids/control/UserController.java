@@ -33,6 +33,7 @@ public class UserController extends Application {
     private Mappa mappa;
     private Localizzatore localizzatore;
     private DBHelper db;
+    private MappaView mappaView;
     private int PianoUtente;
     private int modalita;
 
@@ -70,7 +71,7 @@ public class UserController extends Application {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void richiediPercorso(String mac, MappaView mappaView) {
+    public void richiediPercorso(String mac) {
 
         ArrayList<Arco> percorso;
 
@@ -88,6 +89,7 @@ public class UserController extends Application {
 
         mappaView.setPosUtente(mappa.getPosUtente(mac));
         mappaView.setPercorso(percorso);
+
         //Nel caso in cui il percorso sia zero significa che
         //l utente ha raggiunto l uscita
         //per questo lo avvisiamo attraverso un messaggio
@@ -168,6 +170,16 @@ public class UserController extends Application {
         this.mappa = mappa;
     }
 
+    public void setMappaView(MappaView mappaView) {
+
+        this.mappaView = mappaView;
+    }
+
+    public MappaView getMappaView() {
+
+      return mappaView;
+    }
+
     public void setPianoUtente(int piano) {
 
         PianoUtente = piano;
@@ -176,10 +188,6 @@ public class UserController extends Application {
     public void setLocalizzatore(Localizzatore loc){
 
         localizzatore = loc;
-    }
-
-    public void setDb(DBHelper d){
-        db = d;
     }
 
     public static UserController getInstance(Activity context) {

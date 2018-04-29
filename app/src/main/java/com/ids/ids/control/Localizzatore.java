@@ -25,7 +25,6 @@ public class Localizzatore {
     private Handler finder;
     private ProgressDialog loading_localizzazione;
     private UserController userController;
-    private MappaView mappaView;
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -37,17 +36,6 @@ public class Localizzatore {
         userController = UserController.getInstance((Activity) context);
 
     }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public Localizzatore(Context contxt, MappaView mView) {
-
-        context = contxt;
-        scanner = BeaconScanner.getInstance(contxt);
-        finder = new Handler();
-        userController = UserController.getInstance((Activity) context);
-        mappaView = mView;
-    }
-
 
     /*
     =========================================================================================================
@@ -104,7 +92,7 @@ public class Localizzatore {
             } else {
                 System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
                 finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
-                userController.richiediPercorso(macAdrs, mappaView);
+                userController.richiediPercorso(macAdrs);
 
             }
         }

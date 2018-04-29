@@ -33,6 +33,11 @@ public class NodoView {
         return nodo;
     }
 
+    public void setNodo(Nodo nodo) {
+
+        this.nodo = nodo;
+    }
+
     public int getId() {
 
         return nodo.getId();

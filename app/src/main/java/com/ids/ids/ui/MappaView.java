@@ -73,7 +73,7 @@ public class MappaView extends View {
         super.onDraw(canvas);
         if (this.image != null) {
             canvas.drawBitmap(this.image, null, new Rect(0, 0, this.width, this.height), this.paint);
-            for (NodoView nodoView : this.nodi) {
+           for (NodoView nodoView : this.nodi) {
                 Bitmap image = nodoView.getNodo().equals(this.posUtente)
                         ? BitmapFactory.decodeResource(context.getResources(), Nodo.IMG_UTENTE)
                         : nodoView.getImage();
@@ -83,6 +83,7 @@ public class MappaView extends View {
                 this.disegnaPercorso(canvas);
         }
     }
+
 
     public void setPercorso(ArrayList<Arco> percorso) {
 
@@ -145,6 +146,17 @@ public class MappaView extends View {
                 return true;
             }
         });
+    }
+
+    public void setNodi(ArrayList<Nodo> nodiAggiornati){
+
+        width = getMeasuredWidth();
+        height = getMeasuredHeight();
+        for (Nodo nodo : nodiAggiornati) {
+            NodoView nodoView = new NodoView(nodo, width, height, context);
+            nodi.add(nodoView);
+        }
+
     }
 
     public void messaggio(String titolo,String messaggio){
