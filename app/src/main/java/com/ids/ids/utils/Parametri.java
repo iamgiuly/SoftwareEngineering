@@ -11,9 +11,7 @@ public class Parametri {
     //Periodo scansione dispositivi BLE
     public static int T_SCAN_PERIOD = 1000;
     // periodo scansione localizzatore
-    public static int T_POSIZIONE_EMERGENZA = 2000;
-    // periodo scansione segnalazione
-    public static int T_POSIZIONE_SEGNALAZIONE = 3000;
+    public static int T_POSIZIONE = 2000;
     // periodo di richiesta aggiornamenti al server
     public static int T_AGGIORNAMENTI  = 60000; //ogni due minuti
     // Hosting Server

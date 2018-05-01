@@ -157,12 +157,12 @@ public class MappaView extends View {
         this.percorso = percorso;
     }
 
-    public void messaggio(String titolo,String messaggio){
+    public void messaggio(String titolo,String messaggio,boolean enable){
 
         AlertDialog avviso = new AlertDialog.Builder(context).create();
         avviso.setTitle(titolo);
         avviso.setMessage(messaggio);
-        avviso.setCanceledOnTouchOutside(false);
+        avviso.setCanceledOnTouchOutside(enable);
         avviso.show();
 
     }

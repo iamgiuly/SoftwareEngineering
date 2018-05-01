@@ -72,6 +72,7 @@ public class EmergenzaActivity extends AppCompatActivity {
             if (userController.getModalita() == userController.MODALITA_SEGNALAZIONE) {
 
                 mappaView.setMappa(userController.getMappa());
+               // mappaView.setPosUtente(userController.getMappa().getPosUtente(userController.getMacAdrs()));
                 mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {

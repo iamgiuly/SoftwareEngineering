@@ -68,7 +68,7 @@ public class Localizzatore {
             if (macAdrs.equals("NN")) {
                 // Non è stato ancora trovato nessun Beacon dallo scanner
                 // Attendo nuovamente
-                finder.postDelayed(findMeONE, Parametri.T_POSIZIONE_SEGNALAZIONE);
+                finder.postDelayed(findMeONE, Parametri.T_POSIZIONE);
             } else {
                 // E' stato trovato il beacon dallo scanner
                 loading_localizzazione.dismiss();               //  Tolgo il messaggio di localizzazione
@@ -90,10 +90,10 @@ public class Localizzatore {
             if (macAdrs.equals("NN")) {
                 // Non è stato ancora trovato nessun Beacon dallo scanner
                 // Attendo nuovamente
-                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
+                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE);
             } else {
                 System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
-                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
+                finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE);
                 userController.richiediPercorso(macAdrs);
             }
         }
@@ -111,7 +111,7 @@ public class Localizzatore {
     public void startFinderONE() {
 
         scanner.scansione(true);
-        finder.postDelayed(findMeONE, Parametri.T_POSIZIONE_EMERGENZA);
+        finder.postDelayed(findMeONE, Parametri.T_POSIZIONE);
         //visualizzazione messaggio di localizzazione
         loading_localizzazione = new ProgressDialog(context);
         loading_localizzazione.setIndeterminate(true);
@@ -127,7 +127,7 @@ public class Localizzatore {
     public void startFinderALWAYS() {
 
         scanner.scansione(true);                                  //Avvio scansione BLE
-        finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE_EMERGENZA);
+        finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE);
     }
 
 

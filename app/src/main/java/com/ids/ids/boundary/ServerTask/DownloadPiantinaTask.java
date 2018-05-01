@@ -118,6 +118,9 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
         usercontroller.setMappa(mappa_scaricata);
         usercontroller.setPianoUtente(mappa_scaricata.getPiano());  //resterà questoi fino al cambio piano
-        usercontroller.MandaEmergenzaActivity();
+        if(usercontroller.getModalita() == UserController.MODALITA_EMERGENZA || usercontroller.getModalita() == UserController.MODALITA_SEGNALAZIONE)
+           usercontroller.MandaEmergenzaActivity();
+        else
+            usercontroller.MandaNormaleActivity();
     }
 }

@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     // consente di eseguire attività Bluetooth fondamental
     // (es. avviare il rilevamento dei dispositivi)
     private BroadcastReceiver receiver;             // permette di ricevere notifice sullo stato del dispositivo
+    private Button normaleButton;
     private Button segnalazioneButton;
     private Button emergenzaButton;
 
@@ -57,6 +58,15 @@ public class MainActivity extends AppCompatActivity {
 
         userController = UserController.getInstance(this);
         this.initBluetooth();
+
+        normaleButton = findViewById(R.id.normaleButton);
+        normaleButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View v) {
+                listenerBottoneNormale();
+            }
+        });
 
         segnalazioneButton = findViewById(R.id.segnalazioneButton);
         segnalazioneButton.setOnClickListener(new View.OnClickListener() {
@@ -129,6 +139,13 @@ public class MainActivity extends AppCompatActivity {
         if (datipassati != null) {
             listenerBottoneEmergenza();
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void listenerBottoneNormale() {
+        userController.setModalita(userController.MODALITA_NORMALE);
+        if (abilitaBLE())
+            localizzatore.startFinderONE();
     }
 
     /**

@@ -18,6 +18,7 @@ import com.ids.ids.entity.Percorso;
 import com.ids.ids.ui.EmergenzaActivity;
 import com.ids.ids.ui.MainActivity;
 import com.ids.ids.ui.MappaView;
+import com.ids.ids.ui.NormaleActivity;
 
 public class UserController extends Application {
 
@@ -26,12 +27,14 @@ public class UserController extends Application {
 
     public static final int MODALITA_SEGNALAZIONE = 0;
     public static final int MODALITA_EMERGENZA = 1;
+    public static final int MODALITA_NORMALE = 2;
 
     private Activity context;
     private MappaView mappaView;
     private CommunicationServer communicationServer;
     private Localizzatore localizzatore;
     private Mappa mappa;
+    private String macAdrs;
     private ArrayList<Nodo> nodiSelezionati; // nodi di cui bisogna cambiare il flag "sotto incendio"
     private int PianoUtente;
     private int modalita;
@@ -44,7 +47,8 @@ public class UserController extends Application {
 
     public void DropDB() {
 
-        mappa.deletemappa(context);
+        if(modalita == UserController.MODALITA_EMERGENZA)
+           mappa.deletemappa(context);
     }
 
     /**
@@ -53,6 +57,7 @@ public class UserController extends Application {
      */
     public void richiestaMappa(Context context, String macAddress) {
 
+        macAdrs = macAddress;
         communicationServer.richiestaMappa(context, macAddress);
     }
 
@@ -93,7 +98,7 @@ public class UserController extends Application {
         if (percorso.size() == 0) {
             localizzatore.stopFinderALWAYS();
             richiestaAggiornamento(false);
-            mappaView.messaggio("Sei al sicuro", "Hai raggiunto l uscita");
+            mappaView.messaggio("Sei al sicuro", "Hai raggiunto l uscita", false);
         }
 
         try {
@@ -128,7 +133,6 @@ public class UserController extends Application {
         return !nodiSelezionati.isEmpty();
     }
 
-
     public void MandaEmergenzaActivity() {
 
         Intent intent = new Intent(context, EmergenzaActivity.class);
@@ -139,6 +143,12 @@ public class UserController extends Application {
 
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("AvviaTastoEmergenza", true);
+        context.startActivity(intent);
+    }
+
+    public void MandaNormaleActivity() {
+
+        Intent intent = new Intent(context, NormaleActivity.class);
         context.startActivity(intent);
     }
 
@@ -185,6 +195,11 @@ public class UserController extends Application {
     public void setLocalizzatore(Localizzatore loc) {
 
         localizzatore = loc;
+    }
+
+    public String getMacAdrs(){
+
+        return macAdrs;
     }
 
     public static UserController getInstance(Activity context) {

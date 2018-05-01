@@ -183,9 +183,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
             Mappa mappa_scaricata = new Gson().fromJson(result, type);
 
-            System.out.println("ecco: " + mappa_scaricata.getPiantina());
-            System.out.println("ecco: " + mappa_scaricata.getNodi().size());
-
             download_mappa_in_corso.dismiss();
             new DownloadPiantinaTask(context, mappa_scaricata).execute();
 
