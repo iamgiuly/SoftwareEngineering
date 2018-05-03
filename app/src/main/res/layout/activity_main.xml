@@ -4,65 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="@android:color/background_light"
     tools:context="com.ids.ids.ui.MainActivity">
 
     <Button
         android:id="@+id/segnalazioneButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="105dp"
-        android:layout_marginRight="105dp"
-        android:layout_marginTop="284dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="28dp"
         android:text="Segnala Emergenza"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/messaggioErroreTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/normaleButton"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/emergenzaButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
-        android:layout_marginLeft="105dp"
-        android:layout_marginRight="105dp"
-        android:layout_marginTop="30dp"
+        android:layout_width="166dp"
+        android:layout_height="51dp"
+        android:layout_marginBottom="48dp"
+        android:layout_marginTop="8dp"
         android:text="Emergenza"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/segnalazioneButton" />
-
-    <TextView
-        android:id="@+id/messaggioErroreTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="38dp"
-        android:layout_marginBottom="284dp"
-        android:layout_marginLeft="91dp"
-        android:layout_marginRight="94dp"
-        android:layout_marginTop="38dp"
-        android:text="Connessione assente. Riprovare"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/segnalazioneButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/segnalazioneButton"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="200dp"
-        android:layout_height="139dp"
-        app:layout_constraintBottom_toTopOf="@+id/segnalazioneButton"
+        android:layout_width="256dp"
+        android:layout_height="137dp"
+        android:layout_marginTop="60dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/messaggioErroreTextView"
-        app:layout_constraintVertical_bias="0.089"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/fireexit" />
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
+    <Button
+        android:id="@+id/normaleButton"
+        android:layout_width="172dp"
+        android:layout_height="53dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:text="Normale"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 </android.support.constraint.ConstraintLayout>

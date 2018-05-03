@@ -12,6 +12,7 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String DATABASE_NAME = "ids.db";
 
     public DBHelper(Context context){
+
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -21,6 +22,8 @@ public class DBHelper extends SQLiteOpenHelper{
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
+
+        System.out.println("SET DB");
         String CREATE_TABLE_MAPPA = "CREATE TABLE " + MappaDAO.TABLE + "(" +
                 MappaDAO.KEY_piano + " INTEGER PRIMARY KEY, " +
                 MappaDAO.KEY_piantina + " INTEGER)";
@@ -56,6 +59,7 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL(CREATE_TABLE_ARCO);
         db.execSQL(CREATE_TABLE_PESO);
         db.execSQL(CREATE_TABLE_PESO_ARCO);
+
     }
 
     /**
@@ -66,6 +70,7 @@ public class DBHelper extends SQLiteOpenHelper{
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        System.out.println("DROP DB");
         db.execSQL("DROP TABLE IF EXISTS " + MappaDAO.TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + NodoDAO.TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + ArcoDAO.TABLE);
@@ -73,5 +78,4 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS " + PesoArcoDAO.TABLE);
         onCreate(db);
     }
-
 }

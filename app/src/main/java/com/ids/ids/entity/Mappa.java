@@ -106,7 +106,7 @@ public class Mappa {
         ArrayList<Mappa>  esito;
 
         MappaDAO m = MappaDAO.getInstance(contxt);
-        esito = m.findAllByColumnValue("piano",String.valueOf(this.Piano));
+        esito = m.findAllByColumnValue("piano", String.valueOf(Piano));
 
         if(esito.size() == 0 ){
             System.out.println("Salvataggio");
@@ -116,6 +116,11 @@ public class Mappa {
             System.out.println("Update");
             m.update(this);
         }
+    }
 
+    public void deletemappa(Context contxt){
+
+        MappaDAO m = MappaDAO.getInstance(contxt);
+        m.delete(Piano);
     }
 }

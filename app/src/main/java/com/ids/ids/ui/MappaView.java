@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -14,8 +15,6 @@ import android.view.ViewTreeObserver;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.utils.DebugSettings;
-import com.ids.ids.utils.DecodedResources;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class MappaView extends View {
         super.onDraw(canvas);
         if (this.image != null) {
             canvas.drawBitmap(this.image, null, new Rect(0, 0, this.width, this.height), this.paint);
-            for (NodoView nodoView : this.nodi) {
+           for (NodoView nodoView : this.nodi) {
                 Bitmap image = nodoView.getNodo().equals(this.posUtente)
                         ? BitmapFactory.decodeResource(context.getResources(), Nodo.IMG_UTENTE)
                         : nodoView.getImage();
@@ -83,11 +82,6 @@ public class MappaView extends View {
             if (this.disegnaPercorso)
                 this.disegnaPercorso(canvas);
         }
-    }
-
-    public void setPercorso(ArrayList<Arco> percorso) {
-
-        this.percorso = percorso;
     }
 
     private void disegnaPercorso(Canvas canvas) {
@@ -148,10 +142,40 @@ public class MappaView extends View {
         });
     }
 
+    public void setNodi(ArrayList<Nodo> nodiAggiornati){
+
+        width = getMeasuredWidth();
+        height = getMeasuredHeight();
+        for (Nodo nodo : nodiAggiornati) {
+            NodoView nodoView = new NodoView(nodo, width, height, context);
+            nodi.add(nodoView);
+        }
+    }
+
+    public void setPercorso(ArrayList<Arco> percorso) {
+
+        this.percorso = percorso;
+    }
+
+    public void messaggio(String titolo,String messaggio,boolean enable){
+
+        AlertDialog avviso = new AlertDialog.Builder(context).create();
+        avviso.setTitle(titolo);
+        avviso.setMessage(messaggio);
+        avviso.setCanceledOnTouchOutside(enable);
+        avviso.show();
+
+    }
+
     public NodoView getNodoPremuto(int x, int y) {
         for (NodoView nodo : this.nodi)
             if (nodo.getRect().contains(x, y))
                 return nodo;
         return null;
+    }
+
+    public void deleteImagePiantina(){
+
+        context.deleteFile(mappa.getPiantina() + ".png");
     }
 }

@@ -1,5 +1,6 @@
 package com.ids.ids.boundary.ServerTask;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.ids.ids.control.UserController;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.utils.Parametri;
 
@@ -36,12 +38,14 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
     private ArrayList<Nodo> NodiSottoIncendio;
     private ProgressDialog loading_segnalazione;
     private Context context;
+    private UserController userController;
     private AsyncTask<Void, Void, Boolean> execute;
 
     public InvioNodiTask(ArrayList<Nodo> nodi, Context contxt) {
 
         NodiSottoIncendio = nodi;
         context = contxt;
+        userController = UserController.getInstance((Activity)context);
 
     }
 
@@ -68,7 +72,6 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
         try {
             connesso = execute.get();
-            System.out.println("Connesione: " + connesso);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -90,11 +93,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
                 Gson gson = new Gson();
                 String Data = gson.toJson(NodiSottoIncendio);
 
-
-                System.out.println(Data);
-
                 // Create the request
-                //TODO: URL
                 URL url = new URL(PATH + "/FireExit/services/maps/segnalazione");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
@@ -136,9 +135,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
                     }
                 }
             }
-
         }
-
         return null;
     }
 
@@ -183,7 +180,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
                 AlertDialog segnalazione_avvenuta = new AlertDialog.Builder(context).create();
                 segnalazione_avvenuta.setTitle("Grazie");
-                segnalazione_avvenuta.setMessage("Segnalazione avvenuta con successo!");
+                segnalazione_avvenuta.setMessage("Segnalazione avvenuta con successo! Clicca OK per metterti al sicuro");
                 segnalazione_avvenuta.setCanceledOnTouchOutside(false);
                 segnalazione_avvenuta.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
@@ -191,15 +188,12 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
+                                userController.MandaMainActivity();
                             }
 
                         });
                 segnalazione_avvenuta.show();
-
-            } else {
-                System.out.println("errore server");
             }
         }
-
     }
 }

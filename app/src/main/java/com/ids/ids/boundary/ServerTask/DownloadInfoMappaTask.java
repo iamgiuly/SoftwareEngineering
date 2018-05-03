@@ -82,7 +82,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
         if (!connesso)
             return null;
         else {
-            System.out.println("connesso");
 
             try {
                 Thread.sleep(1500);
@@ -94,12 +93,8 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
                 //creo il JSON as a key value pair.
                 JSONObject Data = new JSONObject();
                 Data.put("mac_beacon", PosizioneU);
-                System.out.println("Ciao");
-                System.out.println("   " + Data.toString());
 
                 //Create the request
-                //TODO: URL
-
                 URL url = new URL(PATH + "/FireExit/services/maps/getMappa");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
@@ -187,9 +182,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
             }.getType();
 
             Mappa mappa_scaricata = new Gson().fromJson(result, type);
-
-            System.out.println("ecco: " + mappa_scaricata.getPiantina());
-            System.out.println("ecco: " + mappa_scaricata.getNodi().size());
 
             download_mappa_in_corso.dismiss();
             new DownloadPiantinaTask(context, mappa_scaricata).execute();

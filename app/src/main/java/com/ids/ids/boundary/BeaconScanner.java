@@ -1,6 +1,8 @@
 package com.ids.ids.boundary;
 
 import android.annotation.TargetApi;
+import android.support.annotation.RequiresApi;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -10,12 +12,12 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
+
+import java.util.ArrayList;
 
 import com.ids.ids.utils.Parametri;
 
-import java.util.ArrayList;
 
 /**
  * La classe BeaconScanner presenta i metodi per effettuare la scansione periodica dei dispositivi
@@ -24,9 +26,11 @@ import java.util.ArrayList;
 public class BeaconScanner {
 
     private static BeaconScanner instance = null;
+    private static final String TAG = "BeaconScanner";
 
     private Handler scanH = new Handler();  //Utilizzato per la pianificazione del task di avio e stop
     private BluetoothAdapter btAdapter;
+    private BluetoothManager btManager;
     private BluetoothLeScanner btScanner;  // il Bluetooth deve essere on altrimenti restituisce un null l adapter
     private ScanCallback leScanCallback;
     private ArrayList<ScanResult> RaccogliDevice = new ArrayList<>();
@@ -39,47 +43,50 @@ public class BeaconScanner {
 
         //BluethoothManager è utilizzata per ottenere una istanza di Adapter
         //Bluethooth adapter rappresenta l'adattatore Bluetooth del dispositivo locale. BluetoothAdapter
-        // consente di eseguire attività Bluetooth fondamentali, come avviare il rilevamento dei dispositivi,
-        BluetoothManager btManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);//Ottengo BluethoothManager e lo salvo in locale
-        btAdapter = btManager.getAdapter();                                        //richiamo l adapter e lo salvo in locale,
+        //consente di eseguire attività Bluetooth fondamentali, come avviare il rilevamento dei dispositivi,
 
+        btManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);//Ottengo BluethoothManager e lo salvo in locale
+        btAdapter = btManager.getAdapter();    //richiamo l adapter e lo salvo in locale,
 
         leScanCallback = new ScanCallback() {
 
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
-
                 //Aggiungo al raccoglitore il device trovato
                 addDevice(result);
-
             }
 
             // Se fallisce la scansione
             @Override
             public void onScanFailed(int errorCode) {
-                Log.e("Scan Failed", "Error Code: " + errorCode);
+                Log.e(TAG, "Scansione fallita! Error Code: " + errorCode);
             }
         };
-
-
     }
 
+    /**
+     * Questo metodo avvia e ferma la scansione periodica, in base al booleano in ingresso
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void avviaScansione(){
+    public void scansione(Boolean enable) {
+
         // Lo scanner è invocato solo prima della scansione per attendere che il ble sia attivo
         if (btScanner == null)
             btScanner = btAdapter.getBluetoothLeScanner();
-        scanH.post(start);
+
+        if (enable)
+            scanH.post(start);
+        else {
+            scanH.removeCallbacks(start);
+            scanH.removeCallbacks(stop);
+        }
     }
 
-    public void fermaScansione(){
-        scanH.removeCallbacks(start);
-        scanH.removeCallbacks(stop);
-    }
-
-    // Aggiunge ciclicamente i nuovi disp. BLE senza ripetizioni
-    // Si è posto un filtro per considerare solamente i Beacon
+    /**
+     * Aggiunge ciclicamente i nuovi disp. BLE senza ripetizioni
+     * Si è posto un filtro per considerare solamente i Beacon
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void addDevice(ScanResult result) {
 
@@ -100,17 +107,13 @@ public class BeaconScanner {
                 if (device.getAddress().equals(DeviceRaccolto.getDevice().getAddress()))
                     presente = true;
 
-
             //se non è presente lo aggiungo
             if (!presente)
                 RaccogliDevice.add(result);
-
         }
     }
 
-
     ///AVVIO E STOP SCANNER////
-
 
     // Codice task avvia scanner
     private final Runnable start = new Runnable() {
@@ -124,13 +127,12 @@ public class BeaconScanner {
 
                 refresh = 0;
                 RaccogliDevice.clear();
-
             }
             refresh++;
 
             btScanner.startScan(leScanCallback);
 
-            Log.i("Scanning", "Start");
+            Log.i(TAG, "Start");
             scanH.postDelayed(stop, Parametri.T_SCAN_PERIOD); //pianificazione messaggio di stop
 
         }
@@ -143,32 +145,27 @@ public class BeaconScanner {
         @Override
         public void run() {
 
-            System.out.println("-Stampo risultati");
-
             if (btAdapter.isEnabled()) {
                 btScanner.stopScan(leScanCallback);
-
-                for (ScanResult device : RaccogliDevice) {
-
-                    System.out.println("OGGETTO:");
-                    System.out.println(device.getDevice().getName());
-                    System.out.println(device.getDevice().getAddress());
-                    System.out.println(device.getRssi());
-                }
+                for (ScanResult device : RaccogliDevice)
+                    Log.i(TAG,"Device: \n Nome ="+device.getDevice().getName()+"\n MacAdrs ="+device.getDevice().getAddress()+
+                    " \n Rssi = "+device.getRssi());
             }
 
-
-            Log.i("Scanning", "Stop");
+            Log.i(TAG, "Stop");
             scanH.postDelayed(start, Parametri.T_SCAN_PERIOD);
-
         }
     };
 
     /////////RICERCA BEACON VICINO//////
 
-    // Metodo per la ricerca del Beacon più vicino
-    // Per ogni Device viene considerato il valore RSSI e , tra tutti , viene preso il Device con il
-    // valore RSSI più basso (cioè più vicino all utente)
+    /**
+     * Metodo per la ricerca del Beacon più vicino
+     * Per ogni Device viene considerato il valore RSSI e , tra tutti , viene preso il Device con il
+     * valore RSSI più basso (cioè più vicino all utente)
+     *
+     * @return
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public String BeaconVicino() {
 
@@ -188,15 +185,12 @@ public class BeaconScanner {
             macAdrs = vicino.getDevice().getAddress();   //ID del beacon
 
         return macAdrs;  //ID del beacon
-
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static BeaconScanner getInstance(Context context) {
         if (instance == null)
             instance = new BeaconScanner(context);
         return instance;
     }
-
 }
