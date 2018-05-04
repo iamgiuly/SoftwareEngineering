@@ -24,10 +24,9 @@ import com.ids.ids.control.User;
 /**
  * Questa activity viene mostrata all'apertura dell'applicazione.
  * Visualizza i bottoni:
- *     -
- * a tale bottone viene associato un listener, che al tap su di esso richiama il metodo listenerBottoneSegnalazione() il quale:
- * - rimanda l'utente online alla EmergenzaActivity
- * - mostra un messaggio di errore all'utente offline
+ *     - Normale
+ *     - SegnalaEmergenza
+ *     - Emergenza
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -97,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
     }
 
+    /*
+     * Si occupa di controllare se il device presenta o meno il Bluethooth attivato.
+     * In caso non lo fosse lancia un popup per l attivazione
+     */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void initBluetooth() {
@@ -142,12 +145,21 @@ public class MainActivity extends AppCompatActivity {
             listenerBottoneEmergenza();
     }
 
+    /*
+     * Inizializza le classi singleton della nostra applicazione passandogli l attuale context
+     */
     private void initSingleton(){
         user = User.getInstance(this);
         localizzatore = Localizzatore.getInstance(this);
         CommunicationServer.getInstance(this);
     }
 
+    /**
+     * Listener bottone Normale.
+     * Inizializza i singleton.
+     * Setta la modalità normale della nostra applicazione.
+     * Effettua il controllo se il Bluethooth e attivo o meno
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneNormale() {
         initSingleton();
@@ -157,9 +169,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
-     * - se attiva viene avviata l'activity EmergenzaActivity
-     * - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     * Listener bottone SegnalazioneEmenrgenza.
+     * Inizializza i singleton.
+     * Setta la modalità segnalazione della nostra applicazione.
+     * Effettua il controllo se il Bluethooth e attivo o meno
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneSegnalazione() {
@@ -170,9 +183,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
-     * - se attiva viene avviata l'activity EmergenzaActivity
-     * - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     * Listener bottone Emergenza.
+     * Inizializza i singleton.
+     * Setta la modalità emergenza della nostra applicazione.
+     * Effettua il controllo se il Bluethooth e attivo o meno
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneEmergenza() {
@@ -182,10 +196,9 @@ public class MainActivity extends AppCompatActivity {
             localizzatore.startFinderONE();
     }
 
-    /**
-     * Prova ad abilitare l'adapter del bluetooth
-     *
-     * @return true se l'adapter è stato abilitato
+    /*
+     * Controllo se il bluethooth è attivo.
+     * In casop contrario chiedo all utente di attivarlo mediante un popup
      */
     private boolean abilitaBLE() {
 

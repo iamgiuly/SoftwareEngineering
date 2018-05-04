@@ -22,12 +22,15 @@ import com.ids.ids.entity.Nodo;
 
 
 /**
- * Questa activity viene mostrata al tap sul bottone "Segnala Emergenza",
- * al suo avvio carica la mappa in cui si trova l'utente e la visualizza con i suoi nodi opportunamente contrassegnati,
- * ad essi vengono associati dei listener, che al tap richiamano il metodo listenerNodoSelezionato() il quale
- * chiede al Controller di aggiungere / rimuovere il nodo premuto alla / dalla lista dei nodi selezionati.
- * Al tap sul bottone "Invia Nodi" (visibile se almeno un nodo è selezionato),
- * viene chiesto al Controller di inviare al server i nodi selezionati
+ * Questa activity si comporta dinamicamente in base alla modalità dell applicazione.
+ * E' in grado di gestire le seguenti modalità:
+ * <p>
+ * SEGNALAZIONE:  visualizza la piantina e i nodi, relativi asl piano in cui l utente si trova, in modo
+ * tale che l utente può segnalare i nodi sottoIncendio.
+ * <p>
+ * EMERGENZA:     visualizza la piantina i nodi e il percorso che l utente deve segiuire per raggiungere
+ * l uscita di emergenza più vicina.
+ * Inoltre è data all utente la possibilità di effettuare un cambio piano.
  */
 public class EmergenzaActivity extends AppCompatActivity {
 
@@ -42,7 +45,6 @@ public class EmergenzaActivity extends AppCompatActivity {
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
-     * viene caricata e visualizzata la mappa con i suoi nodi e settati i listener associati ad essi
      *
      * @param savedInstanceState
      */
@@ -78,7 +80,7 @@ public class EmergenzaActivity extends AppCompatActivity {
             if (user.getModalita() == user.MODALITA_SEGNALAZIONE) {
 
                 mappaView.setMappa(user.getMappa());
-               // mappaView.setPosUtente(user.getMappa().getNodoSpecifico(user.getMacAdrs()));
+                // mappaView.setPosUtente(user.getMappa().getNodoSpecifico(user.getMacAdrs()));
                 mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -176,16 +178,20 @@ public class EmergenzaActivity extends AppCompatActivity {
     }
 
     /**
-     * Richiamato dal listener associato al bottone "Invia Nodi", viene controllata la connessione:
-     * - se attiva viene chiesto al Controller di inviare al server i nodi selezionati
-     * e viene avviata l'activity MainActivity
-     * - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     * Listener bottone inviaNodi.
+     * Permette di richiamare il metodo opportuno (InviaNodiSottoIncendio) del communicationServer
+     * per l invio della segnalazione.
      */
     public void listenerBottoneInvioNodi() {
 
         communicationServer.inviaNodiSottoIncendio(nodiSelezionati/*, this*/);
     }
 
+    /**
+     * Listener bottone CambioPiano.
+     * Permette di visualizzare un popup con pulsanti SI/NO in cui si chiede all utente se è sicuro o meno di cambiare piano.
+     * Al click sul si avvia nuovamernte la localizzazione
+     */
     private void listenerBottoneCambiaPiano() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

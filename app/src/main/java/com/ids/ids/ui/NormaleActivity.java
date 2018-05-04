@@ -1,14 +1,10 @@
 package com.ids.ids.ui;
 
-/**
- * Created by User on 01/05/2018.
- */
-
 import android.annotation.TargetApi;
+import android.support.annotation.RequiresApi;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,7 +17,9 @@ import com.ids.ids.control.Localizzatore;
 import com.ids.ids.control.User;
 import com.ids.ids.entity.Nodo;
 
-
+/**
+ * Created by User on 01/05/2018.
+ */
 public class NormaleActivity extends AppCompatActivity {
 
     private User user;
@@ -59,7 +57,7 @@ public class NormaleActivity extends AppCompatActivity {
         try {
 
             //CASO SCELTA DESTINAZIONE
-            if(user.getModalita() == User.MODALITA_NORMALE) {
+            if (user.getModalita() == User.MODALITA_NORMALE) {
 
                 mappaView.setMappa(user.getMappa(), true);
                 mappaView.setPosUtente(user.getPosUtente());
@@ -106,26 +104,30 @@ public class NormaleActivity extends AppCompatActivity {
 
         Nodo nodo = nodoView.getNodo();
 
-        if(nodo.getBeaconId() == user.getPosUtente().getBeaconId())
+        if (nodo.getBeaconId() == user.getPosUtente().getBeaconId())
             mappaView.messaggio("Attenzione!", "Si trova già nel posto segnalato", false);
-        else if(nodoDestinazione == null) {
+        else if (nodoDestinazione == null) {
             nodoDestinazione = nodo;
             nodoView.setImage(R.drawable.destinazione);
             RichiediPercorsoButton.setVisibility(View.VISIBLE);
-        }else if(nodo.getBeaconId() == nodoDestinazione.getBeaconId()) {  //deselezione
+        } else if (nodo.getBeaconId() == nodoDestinazione.getBeaconId()) {  //deselezione
             nodoView.setImage(nodo.getImage());
             nodoDestinazione = null;
             RichiediPercorsoButton.setVisibility(View.INVISIBLE);
         } else if (nodoDestinazione != null)
-            mappaView.messaggio("Attenzione!","E' gia segnata una destinazione.\nDeselezionarla per cambiare", true);
+            mappaView.messaggio("Attenzione!", "E' gia segnata una destinazione.\nDeselezionarla per cambiare", true);
     }
 
     public void richiediPercorsoDestinazione() {
 
         user.setModalita(User.MODALITA_NORMALEPERCORSO);
         user.setNodoDestinazione(nodoDestinazione);
-        communicationServer.richiestaPercorsoNormale(user.getMacAdrs(), user.getPianoUtente(),
-                mappaView, user.getMappa(),nodoDestinazione.getBeaconId(),true);
+        communicationServer.richiestaPercorsoNormale(user.getMacAdrs(),
+                user.getPianoUtente(),
+                mappaView,
+                user.getMappa(),
+                nodoDestinazione.getBeaconId(),
+                true);
         localizzatore.startFinderALWAYS();
         RichiediPercorsoButton.setVisibility(View.INVISIBLE);
     }

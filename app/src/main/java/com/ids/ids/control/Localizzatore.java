@@ -16,12 +16,12 @@ import com.ids.ids.utils.Parametri;
 /**
  * Presenta i metodi per localizzare l utente grazie ai risultati (MAC address)
  * forniti dal BeaconScanner
- *
+ * <p>
  * Nota localizzazioni:
-
+ * <p>
  * ALWAYS: mantiene sempre attivo il BeaconScanner
- *         mantiene sempre attivo il Runnable findMeAlways
-
+ * mantiene sempre attivo il Runnable findMeAlways
+ * <p>
  * ONE:    appena trovato il Beacon più vicino il BeaconScanner e il Runnable findMeONE vengono fermati
  */
 
@@ -67,7 +67,7 @@ public class Localizzatore implements IntLocalizzatore {
                 // E' stato trovato il beacon dallo scanner
                 loading_localizzazione.dismiss();               //  Tolgo il messaggio di localizzazione
                 user.setMacAdrs(macAdrs);
-                communicationServer.richiestaMappa(/*context,*/macAdrs);  //   Avvio l Activity passandogli il macAdrs
+                communicationServer.richiestaMappa(macAdrs);  //   Avvio l Activity passandogli il macAdrs
                 stopFinderONE();                              //    Fermo questo Runnable
             }
         }
@@ -92,13 +92,18 @@ public class Localizzatore implements IntLocalizzatore {
 
                 user.setMacAdrs(macAdrs);
 
-                if(user.getModalita() == User.MODALITA_EMERGENZA)
-                    communicationServer.richiediPercorsoEmergenza(macAdrs, user.getPianoUtente(),
-                            user.getMappaView(), user.getMappa());
-                else if(user.getModalita() == User.MODALITA_NORMALEPERCORSO)
-                    communicationServer.richiestaPercorsoNormale(macAdrs, user.getPianoUtente() ,
-                            user.getMappaView(), user.getMappa(), user.getNodoDestinazione().getBeaconId()
-                            ,false );
+                if (user.getModalita() == User.MODALITA_EMERGENZA)
+                    communicationServer.richiediPercorsoEmergenza(macAdrs,
+                            user.getPianoUtente(),
+                            user.getMappaView(),
+                            user.getMappa());
+                else if (user.getModalita() == User.MODALITA_NORMALEPERCORSO)
+                    communicationServer.richiestaPercorsoNormale(macAdrs,
+                            user.getPianoUtente(),
+                            user.getMappaView(),
+                            user.getMappa(),
+                            user.getNodoDestinazione().getBeaconId()
+                            , false);
             }
         }
     };
@@ -164,9 +169,9 @@ public class Localizzatore implements IntLocalizzatore {
         finder.removeCallbacks(findMeONE);
     }
 
-    private void setContext(Context contxt){
+    private void setContext(Context contxt) {
 
-       context = contxt;
+        context = contxt;
     }
 
     public static Localizzatore getInstance(Activity context) {
