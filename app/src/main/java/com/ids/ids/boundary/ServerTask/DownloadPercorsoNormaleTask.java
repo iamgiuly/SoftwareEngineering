@@ -33,12 +33,14 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Task che si preoccupa dell effetuare il download degli aggiornamenti tra DB Locale(App) e DB Server
+ * Task per l invio della richiesta di download del percorso in modalità normale
  */
 public class DownloadPercorsoNormaleTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
+    private AsyncTask<Void, Void, Boolean> execute;
+
     private String MacPosU;
     private String MacDest;
     private int Piano;
@@ -46,7 +48,6 @@ public class DownloadPercorsoNormaleTask extends AsyncTask<Void, Void, String> {
     private Mappa mappa;
     private Context context;
     private boolean Enable;
-    private AsyncTask<Void, Void, Boolean> execute;
     private ProgressDialog download_percorso_in_corso;
 
     public DownloadPercorsoNormaleTask(Context contxt, String macPU , int piano , MappaView mv, Mappa map, String macD ,boolean enable)  {
@@ -75,8 +76,6 @@ public class DownloadPercorsoNormaleTask extends AsyncTask<Void, Void, String> {
             download_percorso_in_corso.show();
         }
         execute = new ServerConnection().execute();
-
-        System.out.println("onPreExecute");
     }
 
     // tutto il codice da eseguire in modo asincrono deve essere inserito nel metodo doInBackground
@@ -104,6 +103,8 @@ public class DownloadPercorsoNormaleTask extends AsyncTask<Void, Void, String> {
                 e.printStackTrace();
             }
             try {
+
+                Log.i("DownloadNormaleTask","Connesso al server");
 
                 //Create the request
                 JSONObject Data = new JSONObject();

@@ -9,7 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Classe che setta i valori per la connessione con il server
+ * Classe che setta i valori per la connessione con il server e testa la connessione
  */
 public class ServerConnection extends AsyncTask<Void, Void, Boolean> {
 

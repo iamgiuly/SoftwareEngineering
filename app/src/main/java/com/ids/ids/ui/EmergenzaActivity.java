@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.control.Localizzatore;
-import com.ids.ids.control.UserController;
+import com.ids.ids.control.User;
 import com.ids.ids.entity.Nodo;
 
 
@@ -31,7 +31,7 @@ import com.ids.ids.entity.Nodo;
  */
 public class EmergenzaActivity extends AppCompatActivity {
 
-    private UserController userController;
+    private User user;
     private CommunicationServer communicationServer;
     private Localizzatore localizzatore;
     private MappaView mappaView;
@@ -54,7 +54,7 @@ public class EmergenzaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergenza);
 
-        userController = UserController.getInstance(this);
+        user = User.getInstance(this);
         localizzatore = Localizzatore.getInstance(this);
         communicationServer = CommunicationServer.getInstance(this);
 
@@ -70,15 +70,15 @@ public class EmergenzaActivity extends AppCompatActivity {
 
         // inizializza la View della mappa
         mappaView = findViewById(R.id.mappaView);
-        userController.setMappaView(mappaView);
+        user.setMappaView(mappaView);
 
         try {
 
             // CASO SEGNALAZIONE
-            if (userController.getModalita() == userController.MODALITA_SEGNALAZIONE) {
+            if (user.getModalita() == user.MODALITA_SEGNALAZIONE) {
 
-                mappaView.setMappa(userController.getMappa());
-               // mappaView.setPosUtente(userController.getMappa().getNodoSpecifico(userController.getMacAdrs()));
+                mappaView.setMappa(user.getMappa());
+               // mappaView.setPosUtente(user.getMappa().getNodoSpecifico(user.getMacAdrs()));
                 mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -97,11 +97,11 @@ public class EmergenzaActivity extends AppCompatActivity {
             } else {
                 //CASO EMERGENZA
 
-                mappaView.setMappa(userController.getMappa(), true);
+                mappaView.setMappa(user.getMappa(), true);
                 localizzatore.startFinderALWAYS();                               //Avvio localizzazione
                 //Avvia aggiornamento db locale
-                communicationServer.richiestaAggiornamenti(true,userController.getPianoUtente());
-                userController.setLocalizzatore(localizzatore);
+                communicationServer.richiestaAggiornamenti(true, user.getPianoUtente());
+                user.setLocalizzatore(localizzatore);
 
                 cambiapianoButton = findViewById(R.id.CambiaPianoButton);
                 cambiapianoButton.setVisibility(View.VISIBLE);
@@ -124,8 +124,8 @@ public class EmergenzaActivity extends AppCompatActivity {
         super.onDestroy();
         if (localizzatore != null)
             localizzatore.stopFinderALWAYS();
-        communicationServer.richiestaAggiornamenti(false, userController.getPianoUtente());
-        userController.DropDB();
+        communicationServer.richiestaAggiornamenti(false, user.getPianoUtente());
+        user.DropDB();
         mappaView.deleteImagePiantina();
     }
 
@@ -203,9 +203,9 @@ public class EmergenzaActivity extends AppCompatActivity {
                 case DialogInterface.BUTTON_POSITIVE: {
                     dialog.cancel();
                     localizzatore.stopFinderALWAYS();
-                    communicationServer.richiestaAggiornamenti(false,userController.getPianoUtente());
+                    communicationServer.richiestaAggiornamenti(false, user.getPianoUtente());
                     finish();
-                    userController.MandaMainActivity();
+                    user.MandaMainActivity();
                     break;
                 }
 

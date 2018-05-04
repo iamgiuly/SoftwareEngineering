@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 
 import java.io.BufferedReader;
@@ -28,24 +29,24 @@ import com.ids.ids.ui.MainActivity;
 import com.ids.ids.ui.R;
 import com.ids.ids.utils.Parametri;
 
-// AsyncTask consente di effettuare operazioni in background
-// in thread separati e poi restituire il risultato al thread dell'interfaccia utente.
-// Per richiamare questa classe basta creare un'istanza della stessa e chiamare il suo metodo execute.
-// < parametri pasati al doBack, progresso , result passato al post >
-
+/**
+ * Task per l invio della richiesta di download info della mappa circa il piano in cui
+ * l utente si trova
+ */
 public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
-    private String PosizioneU;
-    private Context context;
-    private ProgressDialog download_mappa_in_corso;
     private AsyncTask<Void, Void, Boolean> execute;
 
-    public DownloadInfoMappaTask(Context contxt, String posizioneU) {
+    private Context context;
+    private String MacPosU;
+    private ProgressDialog download_mappa_in_corso;
+
+    public DownloadInfoMappaTask(Context contxt, String macU) {
 
         context = contxt;
-        PosizioneU = posizioneU;
+        MacPosU = macU;
     }
 
     @Override
@@ -59,8 +60,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
         download_mappa_in_corso.setCanceledOnTouchOutside(false);
         download_mappa_in_corso.setMessage("Download info mappa in corso..");
         download_mappa_in_corso.show();
-
-        System.out.println("onPreExecute");
     }
 
     // tutto il codice da eseguire in modo asincrono deve essere inserito nel metodo doInBackground
@@ -83,6 +82,8 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
             return null;
         else {
 
+            Log.i("DownInfoMappaTask","Connesso al server");
+
             try {
                 Thread.sleep(1500);
             } catch (Exception e) {
@@ -92,7 +93,7 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
                 //creo il JSON as a key value pair.
                 JSONObject Data = new JSONObject();
-                Data.put("mac_beacon", PosizioneU);
+                Data.put("mac_beacon", MacPosU);
 
                 //Create the request
                 URL url = new URL(PATH + "/FireExit/services/maps/getMappa");
@@ -176,8 +177,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
         } else {
 
-            System.out.println("ciao: " + result.toString());
-
             Type type = new TypeToken<Mappa>() {
             }.getType();
 
@@ -185,7 +184,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
             download_mappa_in_corso.dismiss();
             new DownloadPiantinaTask(context, mappa_scaricata).execute();
-
         }
     }
 }

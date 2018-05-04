@@ -18,13 +18,13 @@ import java.io.FileNotFoundException;
 
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.control.Localizzatore;
-import com.ids.ids.control.UserController;
+import com.ids.ids.control.User;
 import com.ids.ids.entity.Nodo;
 
 
 public class NormaleActivity extends AppCompatActivity {
 
-    private UserController userController;
+    private User user;
     private CommunicationServer communicationServer;
     private Localizzatore localizzatore;
     private MappaView mappaView;
@@ -40,7 +40,7 @@ public class NormaleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normale);
 
-        userController = UserController.getInstance(this);
+        user = User.getInstance(this);
         localizzatore = Localizzatore.getInstance(this);
         communicationServer = CommunicationServer.getInstance(this);
 
@@ -54,15 +54,15 @@ public class NormaleActivity extends AppCompatActivity {
 
         // inizializza la View della mappa
         mappaView = findViewById(R.id.mappaViewNormale);
-        userController.setMappaView(mappaView);
+        user.setMappaView(mappaView);
 
         try {
 
             //CASO SCELTA DESTINAZIONE
-            if(userController.getModalita() == UserController.MODALITA_NORMALE) {
+            if(user.getModalita() == User.MODALITA_NORMALE) {
 
-                mappaView.setMappa(userController.getMappa(), true);
-                mappaView.setPosUtente(userController.getPosUtente());
+                mappaView.setMappa(user.getMappa(), true);
+                mappaView.setPosUtente(user.getPosUtente());
 
                 mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -90,7 +90,7 @@ public class NormaleActivity extends AppCompatActivity {
 
         super.onDestroy();
         localizzatore.stopFinderALWAYS();
-        userController.DropDB();
+        user.DropDB();
         mappaView.deleteImagePiantina();
     }
 
@@ -106,7 +106,7 @@ public class NormaleActivity extends AppCompatActivity {
 
         Nodo nodo = nodoView.getNodo();
 
-        if(nodo.getBeaconId() == userController.getPosUtente().getBeaconId())
+        if(nodo.getBeaconId() == user.getPosUtente().getBeaconId())
             mappaView.messaggio("Attenzione!", "Si trova già nel posto segnalato", false);
         else if(nodoDestinazione == null) {
             nodoDestinazione = nodo;
@@ -122,10 +122,10 @@ public class NormaleActivity extends AppCompatActivity {
 
     public void richiediPercorsoDestinazione() {
 
-        userController.setModalita(UserController.MODALITA_NORMALEPERCORSO);
-        userController.setNodoDestinazione(nodoDestinazione);
-        communicationServer.richiestaPercorsoNormale(userController.getMacAdrs(),userController.getPianoUtente(),
-                mappaView,userController.getMappa(),nodoDestinazione.getBeaconId(),true);
+        user.setModalita(User.MODALITA_NORMALEPERCORSO);
+        user.setNodoDestinazione(nodoDestinazione);
+        communicationServer.richiestaPercorsoNormale(user.getMacAdrs(), user.getPianoUtente(),
+                mappaView, user.getMappa(),nodoDestinazione.getBeaconId(),true);
         localizzatore.startFinderALWAYS();
         RichiediPercorsoButton.setVisibility(View.INVISIBLE);
     }

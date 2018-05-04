@@ -27,7 +27,7 @@ public class Localizzatore {
     private BeaconScanner scanner;
     private Handler finder;
     private ProgressDialog loading_localizzazione;
-    private UserController userController;
+    private User user;
     private CommunicationServer communicationServer;
 
 
@@ -37,7 +37,7 @@ public class Localizzatore {
         context = contxt;
         scanner = BeaconScanner.getInstance(contxt);
         finder = new Handler();
-        userController = UserController.getInstance((Activity) contxt);
+        user = User.getInstance((Activity) contxt);
         communicationServer = CommunicationServer.getInstance(contxt);
     }
 
@@ -73,7 +73,7 @@ public class Localizzatore {
             } else {
                 // E' stato trovato il beacon dallo scanner
                 loading_localizzazione.dismiss();               //  Tolgo il messaggio di localizzazione
-                userController.setMacAdrs(macAdrs);
+                user.setMacAdrs(macAdrs);
                 communicationServer.richiestaMappa(/*context,*/macAdrs);  //   Avvio l Activity passandogli il macAdrs
                 stopFinderONE();                              //    Fermo questo Runnable
             }
@@ -97,14 +97,14 @@ public class Localizzatore {
                 System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
                 finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE);
 
-                userController.setMacAdrs(macAdrs);
+                user.setMacAdrs(macAdrs);
 
-                if(userController.getModalita() == UserController.MODALITA_EMERGENZA)
-                    communicationServer.richiediPercorso(macAdrs, userController.getPianoUtente(),
-                            userController.getMappaView(),userController.getMappa());
-                else if(userController.getModalita() == UserController.MODALITA_NORMALEPERCORSO)
-                    communicationServer.richiestaPercorsoNormale(macAdrs, userController.getPianoUtente() ,
-                            userController.getMappaView(), userController.getMappa(), userController.getNodoDestinazione().getBeaconId()
+                if(user.getModalita() == User.MODALITA_EMERGENZA)
+                    communicationServer.richiediPercorsoEmergenza(macAdrs, user.getPianoUtente(),
+                            user.getMappaView(), user.getMappa());
+                else if(user.getModalita() == User.MODALITA_NORMALEPERCORSO)
+                    communicationServer.richiestaPercorsoNormale(macAdrs, user.getPianoUtente() ,
+                            user.getMappaView(), user.getMappa(), user.getNodoDestinazione().getBeaconId()
                             ,false );
             }
         }

@@ -17,24 +17,26 @@ import java.util.concurrent.ExecutionException;
 
 import com.ids.ids.boundary.ServerTask.AggiornaDatiMappaTask;
 import com.ids.ids.boundary.ServerTask.DownloadPercorsoNormaleTask;
-import com.ids.ids.boundary.ServerTask.DownloadPercorsoTask;
+import com.ids.ids.boundary.ServerTask.DownloadPercorsoEmergenzaTask;
 import com.ids.ids.boundary.ServerTask.DownloadInfoMappaTask;
 import com.ids.ids.boundary.ServerTask.InvioNodiTask;
 
-import com.ids.ids.control.UserController;
-import com.ids.ids.entity.Arco;
+import com.ids.ids.control.User;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.ui.MappaView;
 import com.ids.ids.utils.Parametri;
 
-public class CommunicationServer {
+/**
+ * Espone i metodi che permettono di avviare Task specifici per effettuare le richieste al server
+ */
+public class CommunicationServer implements IntCommunicationServer{
 
     private static CommunicationServer instance = null;
     private static final String TAG = "CommunicationServer";
 
     private final Handler handler = new Handler();
-    private UserController userController;
+    private User user;
     private Context context;
     private int Piano;
 
@@ -44,43 +46,56 @@ public class CommunicationServer {
     }
 
     /**
-     * ottiene come parametri gli ID dei nodi da inviare nella segnalazione,
-     * invia una richiesta RESTful con questi ID,
-     * riceve come risposta l'eventuale successo dell'operazione
+     * Richiama il task specifico per l'invio dei nodi selezionati al server
+     *
+     * @param nodi
+     * @return void
      */
-    public void inviaNodiSottoIncendio(ArrayList<Nodo> nodi/*, Context contxt*/) {
+    public void inviaNodiSottoIncendio(ArrayList<Nodo> nodi) {
 
         new InvioNodiTask(nodi, context).execute();
     }
 
-    public void richiestaPercorsoNormale(String macPosU, int piano, MappaView mv, Mappa mappa, String macDest ,boolean enable){
+    /**
+     * Richiama il task specifico per il download del percorso normale
+     *
+     * @param macPosU , piano , mv , map , macDest , enable
+     * @return void
+     */
+    public void richiestaPercorsoNormale(String macPosU, int piano, MappaView mv, Mappa map, String macDest, boolean enable) {
 
-        new DownloadPercorsoNormaleTask(context , macPosU, piano, mv, mappa , macDest , enable).execute();
+        new DownloadPercorsoNormaleTask(context, macPosU, piano, mv, map, macDest, enable).execute();
     }
 
+    /**
+     * Richiama il task specifico per l'invio dei nodi selezionati al server
+     *
+     * @param macPosU , piano , mv , map
+     * @return void
+     */
+    public void richiediPercorsoEmergenza(String macPosU, int piano, MappaView mV, Mappa map) {
 
-    public void richiediPercorso(String mac, int piano, MappaView mV, Mappa map) {
-
-        new DownloadPercorsoTask(context , mac, piano, mV, map).execute();
+        new DownloadPercorsoEmergenzaTask(context, macPosU, piano, mV, map).execute();
     }
 
     /**
      * Avvia il task per la richiesta della mappa
-     *
+     * <p>
      * Recupera la mappa del Piano in cui si trova l'utente inviando una richiesta al server,
      * passando a questo la posizione dell'utente raffigurata dall'id (MACaddress) del beacon
      *
-     * @param  posizioneU
+     * @param macPosU
+     * @return void
      */
-    public void richiestaMappa(/*Context contxt,*/ String posizioneU) {
+    public void richiestaMappa(String macPosU) {
 
-        new DownloadInfoMappaTask(context, posizioneU).execute();
+        new DownloadInfoMappaTask(context, macPosU).execute();
     }
 
     /**
-     * In base all enable avvia o ferma il runnable relativo alla richiesta di aggiornamenti al server
+     * Avvia o ferma il runnable aggiorna in base al paramentro enable passato come parametro
      *
-     * @param enable
+     * @param enable, piano
      */
     public void richiestaAggiornamenti(Boolean enable, int piano) {
 
@@ -97,7 +112,7 @@ public class CommunicationServer {
         @Override
         public void run() {
 
-            Log.i(TAG,"Richiesta Aggiornamenti");
+            Log.i(TAG, "Richiesta Aggiornamenti");
             String dati_mappa_aggiornata = null;
             try {
                 dati_mappa_aggiornata = new AggiornaDatiMappaTask(Piano).execute().get();
@@ -110,9 +125,9 @@ public class CommunicationServer {
                     Mappa mappa_aggiornata = new Gson().fromJson(dati_mappa_aggiornata, type);
                     mappa_aggiornata.salvataggioLocale(context);
 
-                    userController = UserController.getInstance((Activity)context);
-                    userController.setMappa(mappa_aggiornata);
-                    MappaView m = userController.getMappaView();
+                    user = User.getInstance((Activity) context);
+                    user.setMappa(mappa_aggiornata);
+                    MappaView m = user.getMappaView();
 
                     try {
                         m.setNodi(mappa_aggiornata.getNodi());
@@ -132,7 +147,7 @@ public class CommunicationServer {
         }
     };
 
-    private void setContext(Context contxt){
+    private void setContext(Context contxt) {
 
         context = contxt;
     }

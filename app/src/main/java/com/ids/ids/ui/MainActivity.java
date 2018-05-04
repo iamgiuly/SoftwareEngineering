@@ -18,7 +18,7 @@ import android.widget.Button;
 
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.control.Localizzatore;
-import com.ids.ids.control.UserController;
+import com.ids.ids.control.User;
 
 
 /**
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1; // il popup da mostrare è quello per l'attivazione del bluetooth
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
-    private UserController userController;
+    private User user;
     private Localizzatore localizzatore;
 
     private BluetoothManager btManager;             // utilizzata per ottenere una istanza di Adapter
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSingleton(){
-        userController = UserController.getInstance(this);
+        user = User.getInstance(this);
         localizzatore = Localizzatore.getInstance(this);
         CommunicationServer.getInstance(this);
     }
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneNormale() {
         initSingleton();
-        userController.setModalita(userController.MODALITA_NORMALE);
+        user.setModalita(user.MODALITA_NORMALE);
         if (abilitaBLE())
             localizzatore.startFinderONE();
     }
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneSegnalazione() {
         initSingleton();
-        userController.setModalita(userController.MODALITA_SEGNALAZIONE);
+        user.setModalita(user.MODALITA_SEGNALAZIONE);
         if (abilitaBLE())
             localizzatore.startFinderONE();
     }
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneEmergenza() {
         initSingleton();
-        userController.setModalita(userController.MODALITA_EMERGENZA);
+        user.setModalita(user.MODALITA_EMERGENZA);
         if (abilitaBLE())
             localizzatore.startFinderONE();
     }

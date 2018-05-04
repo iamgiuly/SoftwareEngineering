@@ -12,10 +12,13 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.ids.ids.control.UserController;
+import com.ids.ids.control.User;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.utils.Parametri;
 
+/**
+ * Task per l invio della richiesta di download della piantina del piano in cui l utente si trova
+ */
 public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
     private HttpURLConnection connection;
@@ -23,14 +26,13 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
     private Context context;
     private Mappa mappa_scaricata;
     private ProgressDialog download_immagini_in_corso;
-    private UserController usercontroller;
+    private User usercontroller;
 
     public DownloadPiantinaTask(Context ctx, Mappa mappa) {
 
         context = ctx;
         mappa_scaricata = mappa;
-        usercontroller = UserController.getInstance((Activity) context);
-
+        usercontroller = User.getInstance((Activity) context);
     }
 
     @Override
@@ -58,8 +60,8 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
 
         try {
 
+            Log.i("DownloadPiantinaTask","Connesso al server");
 
-            System.out.println(mappa_scaricata.getPiantina());
             URL url = new URL(PATH + "/FireExit/services/maps/downloadPiantina/" + mappa_scaricata.getPiantina());
             System.out.println(url);
             connection = (HttpURLConnection) url.openConnection();
@@ -113,12 +115,12 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
         download_immagini_in_corso.dismiss();
         Log.i("DownloadPiantinaTask","Piantina scaricata");
 
-        if (usercontroller.getModalita() == UserController.MODALITA_EMERGENZA || usercontroller.getModalita() == UserController.MODALITA_NORMALE)
+        if (usercontroller.getModalita() == User.MODALITA_EMERGENZA || usercontroller.getModalita() == User.MODALITA_NORMALE)
             mappa_scaricata.salvataggioLocale(context);  //PRIMO SALVATAGGIO in locale
 
         usercontroller.setMappa(mappa_scaricata);
         usercontroller.setPianoUtente(mappa_scaricata.getPiano());  //resterà questoi fino al cambio piano
-        if(usercontroller.getModalita() == UserController.MODALITA_EMERGENZA || usercontroller.getModalita() == UserController.MODALITA_SEGNALAZIONE)
+        if(usercontroller.getModalita() == User.MODALITA_EMERGENZA || usercontroller.getModalita() == User.MODALITA_SEGNALAZIONE)
            usercontroller.MandaEmergenzaActivity();
         else
             usercontroller.MandaNormaleActivity();

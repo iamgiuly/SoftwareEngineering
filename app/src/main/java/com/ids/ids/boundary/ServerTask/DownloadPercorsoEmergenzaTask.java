@@ -31,24 +31,25 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Task che si preoccupa dell effetuare il download degli aggiornamenti tra DB Locale(App) e DB Server
+ * Task per l invio della richiesta di download del percorso in caso di emergenza
  */
-public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
+public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
+    private AsyncTask<Void, Void, Boolean> execute;
+
     private Context context;
-    private String Mac;
+    private String MacPosU;
     private Mappa mappa;
     private MappaView mappaView;
     private int piano;
-    private AsyncTask<Void, Void, Boolean> execute;
 
-    public DownloadPercorsoTask(Context contxt, String mac, int Piano, MappaView mV, Mappa map) {
+    public DownloadPercorsoEmergenzaTask(Context contxt, String macU, int Piano, MappaView mV, Mappa map) {
 
         context = contxt;
         piano = Piano;
-        Mac = mac;
+        MacPosU = macU;
         mappaView = mV;
         mappa = map;
     }
@@ -58,8 +59,6 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
 
         super.onPreExecute();
         execute = new ServerConnection().execute();
-
-        System.out.println("onPreExecute");
     }
 
     // tutto il codice da eseguire in modo asincrono deve essere inserito nel metodo doInBackground
@@ -88,9 +87,11 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
             }
             try {
 
+                Log.i("DownloadPercorsoEmer","Connesso al server");
+
                 //Create the request
                 JSONObject Data = new JSONObject();
-                Data.put("posUtente", Mac);
+                Data.put("posUtente", MacPosU);
                 Data.put("piano", piano);
 
                 URL url = new URL(PATH + "/FireExit/services/percorso/getPercorsoMinimo");
@@ -158,7 +159,7 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
             Mappa mappaAggiornata = MappaDAO.getInstance(context).find(piano);
 
             Percorso p = Percorso.getInstance();
-            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getNodoSpecifico(Mac));
+            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getNodoSpecifico(MacPosU));
 
 
         }else{
@@ -169,7 +170,7 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
             percorso = new Gson().fromJson(dati_percorso, type);
         }
 
-        mappaView.setPosUtente(mappa.getNodoSpecifico(Mac));
+        mappaView.setPosUtente(mappa.getNodoSpecifico(MacPosU));
         mappaView.setPercorso(percorso);
 
         //Nel caso in cui il percorso sia zero significa che

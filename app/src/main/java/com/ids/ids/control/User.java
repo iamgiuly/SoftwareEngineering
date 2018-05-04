@@ -13,10 +13,10 @@ import com.ids.ids.ui.MainActivity;
 import com.ids.ids.ui.MappaView;
 import com.ids.ids.ui.NormaleActivity;
 
-public class UserController extends Application {
+public class User extends Application {
 
-    private static UserController instance = null;
-    private static final String TAG = "UserController";
+    private static User instance = null;
+    private static final String TAG = "User";
 
     public static final int MODALITA_SEGNALAZIONE = 0;
     public static final int MODALITA_EMERGENZA = 1;
@@ -33,7 +33,7 @@ public class UserController extends Application {
     private int PianoUtente;
     private int modalita;
 
-    public UserController(Activity contxt) {
+    public User(Activity contxt) {
 
         context = contxt;
         communicationServer = CommunicationServer.getInstance(context.getApplicationContext());
@@ -41,7 +41,7 @@ public class UserController extends Application {
 
     public void DropDB() {
 
-        if (modalita == UserController.MODALITA_EMERGENZA || modalita == UserController.MODALITA_NORMALEPERCORSO)
+        if (modalita == User.MODALITA_EMERGENZA || modalita == User.MODALITA_NORMALEPERCORSO)
             mappa.deletemappa(context);
     }
 
@@ -141,9 +141,9 @@ public class UserController extends Application {
         context = (Activity) contxt;
     }
 
-    public static UserController getInstance(Activity context) {
+    public static User getInstance(Activity context) {
         if (instance == null)
-            instance = new UserController(context);
+            instance = new User(context);
         else
             instance.setContext(context);
         return instance;

@@ -1,10 +1,7 @@
 package com.ids.ids.boundary.ServerTask;
 
-
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.ids.ids.utils.Parametri;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,21 +15,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by User on 09/04/2018.
- */
+import com.ids.ids.utils.Parametri;
 
+/**
+ * Task per l invio della richiesta aggiornamento dati mappa
+ */
 public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
-    private int PianoUtente;
     private AsyncTask<Void, Void, Boolean> execute;
+
+    private int PianoUtente;
 
     public AggiornaDatiMappaTask(int pianoUtente) {
 
         PianoUtente = pianoUtente;
-
     }
 
     @Override
@@ -68,10 +66,11 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
             }
             try {
 
+                Log.i("AggiornamentiTask","Connesso al server");
+
                 //creo il JSON as a key value pair.
                 JSONObject Data = new JSONObject();
                 Data.put("PianoUtente", PianoUtente);
-                System.out.println("   " + Data.toString());
 
                 //Create the request
                 URL url = new URL(PATH + "/FireExit/services/maps/downloadAggiornamenti");
@@ -118,7 +117,6 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
                     }
                 }
             }
-
         }
         return null;
     }
