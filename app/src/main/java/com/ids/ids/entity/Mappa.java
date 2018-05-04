@@ -90,7 +90,7 @@ public class Mappa {
         return Piano == mappa.Piano;
     }
 
-    public Nodo getPosUtente(String macAdrs){
+    public Nodo getNodoSpecifico(String macAdrs){
 
         Nodo result = null;
 

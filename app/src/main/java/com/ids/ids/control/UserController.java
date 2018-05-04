@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
+
 import java.util.ArrayList;
 
 import com.ids.ids.DB.MappaDAO;
@@ -28,53 +29,33 @@ public class UserController extends Application {
     public static final int MODALITA_SEGNALAZIONE = 0;
     public static final int MODALITA_EMERGENZA = 1;
     public static final int MODALITA_NORMALE = 2;
+    public static final int MODALITA_NORMALEPERCORSO = 3;
 
-    private Activity context;
-    private MappaView mappaView;
     private CommunicationServer communicationServer;
     private Localizzatore localizzatore;
+    private MappaView mappaView;
+    private Activity context;
     private Mappa mappa;
     private String macAdrs;
-    private ArrayList<Nodo> nodiSelezionati; // nodi di cui bisogna cambiare il flag "sotto incendio"
+    private Nodo nodoDestinazione;
     private int PianoUtente;
     private int modalita;
 
     public UserController(Activity contxt) {
+
         context = contxt;
         communicationServer = CommunicationServer.getInstance(context.getApplicationContext());
-        nodiSelezionati = new ArrayList<>();
     }
 
     public void DropDB() {
 
-        if(modalita == UserController.MODALITA_EMERGENZA)
-           mappa.deletemappa(context);
+        if (modalita == UserController.MODALITA_EMERGENZA || modalita == UserController.MODALITA_NORMALEPERCORSO)
+            mappa.deletemappa(context);
     }
 
-    /**
-     * Recupera la mappa del piano in cui si trova l'utente inviando una richiesta al server,
-     * passando a questo la posizione dell'utente raffigurata dall'id (MACaddress) del beacon
-     */
-    public void richiestaMappa(Context context, String macAddress) {
-
-        macAdrs = macAddress;
-        communicationServer.richiestaMappa(context, macAddress);
-    }
-
-    /**
-     * I nodi selezionati vengono settati nel db locale come sotto incendio,
-     * viene fatto lo stesso nel db remoto inviando una richiesta RESTful al server,
-     * quindi la lista dei nodi selezionati viene svuotata
-     *
-     * @return true se l'operazione ha successo
-     */
-    public void inviaNodiSelezionati(Context contx) {
-
-        communicationServer.inviaNodiSottoIncendio(nodiSelezionati, contx);
-    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void richiediPercorso(String mac) {
+    public void richiediPercorsoEmergenza(String mac) {
 
         ArrayList<Arco> percorso;
 
@@ -82,14 +63,14 @@ public class UserController extends Application {
 
         if (percorso == null) {
 
-            Log.i(TAG, "Percorso in locale");
+            Log.i(TAG, "Percorso emergenza in locale");
             Mappa mappaAggiornata = MappaDAO.getInstance(context).find(PianoUtente);
 
             Percorso p = Percorso.getInstance();
-            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getPosUtente(mac));
+            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getNodoSpecifico(mac));
         }
 
-        mappaView.setPosUtente(mappa.getPosUtente(mac));
+        mappaView.setPosUtente(mappa.getNodoSpecifico(mac));
         mappaView.setPercorso(percorso);
 
         //Nel caso in cui il percorso sia zero significa che
@@ -115,24 +96,6 @@ public class UserController extends Application {
         communicationServer.richiestaAggiornamenti(enable, PianoUtente);
     }
 
-    /**
-     * Aggiunge o rimuove dalla lista dei nodi selezionati il nodo con l'id passato come parametro
-     *
-     * @param nodo nodo da selezionare o deselezionare
-     * @return true se c'è almeno un nodo selezionato
-     */
-    public boolean selezionaNodo(Nodo nodo) {
-        nodo.setIncendio();
-
-        if (nodo.isCambiato()) {
-            if (!nodiSelezionati.contains(nodo))
-                nodiSelezionati.add(nodo);
-        } else if (nodiSelezionati.contains(nodo))
-            nodiSelezionati.remove(nodo);
-
-        return !nodiSelezionati.isEmpty();
-    }
-
     public void MandaEmergenzaActivity() {
 
         Intent intent = new Intent(context, EmergenzaActivity.class);
@@ -152,9 +115,10 @@ public class UserController extends Application {
         context.startActivity(intent);
     }
 
-    public void clearNodiSelezionati() {
+    //GETTERS
+    public MappaView getMappaView() {
 
-        nodiSelezionati.clear();
+        return mappaView;
     }
 
     public int getModalita() {
@@ -162,14 +126,40 @@ public class UserController extends Application {
         return modalita;
     }
 
+    public Mappa getMappa() {
+
+        return mappa;
+    }
+
+    public String getMacAdrs(){
+
+        return macAdrs;
+    }
+
+    public int getPianoUtente() {
+
+        return PianoUtente;
+    }
+
+    public Nodo getPosUtente() {
+
+        return mappa.getNodoSpecifico(macAdrs);
+    }
+
+    public Nodo getNodoDestinazione(){
+
+        return nodoDestinazione;
+    }
+
+    //SETTERS
     public void setModalita(int mod) {
 
         modalita = mod;
     }
 
-    public Mappa getMappa() {
+    public void setNodoDestinazione(Nodo destinazione) {
 
-        return mappa;
+        nodoDestinazione = destinazione;
     }
 
     public void setMappa(Mappa map) {
@@ -182,11 +172,6 @@ public class UserController extends Application {
         mappaView = mV;
     }
 
-    public MappaView getMappaView() {
-
-        return mappaView;
-    }
-
     public void setPianoUtente(int piano) {
 
         PianoUtente = piano;
@@ -197,14 +182,21 @@ public class UserController extends Application {
         localizzatore = loc;
     }
 
-    public String getMacAdrs(){
+    public void setMacAdrs(String mac) {
 
-        return macAdrs;
+        macAdrs = mac;
+    }
+
+    private void setContext(Context contxt) {
+
+        context = (Activity) contxt;
     }
 
     public static UserController getInstance(Activity context) {
         if (instance == null)
             instance = new UserController(context);
+        else
+            instance.setContext(context);
         return instance;
     }
 }

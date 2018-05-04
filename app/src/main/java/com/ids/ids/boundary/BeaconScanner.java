@@ -123,7 +123,7 @@ public class BeaconScanner {
         public void run() {
 
             // ogni 2 scansioni si rinnova la lista
-            if (refresh == 1) {
+            if (refresh == 2) {
 
                 refresh = 0;
                 RaccogliDevice.clear();

@@ -10,7 +10,7 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.ids.ids.boundary.BeaconScanner;
-import com.ids.ids.ui.MappaView;
+import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.utils.Parametri;
 
 /**
@@ -28,6 +28,7 @@ public class Localizzatore {
     private Handler finder;
     private ProgressDialog loading_localizzazione;
     private UserController userController;
+    private CommunicationServer communicationServer;
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -36,8 +37,8 @@ public class Localizzatore {
         context = contxt;
         scanner = BeaconScanner.getInstance(contxt);
         finder = new Handler();
-        userController = UserController.getInstance((Activity) context);
-
+        userController = UserController.getInstance((Activity) contxt);
+        communicationServer = CommunicationServer.getInstance(contxt);
     }
 
     /*
@@ -72,7 +73,8 @@ public class Localizzatore {
             } else {
                 // E' stato trovato il beacon dallo scanner
                 loading_localizzazione.dismiss();               //  Tolgo il messaggio di localizzazione
-                userController.richiestaMappa(context, macAdrs);  //   Avvio l Activity passandogli il macAdrs
+                userController.setMacAdrs(macAdrs);
+                communicationServer.richiestaMappa(/*context,*/macAdrs);  //   Avvio l Activity passandogli il macAdrs
                 stopFinderONE();                              //    Fermo questo Runnable
             }
         }
@@ -94,7 +96,15 @@ public class Localizzatore {
             } else {
                 System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
                 finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE);
-                userController.richiediPercorso(macAdrs);
+
+                userController.setMacAdrs(macAdrs);
+
+                if(userController.getModalita() == UserController.MODALITA_EMERGENZA)
+                   userController.richiediPercorsoEmergenza(macAdrs);
+                else if(userController.getModalita() == UserController.MODALITA_NORMALEPERCORSO)
+                    communicationServer.richiestaPercorsoNormale(macAdrs, userController.getPianoUtente() ,
+                            userController.getMappaView(), userController.getMappa(), userController.getNodoDestinazione().getBeaconId()
+                            ,false );
             }
         }
     };
@@ -153,9 +163,17 @@ public class Localizzatore {
         finder.removeCallbacks(findMeONE);
     }
 
+    private void setContext(Context contxt){
+
+       context = contxt;
+    }
+
     public static Localizzatore getInstance(Activity context) {
         if (instance == null)
             instance = new Localizzatore(context);
+        else
+            instance.setContext(context);
+
         return instance;
     }
 }

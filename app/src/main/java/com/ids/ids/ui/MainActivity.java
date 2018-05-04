@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.control.Localizzatore;
 import com.ids.ids.control.UserController;
 
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     // consente di eseguire attività Bluetooth fondamental
     // (es. avviare il rilevamento dei dispositivi)
     private BroadcastReceiver receiver;             // permette di ricevere notifice sullo stato del dispositivo
+
     private Button normaleButton;
     private Button segnalazioneButton;
     private Button emergenzaButton;
@@ -56,8 +58,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        userController = UserController.getInstance(this);
-        this.initBluetooth();
+        initBluetooth();
 
         normaleButton = findViewById(R.id.normaleButton);
         normaleButton.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
 
         btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         btAdapter = btManager.getAdapter();
-        localizzatore = Localizzatore.getInstance(this);
         receiver = new BroadcastReceiver() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -136,13 +136,19 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(receiver, filter);
 
         Bundle datipassati = getIntent().getExtras();
-        if (datipassati != null) {
+        if (datipassati != null)
             listenerBottoneEmergenza();
-        }
+    }
+
+    private void initSingleton(){
+        userController = UserController.getInstance(this);
+        localizzatore = Localizzatore.getInstance(this);
+        CommunicationServer.getInstance(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneNormale() {
+        initSingleton();
         userController.setModalita(userController.MODALITA_NORMALE);
         if (abilitaBLE())
             localizzatore.startFinderONE();
@@ -155,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneSegnalazione() {
+        initSingleton();
         userController.setModalita(userController.MODALITA_SEGNALAZIONE);
         if (abilitaBLE())
             localizzatore.startFinderONE();
@@ -167,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void listenerBottoneEmergenza() {
+        initSingleton();
         userController.setModalita(userController.MODALITA_EMERGENZA);
         if (abilitaBLE())
             localizzatore.startFinderONE();

@@ -5,8 +5,6 @@ package com.ids.ids.ui;
  */
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -34,13 +32,12 @@ import com.ids.ids.entity.Nodo;
  */
 public class NormaleActivity extends AppCompatActivity {
 
-    private MappaView mappaView;
     private UserController userController;
+    private CommunicationServer communicationServer;
     private Localizzatore localizzatore;
-    private Button inviaDestinazioneButton;                 // invisibile all'inizio
+    private MappaView mappaView;
     private Nodo nodoDestinazione;
-    private Nodo posUtente;
-
+    private Button RichiediPercorsoButton;                 // invisibile all'inizio
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
@@ -52,19 +49,19 @@ public class NormaleActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normale);
 
         userController = UserController.getInstance(this);
-        userController.clearNodiSelezionati();
         localizzatore = Localizzatore.getInstance(this);
-        CommunicationServer.getInstance(this);
+        communicationServer = CommunicationServer.getInstance(this);
 
-        inviaDestinazioneButton = findViewById(R.id.inviaDestinazioneButton);
-        inviaDestinazioneButton.setOnClickListener(new View.OnClickListener() {
+        RichiediPercorsoButton = findViewById(R.id.RichiediPercorsoButton);
+        RichiediPercorsoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listenerInviaDestinazione();
+                richiediPercorsoDestinazione();
             }
         });
 
@@ -74,23 +71,34 @@ public class NormaleActivity extends AppCompatActivity {
 
         try {
 
-            mappaView.setMappa(userController.getMappa());
-            posUtente = userController.getMappa().getPosUtente(userController.getMacAdrs());
-            mappaView.setPosUtente(posUtente);
-            mappaView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
+            //CASO SCELTA DESTINAZIONE
+            if(userController.getModalita() == UserController.MODALITA_NORMALE) {
 
-                    if (motionEvent.getAction() != MotionEvent.ACTION_DOWN)
+                mappaView.setMappa(userController.getMappa(), true);
+                mappaView.setPosUtente(userController.getPosUtente());
+
+                mappaView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                        if (motionEvent.getAction() != MotionEvent.ACTION_DOWN)
+                            return true;
+                        NodoView nodoView = mappaView.getNodoPremuto((int) motionEvent.getX(), (int) motionEvent.getY());
+                        if (nodoView != null)
+                            listenerNodoSelezionato(nodoView);
+                        mappaView.invalidate();
                         return true;
-                    NodoView nodoView = mappaView.getNodoPremuto((int) motionEvent.getX(), (int) motionEvent.getY());
-                    if (nodoView != null)
-                        listenerNodoSelezionato(nodoView);
-                    mappaView.invalidate();
-                    return true;
 
-                }
-            });
+                    }
+                });
+
+            }else if(userController.getModalita() == UserController.MODALITA_NORMALEPERCORSO){
+
+                //CASO PERCORSO
+
+                mappaView.setMappa(userController.getMappa(), true);
+                localizzatore.startFinderALWAYS();                               //Avvio localizzazione
+            }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -121,22 +129,27 @@ public class NormaleActivity extends AppCompatActivity {
 
         Nodo nodo = nodoView.getNodo();
 
-        if(nodo.getBeaconId() == posUtente.getBeaconId())
+        if(nodo.getBeaconId() == userController.getPosUtente().getBeaconId())
             mappaView.messaggio("Attenzione!", "Si trova già nel posto segnalato", false);
         else if(nodoDestinazione == null) {
             nodoDestinazione = nodo;
             nodoView.setImage(R.drawable.destinazione);
-            inviaDestinazioneButton.setVisibility(View.VISIBLE);
+            RichiediPercorsoButton.setVisibility(View.VISIBLE);
         }else if(nodo.getBeaconId() == nodoDestinazione.getBeaconId()) {  //deselezione
             nodoView.setImage(nodo.getImage());
             nodoDestinazione = null;
-            inviaDestinazioneButton.setVisibility(View.INVISIBLE);
+            RichiediPercorsoButton.setVisibility(View.INVISIBLE);
         } else if (nodoDestinazione != null)
             mappaView.messaggio("Attenzione!","E' gia segnata una destinazione.\nDeselezionarla per cambiare", true);
     }
 
-    public void listenerInviaDestinazione() {
+    public void richiediPercorsoDestinazione() {
 
-        //userController.inviaDestinazione(this);
+        userController.setModalita(UserController.MODALITA_NORMALEPERCORSO);
+        userController.setNodoDestinazione(nodoDestinazione);
+        communicationServer.richiestaPercorsoNormale(userController.getMacAdrs(),userController.getPianoUtente(),
+                mappaView,userController.getMappa(),nodoDestinazione.getBeaconId(),true);
+        localizzatore.startFinderALWAYS();
+        RichiediPercorsoButton.setVisibility(View.INVISIBLE);
     }
 }

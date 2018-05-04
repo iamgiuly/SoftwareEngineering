@@ -1,5 +1,6 @@
 package com.ids.ids.boundary;
 
+import android.app.Activity;
 import android.support.annotation.RequiresApi;
 
 import android.content.Context;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import com.ids.ids.boundary.ServerTask.AggiornaDatiMappaTask;
+import com.ids.ids.boundary.ServerTask.DownloadPercorsoNormaleTask;
 import com.ids.ids.boundary.ServerTask.DownloadPercorsoTask;
 import com.ids.ids.boundary.ServerTask.DownloadInfoMappaTask;
 import com.ids.ids.boundary.ServerTask.InvioNodiTask;
@@ -31,15 +33,14 @@ public class CommunicationServer {
     private static CommunicationServer instance = null;
     private static final String TAG = "CommunicationServer";
 
-    private Context context;
-    private UserController userController;
     private final Handler handler = new Handler();
-    private int piano;
+    private UserController userController;
+    private Context context;
+    private int Piano;
 
-    private CommunicationServer(Context context) {
+    private CommunicationServer(Context contxt) {
 
-        this.context = context;
-
+        context = contxt;
     }
 
     /**
@@ -47,16 +48,21 @@ public class CommunicationServer {
      * invia una richiesta RESTful con questi ID,
      * riceve come risposta l'eventuale successo dell'operazione
      */
-    public void inviaNodiSottoIncendio(ArrayList<Nodo> nodi, Context contxt) {
+    public void inviaNodiSottoIncendio(ArrayList<Nodo> nodi/*, Context contxt*/) {
 
-        new InvioNodiTask(nodi, contxt).execute();
+        new InvioNodiTask(nodi, context).execute();
+    }
+
+    public void richiestaPercorsoNormale(String macPosU, int piano, MappaView mv, Mappa mappa, String macDest ,boolean enable){
+
+        new DownloadPercorsoNormaleTask(context , macPosU, piano, mv, mappa , macDest , enable).execute();
     }
 
     /**
      * Avvia il task per la richiesta del percorso e una volta ricevuto, se non è null,
      * lo mappa lato App
      *
-     * @param mac , piano
+     * @param mac , Piano
      * @return percorso --> null se la connessione è caduta
      */
     public ArrayList<Arco> richiediPercorso(String mac, int piano) {
@@ -89,14 +95,14 @@ public class CommunicationServer {
     /**
      * Avvia il task per la richiesta della mappa
      *
-     * Recupera la mappa del piano in cui si trova l'utente inviando una richiesta al server,
+     * Recupera la mappa del Piano in cui si trova l'utente inviando una richiesta al server,
      * passando a questo la posizione dell'utente raffigurata dall'id (MACaddress) del beacon
      *
-     * @param contxt, posizioneU
+     * @param  posizioneU
      */
-    public void richiestaMappa(Context contxt, String posizioneU) {
+    public void richiestaMappa(/*Context contxt,*/ String posizioneU) {
 
-        new DownloadInfoMappaTask(contxt, posizioneU).execute();
+        new DownloadInfoMappaTask(context, posizioneU).execute();
     }
 
     /**
@@ -104,9 +110,9 @@ public class CommunicationServer {
      *
      * @param enable
      */
-    public void richiestaAggiornamenti(Boolean enable, int PianoUtente) {
+    public void richiestaAggiornamenti(Boolean enable, int piano) {
 
-        piano = PianoUtente;
+        Piano = piano;
         if (enable)
             handler.postDelayed(Aggiorna, Parametri.T_AGGIORNAMENTI);
         else
@@ -122,7 +128,7 @@ public class CommunicationServer {
             Log.i(TAG,"Richiesta Aggiornamenti");
             String dati_mappa_aggiornata = null;
             try {
-                dati_mappa_aggiornata = new AggiornaDatiMappaTask(piano).execute().get();
+                dati_mappa_aggiornata = new AggiornaDatiMappaTask(Piano).execute().get();
 
                 if (dati_mappa_aggiornata != null) {
 
@@ -132,7 +138,7 @@ public class CommunicationServer {
                     Mappa mappa_aggiornata = new Gson().fromJson(dati_mappa_aggiornata, type);
                     mappa_aggiornata.salvataggioLocale(context);
 
-                    userController = UserController.getInstance(null);
+                    userController = UserController.getInstance((Activity)context);
                     userController.setMappa(mappa_aggiornata);
                     MappaView m = userController.getMappaView();
 
@@ -154,9 +160,16 @@ public class CommunicationServer {
         }
     };
 
+    private void setContext(Context contxt){
+
+        context = contxt;
+    }
+
     public static CommunicationServer getInstance(Context context) {
         if (instance == null)
             instance = new CommunicationServer(context);
+        else
+            instance.setContext(context);
         return instance;
     }
 }

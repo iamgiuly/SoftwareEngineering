@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.control.Localizzatore;
@@ -30,9 +31,12 @@ import com.ids.ids.entity.Nodo;
  */
 public class EmergenzaActivity extends AppCompatActivity {
 
-    private MappaView mappaView;
     private UserController userController;
+    private CommunicationServer communicationServer;
     private Localizzatore localizzatore;
+    private MappaView mappaView;
+    private ArrayList<Nodo> nodiSelezionati; // nodi di cui bisogna cambiare il flag "sotto incendio"
+
     private Button inviaNodiButton;                 // invisibile all'inizio
     private Button cambiapianoButton;
 
@@ -46,13 +50,15 @@ public class EmergenzaActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergenza);
 
         userController = UserController.getInstance(this);
-        userController.clearNodiSelezionati();
         localizzatore = Localizzatore.getInstance(this);
-        CommunicationServer.getInstance(this);
+        communicationServer = CommunicationServer.getInstance(this);
+
+        nodiSelezionati = new ArrayList<>();
 
         inviaNodiButton = findViewById(R.id.inviaNodiButton);
         inviaNodiButton.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +78,7 @@ public class EmergenzaActivity extends AppCompatActivity {
             if (userController.getModalita() == userController.MODALITA_SEGNALAZIONE) {
 
                 mappaView.setMappa(userController.getMappa());
-               // mappaView.setPosUtente(userController.getMappa().getPosUtente(userController.getMacAdrs()));
+               // mappaView.setPosUtente(userController.getMappa().getNodoSpecifico(userController.getMacAdrs()));
                 mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -87,6 +93,7 @@ public class EmergenzaActivity extends AppCompatActivity {
 
                     }
                 });
+
             } else {
                 //CASO EMERGENZA
 
@@ -140,12 +147,32 @@ public class EmergenzaActivity extends AppCompatActivity {
 
         Nodo nodo = nodoView.getNodo();
 
-        if (userController.selezionaNodo(nodo))
+        if (selezionaNodo(nodo))
             inviaNodiButton.setVisibility(View.VISIBLE);
         else
             inviaNodiButton.setVisibility(View.INVISIBLE);
 
         nodoView.setImage(nodo.getImage());
+    }
+
+
+    /**
+     * Aggiunge o rimuove dalla lista dei nodi selezionati il nodo con l'id passato come parametro
+     *
+     * @param nodo nodo da selezionare o deselezionare
+     * @return true se c'è almeno un nodo selezionato
+     */
+
+    private boolean selezionaNodo(Nodo nodo) {
+        nodo.setIncendio();
+
+        if (nodo.isCambiato()) {
+            if (!nodiSelezionati.contains(nodo))
+                nodiSelezionati.add(nodo);
+        } else if (nodiSelezionati.contains(nodo))
+            nodiSelezionati.remove(nodo);
+
+        return !nodiSelezionati.isEmpty();
     }
 
     /**
@@ -156,7 +183,7 @@ public class EmergenzaActivity extends AppCompatActivity {
      */
     public void listenerBottoneInvioNodi() {
 
-        userController.inviaNodiSelezionati(this);
+        communicationServer.inviaNodiSottoIncendio(nodiSelezionati/*, this*/);
     }
 
     private void listenerBottoneCambiaPiano() {
