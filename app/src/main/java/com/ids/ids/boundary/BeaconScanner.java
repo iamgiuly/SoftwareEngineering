@@ -23,7 +23,7 @@ import com.ids.ids.utils.Parametri;
  * La classe BeaconScanner presenta i metodi per effettuare la scansione periodica dei dispositivi
  * BLE (Bluetooth Low Energy) che si trovano nelle vicinanze
  */
-public class BeaconScanner {
+public class BeaconScanner implements IntBeaconScanner{
 
     private static BeaconScanner instance = null;
     private static final String TAG = "BeaconScanner";

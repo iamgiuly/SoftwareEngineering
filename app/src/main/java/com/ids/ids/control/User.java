@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.ids.ids.boundary.CommunicationServer;
+import com.ids.ids.boundary.IntCommunicationServer;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.ui.EmergenzaActivity;
