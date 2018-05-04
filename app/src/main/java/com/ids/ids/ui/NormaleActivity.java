@@ -22,14 +22,6 @@ import com.ids.ids.control.UserController;
 import com.ids.ids.entity.Nodo;
 
 
-/**
- * Questa activity viene mostrata al tap sul bottone "Segnala Emergenza",
- * al suo avvio carica la mappa in cui si trova l'utente e la visualizza con i suoi nodi opportunamente contrassegnati,
- * ad essi vengono associati dei listener, che al tap richiamano il metodo listenerNodoSelezionato() il quale
- * chiede al Controller di aggiungere / rimuovere il nodo premuto alla / dalla lista dei nodi selezionati.
- * Al tap sul bottone "Invia Nodi" (visibile se almeno un nodo è selezionato),
- * viene chiesto al Controller di inviare al server i nodi selezionati
- */
 public class NormaleActivity extends AppCompatActivity {
 
     private UserController userController;
@@ -37,14 +29,9 @@ public class NormaleActivity extends AppCompatActivity {
     private Localizzatore localizzatore;
     private MappaView mappaView;
     private Nodo nodoDestinazione;
-    private Button RichiediPercorsoButton;                 // invisibile all'inizio
+    private Button RichiediPercorsoButton;
 
-    /**
-     * Vengono visualizzati gli elementi della UI e settati i listener,
-     * viene caricata e visualizzata la mappa con i suoi nodi e settati i listener associati ad essi
-     *
-     * @param savedInstanceState
-     */
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
@@ -91,15 +78,7 @@ public class NormaleActivity extends AppCompatActivity {
 
                     }
                 });
-
-            }else if(userController.getModalita() == UserController.MODALITA_NORMALEPERCORSO){
-
-                //CASO PERCORSO
-
-                mappaView.setMappa(userController.getMappa(), true);
-                localizzatore.startFinderALWAYS();                               //Avvio localizzazione
             }
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -108,7 +87,11 @@ public class NormaleActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onDestroy() {
+
         super.onDestroy();
+        localizzatore.stopFinderALWAYS();
+        userController.DropDB();
+        mappaView.deleteImagePiantina();
     }
 
     //per finish()
@@ -119,12 +102,6 @@ public class NormaleActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    /**
-     * Richiamato dal listener associato ad un nodo, tale nodo deve essere opportunamente contrassegnato
-     * oltre ad essere aggiunto alla / rimosso dalla lista dei nodi selezionati,
-     * viene quindi controllato se c'è almeno un nodo selezionato in modo tale da
-     * rendere visibile o invisibile il bottone "Invia Nodi"
-     */
     public void listenerNodoSelezionato(NodoView nodoView) {
 
         Nodo nodo = nodoView.getNodo();

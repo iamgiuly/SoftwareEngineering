@@ -58,38 +58,10 @@ public class CommunicationServer {
         new DownloadPercorsoNormaleTask(context , macPosU, piano, mv, mappa , macDest , enable).execute();
     }
 
-    /**
-     * Avvia il task per la richiesta del percorso e una volta ricevuto, se non è null,
-     * lo mappa lato App
-     *
-     * @param mac , Piano
-     * @return percorso --> null se la connessione è caduta
-     */
-    public ArrayList<Arco> richiediPercorso(String mac, int piano) {
 
-        ArrayList<Arco> percorso = null;
+    public void richiediPercorso(String mac, int piano, MappaView mV, Mappa map) {
 
-        try {
-
-            String dati_percorso = new DownloadPercorsoTask(mac, piano).execute().get();
-
-            if (dati_percorso != null) {
-
-                Log.i(TAG, "Percorso del Server"+dati_percorso.toString());
-
-                Type type = new TypeToken<ArrayList<Arco>>() {
-                }.getType();
-                // Estrazione dell ArrayList inviato dall app
-                percorso = new Gson().fromJson(dati_percorso, type);
-            }
-
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return percorso;
+        new DownloadPercorsoTask(context , mac, piano, mV, map).execute();
     }
 
     /**

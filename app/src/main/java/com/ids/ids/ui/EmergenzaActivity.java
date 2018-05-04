@@ -100,7 +100,7 @@ public class EmergenzaActivity extends AppCompatActivity {
                 mappaView.setMappa(userController.getMappa(), true);
                 localizzatore.startFinderALWAYS();                               //Avvio localizzazione
                 //Avvia aggiornamento db locale
-                userController.richiestaAggiornamento(true);             //Avvio richiesta aggiornamento
+                communicationServer.richiestaAggiornamenti(true,userController.getPianoUtente());
                 userController.setLocalizzatore(localizzatore);
 
                 cambiapianoButton = findViewById(R.id.CambiaPianoButton);
@@ -124,7 +124,7 @@ public class EmergenzaActivity extends AppCompatActivity {
         super.onDestroy();
         if (localizzatore != null)
             localizzatore.stopFinderALWAYS();
-        userController.richiestaAggiornamento(false);
+        communicationServer.richiestaAggiornamenti(false, userController.getPianoUtente());
         userController.DropDB();
         mappaView.deleteImagePiantina();
     }
@@ -203,7 +203,7 @@ public class EmergenzaActivity extends AppCompatActivity {
                 case DialogInterface.BUTTON_POSITIVE: {
                     dialog.cancel();
                     localizzatore.stopFinderALWAYS();
-                    userController.richiestaAggiornamento(false);
+                    communicationServer.richiestaAggiornamenti(false,userController.getPianoUtente());
                     finish();
                     userController.MandaMainActivity();
                     break;

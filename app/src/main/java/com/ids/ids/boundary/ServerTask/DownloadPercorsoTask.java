@@ -1,7 +1,19 @@
 package com.ids.ids.boundary.ServerTask;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.ids.ids.DB.MappaDAO;
+import com.ids.ids.boundary.CommunicationServer;
+import com.ids.ids.control.Localizzatore;
+import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.Percorso;
+import com.ids.ids.ui.MappaView;
 import com.ids.ids.utils.Parametri;
 
 import org.json.JSONException;
@@ -12,8 +24,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -23,14 +37,20 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
+    private Context context;
     private String Mac;
+    private Mappa mappa;
+    private MappaView mappaView;
     private int piano;
     private AsyncTask<Void, Void, Boolean> execute;
 
-    public DownloadPercorsoTask(String mac, int Piano) {
+    public DownloadPercorsoTask(Context contxt, String mac, int Piano, MappaView mV, Mappa map) {
 
+        context = contxt;
         piano = Piano;
         Mac = mac;
+        mappaView = mV;
+        mappa = map;
     }
 
     @Override
@@ -128,8 +148,39 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(String dati_percorso) {
 
-       //VUOTO LO PRENDO DAL CommunicationServer
+        ArrayList<Arco> percorso = null;
+
+        if(dati_percorso == null){
+
+            Log.i("DownloadPercorsoEmer", "Percorso emergenza in locale");
+            Mappa mappaAggiornata = MappaDAO.getInstance(context).find(piano);
+
+            Percorso p = Percorso.getInstance();
+            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getNodoSpecifico(Mac));
+
+
+        }else{
+
+            Type type = new TypeToken<ArrayList<Arco>>() {
+            }.getType();
+            // Estrazione dell ArrayList inviato dall app
+            percorso = new Gson().fromJson(dati_percorso, type);
+        }
+
+        mappaView.setPosUtente(mappa.getNodoSpecifico(Mac));
+        mappaView.setPercorso(percorso);
+
+        //Nel caso in cui il percorso sia zero significa che
+        //l utente ha raggiunto l uscita
+        //per questo lo avvisiamo attraverso un messaggio
+        if (percorso.size() == 0) {
+            Localizzatore.getInstance((Activity) context);
+            CommunicationServer.getInstance(context).richiestaAggiornamenti(false , piano);
+            mappaView.messaggio("Sei al sicuro", "Hai raggiunto l uscita", false);
+        }
+
+        mappaView.postInvalidate();
     }
 }

@@ -100,7 +100,8 @@ public class Localizzatore {
                 userController.setMacAdrs(macAdrs);
 
                 if(userController.getModalita() == UserController.MODALITA_EMERGENZA)
-                   userController.richiediPercorsoEmergenza(macAdrs);
+                    communicationServer.richiediPercorso(macAdrs, userController.getPianoUtente(),
+                            userController.getMappaView(),userController.getMappa());
                 else if(userController.getModalita() == UserController.MODALITA_NORMALEPERCORSO)
                     communicationServer.richiestaPercorsoNormale(macAdrs, userController.getPianoUtente() ,
                             userController.getMappaView(), userController.getMappa(), userController.getNodoDestinazione().getBeaconId()
@@ -173,7 +174,6 @@ public class Localizzatore {
             instance = new Localizzatore(context);
         else
             instance.setContext(context);
-
         return instance;
     }
 }
