@@ -1,12 +1,12 @@
 package com.ids.ids.control;
 
 import android.annotation.TargetApi;
+import android.support.annotation.RequiresApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.ids.ids.boundary.BeaconScanner;
@@ -14,11 +14,18 @@ import com.ids.ids.boundary.CommunicationServer;
 import com.ids.ids.utils.Parametri;
 
 /**
- * La classe Localizzatore presenta i metodi per localizzare l utente grazie ai risultati (MAC address)
- * forniti dallo scanner
+ * Presenta i metodi per localizzare l utente grazie ai risultati (MAC address)
+ * forniti dal BeaconScanner
+ *
+ * Nota localizzazioni:
+
+ * ALWAYS: mantiene sempre attivo il BeaconScanner
+ *         mantiene sempre attivo il Runnable findMeAlways
+
+ * ONE:    appena trovato il Beacon più vicino il BeaconScanner e il Runnable findMeONE vengono fermati
  */
 
-public class Localizzatore {
+public class Localizzatore implements IntLocalizzatore {
 
     private static Localizzatore instance = null;
     private static final String TAG = "Localizzatore";
@@ -41,20 +48,6 @@ public class Localizzatore {
         communicationServer = CommunicationServer.getInstance(contxt);
     }
 
-    /*
-    =========================================================================================================
-
-      Nota localizzazioni:
-
-      ALWAYS: Utilizzata dalla mappa
-              tiene sempre attivo il BeaconScanner
-              tiene sempre attivo il Runnable findMeAlways
-
-      ONE:    Utilizzato al click del bottone SegnalaEmergenza
-              Appena trovato il Beacon più vicino il BeaconScanner e il Runnable findMeONE vengono fermati
-
-     ========================================================================================================
-     */
 
     // FindMeONE viene è un Runnable utilizzato al click del bottone segnala emergenza
     // Appena la posizione dell utente è stata trovata termina la scansione
@@ -113,11 +106,12 @@ public class Localizzatore {
     /*
     ========================================================================================================
      AVVIO RUNNABLE
-     =======================================================================================================
+    =======================================================================================================
      */
 
-
-    // Avvia la localizzazione ONE
+    /**
+     * Avvia la localizzazione ONE
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void startFinderONE() {
 
@@ -133,7 +127,9 @@ public class Localizzatore {
 
     }
 
-    // Avvia la localizzazione ALWAYS
+    /**
+     * Avvia la localizzazione ALWAYS
+     */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void startFinderALWAYS() {
 
@@ -148,7 +144,9 @@ public class Localizzatore {
      =======================================================================================================
      */
 
-    // Ferma la localizzazione ALWAYS
+    /**
+     * Ferma la localizzazione ALWAYS
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void stopFinderALWAYS() {
 
@@ -156,7 +154,9 @@ public class Localizzatore {
         finder.removeCallbacks(findMeALWAYS);
     }
 
-    // Ferma la localizzazione ONE
+    /**
+     * Ferma la localizzazione ONE
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void stopFinderONE() {
 

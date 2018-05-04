@@ -22,7 +22,9 @@ import com.ids.ids.control.User;
 
 
 /**
- * Questa activity viene mostrata all'apertura dell'applicazione, visualizza il bottone "Segnala Emergenza",
+ * Questa activity viene mostrata all'apertura dell'applicazione.
+ * Visualizza i bottoni:
+ *     -
  * a tale bottone viene associato un listener, che al tap su di esso richiama il metodo listenerBottoneSegnalazione() il quale:
  * - rimanda l'utente online alla EmergenzaActivity
  * - mostra un messaggio di errore all'utente offline
