@@ -16,12 +16,12 @@ import com.ids.ids.utils.Parametri;
 /**
  * Presenta i metodi per localizzare l utente grazie ai risultati (MAC address)
  * forniti dal BeaconScanner
- * <p>
+ *
  * Nota localizzazioni:
- * <p>
+ *
  * ALWAYS: mantiene sempre attivo il BeaconScanner
- * mantiene sempre attivo il Runnable findMeAlways
- * <p>
+ *         mantiene sempre attivo il Runnable findMeAlways
+ *
  * ONE:    appena trovato il Beacon più vicino il BeaconScanner e il Runnable findMeONE vengono fermati
  */
 
@@ -49,8 +49,10 @@ public class Localizzatore implements IntLocalizzatore {
     }
 
 
-    // FindMeONE viene è un Runnable utilizzato al click del bottone segnala emergenza
-    // Appena la posizione dell utente è stata trovata termina la scansione
+    /*
+     * FindMeONE viene è un Runnable utilizzato al click del bottone segnala emergenza
+     * Appena la posizione dell utente è stata trovata termina la scansione
+     */
     private final Runnable findMeONE = new Runnable() {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
@@ -73,7 +75,9 @@ public class Localizzatore implements IntLocalizzatore {
         }
     };
 
-    // FindMeALWAYS è un Runnable utilizzato dalla mappa
+    /*
+     * FindMeALWAYS è un Runnable utilizzato dalla mappa
+     */
     private final Runnable findMeALWAYS = new Runnable() {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
@@ -116,6 +120,7 @@ public class Localizzatore implements IntLocalizzatore {
 
     /**
      * Avvia la localizzazione ONE
+     *
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void startFinderONE() {

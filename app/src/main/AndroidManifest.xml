@@ -11,7 +11,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/fireexit"
+        android:icon="@mipmap/fireexiticon"
         android:label="FireExit"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"

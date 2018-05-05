@@ -48,8 +48,7 @@ public class CommunicationServer implements IntCommunicationServer{
     /**
      * Richiama il task specifico per l'invio dei nodi selezionati al server
      *
-     * @param nodi
-     * @return void
+     * @param nodi selezionati dall utente essere sotto incendio
      */
     public void inviaNodiSottoIncendio(ArrayList<Nodo> nodi) {
 
@@ -59,8 +58,12 @@ public class CommunicationServer implements IntCommunicationServer{
     /**
      * Richiama il task specifico per il download del percorso normale
      *
-     * @param macPosU , piano , mv , map , macDest , enable
-     * @return void
+     * @param macPosU indirizzo MAC del nodo Posizone Utente
+     * @param piano piano in cui si trova l utente
+     * @param mv hash della mappa View utilizzata
+     * @param map mappa del piano in cui l utente si trova
+     * @param macDest indirizzo MAC del nodo a cui l utente vuole arrivare
+     * @param enable abilita o meno la finestra di download percorso
      */
     public void richiestaPercorsoNormale(String macPosU, int piano, MappaView mv, Mappa map, String macDest, boolean enable) {
 
@@ -70,8 +73,10 @@ public class CommunicationServer implements IntCommunicationServer{
     /**
      * Richiama il task specifico per l'invio dei nodi selezionati al server
      *
-     * @param macPosU , piano , mv , map
-     * @return void
+     * @param macPosU indirizzo MAC del nodo Posizone Utente
+     * @param piano piano in cui si trova l utente
+     * @param mV hash della mappa View utilizzata
+     * @param map mappa del piano in cui l utente si trova
      */
     public void richiediPercorsoEmergenza(String macPosU, int piano, MappaView mV, Mappa map) {
 
@@ -80,12 +85,11 @@ public class CommunicationServer implements IntCommunicationServer{
 
     /**
      * Avvia il task per la richiesta della mappa
-     * <p>
+     *
      * Recupera la mappa del Piano in cui si trova l'utente inviando una richiesta al server,
      * passando a questo la posizione dell'utente raffigurata dall'id (MACaddress) del beacon
      *
-     * @param macPosU
-     * @return void
+     * @param macPosU indirizzo Mac del nodo Posizione utente
      */
     public void richiestaMappa(String macPosU) {
 
@@ -95,7 +99,8 @@ public class CommunicationServer implements IntCommunicationServer{
     /**
      * Avvia o ferma il runnable aggiorna in base al paramentro enable passato come parametro
      *
-     * @param enable, piano
+     * @param enable abilitare o disattivare il thread per la richiesta aggiornamenti
+     * @param piano piano in cui si trova l utente
      */
     public void richiestaAggiornamenti(Boolean enable, int piano) {
 
@@ -106,7 +111,9 @@ public class CommunicationServer implements IntCommunicationServer{
             handler.removeCallbacks(Aggiorna);
     }
 
-    // Runnable per l aggiornamento
+    /*
+     * Runnable per l aggiornamento
+     */
     private final Runnable Aggiorna = new Runnable() {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override

@@ -8,9 +8,8 @@ import com.ids.ids.ui.MainActivity;
 import com.ids.ids.ui.NormaleActivity;
 
 /**
- * Created by User on 05/05/2018.
+ * Pone a disposizione i metodi per lanciare le diverse activity di FireExit
  */
-
 public class GestoreUI implements IntGestoreUI{
 
     private static GestoreUI instance;
@@ -19,12 +18,22 @@ public class GestoreUI implements IntGestoreUI{
 
     }
 
+    /**
+     * Lancia l activity Emergenza
+     *
+     * @param context dell Activity che si sta utilizzando quando questo metodo è richiamato
+     */
     public void MandaEmergenzaActivity(Context context) {
 
         Intent intent = new Intent(context, EmergenzaActivity.class);
         context.startActivity(intent);
     }
 
+    /**
+     * Lancia l activity Main
+     *
+     * @param context dell Activity che si sta utilizzando quando questo metodo è richiamato
+     */
     public void MandaMainActivity(Context context) {
 
         Intent intent = new Intent(context, MainActivity.class);
@@ -32,6 +41,11 @@ public class GestoreUI implements IntGestoreUI{
         context.startActivity(intent);
     }
 
+    /**
+     * Lancia l activity Normale
+     *
+     * @param context dell Activity che si sta utilizzando quando questo metodo è richiamato
+     */
     public void MandaNormaleActivity(Context context) {
 
         Intent intent = new Intent(context, NormaleActivity.class);

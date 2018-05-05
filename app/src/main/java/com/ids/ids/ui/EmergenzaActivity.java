@@ -26,13 +26,13 @@ import com.ids.ids.utils.GestoreUI;
 /**
  * Questa activity si comporta dinamicamente in base alla modalità dell applicazione.
  * E' in grado di gestire le seguenti modalità:
- * <p>
+ *
  * SEGNALAZIONE:  visualizza la piantina e i nodi, relativi asl piano in cui l utente si trova, in modo
- * tale che l utente può segnalare i nodi sottoIncendio.
- * <p>
+ *                tale che l utente può segnalare i nodi sottoIncendio.
+ *
  * EMERGENZA:     visualizza la piantina i nodi e il percorso che l utente deve segiuire per raggiungere
- * l uscita di emergenza più vicina.
- * Inoltre è data all utente la possibilità di effettuare un cambio piano.
+ *                l uscita di emergenza più vicina.
+ *                Inoltre è data all utente la possibilità di effettuare un cambio piano.
  */
 public class EmergenzaActivity extends AppCompatActivity {
 

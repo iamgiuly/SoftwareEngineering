@@ -67,6 +67,8 @@ public class BeaconScanner implements IntBeaconScanner{
 
     /**
      * Questo metodo avvia e ferma la scansione periodica, in base al booleano in ingresso
+     *
+     * @param enable per attivare e disattivare la scansione
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void scansione(Boolean enable) {
@@ -83,7 +85,7 @@ public class BeaconScanner implements IntBeaconScanner{
         }
     }
 
-    /**
+    /*
      * Aggiunge ciclicamente i nuovi disp. BLE senza ripetizioni
      * Si è posto un filtro per considerare solamente i Beacon
      */
@@ -115,7 +117,9 @@ public class BeaconScanner implements IntBeaconScanner{
 
     ///AVVIO E STOP SCANNER////
 
-    // Codice task avvia scanner
+    /*
+     * Codice task avvia scanner
+     */
     private final Runnable start = new Runnable() {
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -138,7 +142,9 @@ public class BeaconScanner implements IntBeaconScanner{
         }
     };
 
-    // Codice task ferma scanner
+    /*
+     * Codice task ferma scanner
+     */
     private final Runnable stop = new Runnable() {
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -164,7 +170,7 @@ public class BeaconScanner implements IntBeaconScanner{
      * Per ogni Device viene considerato il valore RSSI e , tra tutti , viene preso il Device con il
      * valore RSSI più basso (cioè più vicino all utente)
      *
-     * @return
+     * @return  indirizzo MAC del Beacon più vicino all utente
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public String BeaconVicino() {
