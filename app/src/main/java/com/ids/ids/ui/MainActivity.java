@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
      * Effettua il controllo se il Bluethooth e attivo o meno
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void listenerBottoneNormale() {
+    private void listenerBottoneNormale() {
         initSingleton();
         user.setModalita(user.MODALITA_NORMALE);
         if (abilitaBLE())
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
      * Effettua il controllo se il Bluethooth e attivo o meno
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void listenerBottoneSegnalazione() {
+    private void listenerBottoneSegnalazione() {
         initSingleton();
         user.setModalita(user.MODALITA_SEGNALAZIONE);
         if (abilitaBLE())
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
      * Effettua il controllo se il Bluethooth e attivo o meno
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void listenerBottoneEmergenza() {
+    private void listenerBottoneEmergenza() {
         initSingleton();
         user.setModalita(user.MODALITA_EMERGENZA);
         if (abilitaBLE())

@@ -1,22 +1,21 @@
 package com.ids.ids;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.ui.MappaView;
 
-public class User extends Application {
+public class User implements IntUser{
 
     private static User instance = null;
     private static final String TAG = "User";
 
-    public static final int MODALITA_SEGNALAZIONE = 0;
+    /*public static final int MODALITA_SEGNALAZIONE = 0;
     public static final int MODALITA_EMERGENZA = 1;
     public static final int MODALITA_NORMALE = 2;
-    public static final int MODALITA_NORMALEPERCORSO = 3;
+    public static final int MODALITA_NORMALEPERCORSO = 3;*/
 
     private MappaView mappaView;
     private Activity context;

@@ -18,7 +18,9 @@ import com.ids.ids.User;
 import com.ids.ids.entity.Nodo;
 
 /**
- * Created by User on 01/05/2018.
+ * Questa Activity consente all utente
+ * 1) di scegliele la destinazione
+ * 2) una volta scelta permette la visualizzazione del percorso per raggiungere il nodo scelto
  */
 public class NormaleActivity extends AppCompatActivity {
 
@@ -100,7 +102,14 @@ public class NormaleActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    public void listenerNodoSelezionato(NodoView nodoView) {
+    /*
+     * Listener per i nodi selezionati.
+     * Dispone dei vari controlli
+     * 1) vede se la destinazione coincide con la posizione attuale dell utente
+     * 2) se si seleziona una sola destinazione
+     * 3) se è stata selezionata una sola destinazione
+     */
+    private void listenerNodoSelezionato(NodoView nodoView) {
 
         Nodo nodo = nodoView.getNodo();
 
@@ -118,7 +127,12 @@ public class NormaleActivity extends AppCompatActivity {
             mappaView.messaggio("Attenzione!", "E' gia segnata una destinazione.\nDeselezionarla per cambiare", true);
     }
 
-    public void richiediPercorsoDestinazione() {
+    /*
+     * Listener del bottone richiedi percorso.
+     * Si occupa di richiamare il metodo adatto del CommunicationServer per inviare la richiesta al server
+     * Attiva inoltre la ricerca Always del Localizzatore
+     */
+    private void richiediPercorsoDestinazione() {
 
         user.setModalita(User.MODALITA_NORMALEPERCORSO);
         user.setNodoDestinazione(nodoDestinazione);

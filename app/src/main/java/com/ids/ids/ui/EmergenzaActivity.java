@@ -150,7 +150,7 @@ public class EmergenzaActivity extends AppCompatActivity {
      * viene quindi controllato se c'è almeno un nodo selezionato in modo tale da
      * rendere visibile o invisibile il bottone "Invia Nodi"
      */
-    public void listenerNodoSelezionato(NodoView nodoView) {
+    private void listenerNodoSelezionato(NodoView nodoView) {
 
         Nodo nodo = nodoView.getNodo();
 
@@ -187,7 +187,7 @@ public class EmergenzaActivity extends AppCompatActivity {
      * Permette di richiamare il metodo opportuno (InviaNodiSottoIncendio) del communicationServer
      * per l invio della segnalazione.
      */
-    public void listenerBottoneInvioNodi() {
+    private void listenerBottoneInvioNodi() {
 
         communicationServer.inviaNodiSottoIncendio(nodiSelezionati/*, this*/);
     }
