@@ -1,4 +1,4 @@
-package com.ids.ids.boundary;
+package com.ids.ids.toServer;
 
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;

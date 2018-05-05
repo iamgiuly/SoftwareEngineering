@@ -1,4 +1,4 @@
-package com.ids.ids.boundary;
+package com.ids.ids.beacon;
 
 import android.annotation.TargetApi;
 import android.support.annotation.RequiresApi;

@@ -1,4 +1,4 @@
-package com.ids.ids.boundary.ServerTask;
+package com.ids.ids.toServer.ServerTask;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -12,8 +12,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.ids.ids.control.User;
+import com.ids.ids.User;
 import com.ids.ids.entity.Mappa;
+import com.ids.ids.utils.GestoreUI;
 import com.ids.ids.utils.Parametri;
 
 /**
@@ -27,12 +28,14 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
     private Mappa mappa_scaricata;
     private ProgressDialog download_immagini_in_corso;
     private User usercontroller;
+    private GestoreUI gestoreUI;
 
     public DownloadPiantinaTask(Context ctx, Mappa mappa) {
 
         context = ctx;
         mappa_scaricata = mappa;
         usercontroller = User.getInstance((Activity) context);
+        gestoreUI = GestoreUI.getInstance();
     }
 
     @Override
@@ -121,8 +124,8 @@ public class DownloadPiantinaTask extends AsyncTask<Void, String, Void> {
         usercontroller.setMappa(mappa_scaricata);
         usercontroller.setPianoUtente(mappa_scaricata.getPiano());  //resterà questoi fino al cambio piano
         if(usercontroller.getModalita() == User.MODALITA_EMERGENZA || usercontroller.getModalita() == User.MODALITA_SEGNALAZIONE)
-           usercontroller.MandaEmergenzaActivity();
+           gestoreUI.MandaEmergenzaActivity(context);
         else
-            usercontroller.MandaNormaleActivity();
+            gestoreUI.MandaNormaleActivity(context);
     }
 }

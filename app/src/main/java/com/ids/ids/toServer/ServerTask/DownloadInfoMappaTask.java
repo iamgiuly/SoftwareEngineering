@@ -1,36 +1,52 @@
-package com.ids.ids.boundary.ServerTask;
+package com.ids.ids.toServer.ServerTask;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.view.View;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.google.gson.Gson;
+
+import com.google.gson.reflect.TypeToken;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.ui.MainActivity;
+import com.ids.ids.ui.R;
 import com.ids.ids.utils.Parametri;
 
 /**
- * Task per l invio della richiesta aggiornamento dati mappa
+ * Task per l invio della richiesta di download info della mappa circa il piano in cui
+ * l utente si trova
  */
-public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
+public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
     private AsyncTask<Void, Void, Boolean> execute;
 
-    private int PianoUtente;
+    private Context context;
+    private String MacPosU;
+    private ProgressDialog download_mappa_in_corso;
 
-    public AggiornaDatiMappaTask(int pianoUtente) {
+    public DownloadInfoMappaTask(Context contxt, String macU) {
 
-        PianoUtente = pianoUtente;
+        context = contxt;
+        MacPosU = macU;
     }
 
     @Override
@@ -38,6 +54,12 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
 
         super.onPreExecute();
         execute = new ServerConnection().execute();
+        download_mappa_in_corso = new ProgressDialog(context);
+        download_mappa_in_corso.setIndeterminate(true);
+        download_mappa_in_corso.setCancelable(false);
+        download_mappa_in_corso.setCanceledOnTouchOutside(false);
+        download_mappa_in_corso.setMessage("Download info mappa in corso..");
+        download_mappa_in_corso.show();
     }
 
     // tutto il codice da eseguire in modo asincrono deve essere inserito nel metodo doInBackground
@@ -49,6 +71,7 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
 
         try {
             connesso = execute.get();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -59,6 +82,8 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
             return null;
         else {
 
+            Log.i("DownInfoMappaTask","Connesso al server");
+
             try {
                 Thread.sleep(1500);
             } catch (Exception e) {
@@ -66,14 +91,12 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
             }
             try {
 
-                Log.i("AggiornamentiTask","Connesso al server");
-
                 //creo il JSON as a key value pair.
                 JSONObject Data = new JSONObject();
-                Data.put("PianoUtente", PianoUtente);
+                Data.put("mac_beacon", MacPosU);
 
                 //Create the request
-                URL url = new URL(PATH + "/FireExit/services/maps/downloadAggiornamenti");
+                URL url = new URL(PATH + "/FireExit/services/maps/getMappa");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
@@ -117,6 +140,7 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
                     }
                 }
             }
+
         }
         return null;
     }
@@ -129,5 +153,38 @@ public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String result) {
 
+        super.onPostExecute(result);
+
+        if (result == null) {
+
+            download_mappa_in_corso.dismiss();
+            AlertDialog download_mappa_impossibile = new AlertDialog.Builder(context).create();
+            download_mappa_impossibile.setTitle("Errore");
+            download_mappa_impossibile.setMessage("Controllare connessione WiFi e riprovare");
+            download_mappa_impossibile.setCanceledOnTouchOutside(false);
+            download_mappa_impossibile.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+
+                    });
+            download_mappa_impossibile.show();
+            MainActivity m = (MainActivity) context;
+            m.findViewById(R.id.segnalazioneButton).setVisibility(View.VISIBLE);
+
+        } else {
+
+            Type type = new TypeToken<Mappa>() {
+            }.getType();
+
+            Mappa mappa_scaricata = new Gson().fromJson(result, type);
+
+            download_mappa_in_corso.dismiss();
+            new DownloadPiantinaTask(context, mappa_scaricata).execute();
+        }
     }
 }
+

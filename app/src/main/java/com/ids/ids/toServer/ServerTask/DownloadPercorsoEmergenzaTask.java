@@ -1,17 +1,15 @@
-package com.ids.ids.boundary.ServerTask;
+package com.ids.ids.toServer.ServerTask;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ids.ids.DB.MappaDAO;
-import com.ids.ids.control.Localizzatore;
+import com.ids.ids.toServer.CommunicationServer;
+import com.ids.ids.beacon.Localizzatore;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Percorso;
@@ -33,48 +31,33 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Task per l invio della richiesta di download del percorso in modalità normale
+ * Task per l invio della richiesta di download del percorso in caso di emergenza
  */
-public class DownloadPercorsoNormaleTask extends AsyncTask<Void, Void, String> {
+public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
     private AsyncTask<Void, Void, Boolean> execute;
 
-    private String MacPosU;
-    private String MacDest;
-    private int Piano;
-    private MappaView mappaView;
-    private Mappa mappa;
     private Context context;
-    private boolean Enable;
-    private ProgressDialog download_percorso_in_corso;
+    private String MacPosU;
+    private Mappa mappa;
+    private MappaView mappaView;
+    private int piano;
 
-    public DownloadPercorsoNormaleTask(Context contxt, String macPU , int piano , MappaView mv, Mappa map, String macD ,boolean enable)  {
+    public DownloadPercorsoEmergenzaTask(Context contxt, String macU, int Piano, MappaView mV, Mappa map) {
 
         context = contxt;
-        Piano = piano;
-        MacPosU = macPU;
-        mappaView = mv;
+        piano = Piano;
+        MacPosU = macU;
+        mappaView = mV;
         mappa = map;
-        MacDest = macD;
-        Enable = enable;
     }
 
     @Override
     protected void onPreExecute() {
 
         super.onPreExecute();
-        if(Enable){
-
-            execute = new ServerConnection().execute();
-            download_percorso_in_corso = new ProgressDialog(context);
-            download_percorso_in_corso.setIndeterminate(true);
-            download_percorso_in_corso.setCancelable(false);
-            download_percorso_in_corso.setCanceledOnTouchOutside(false);
-            download_percorso_in_corso.setMessage("Download percorso in corso..");
-            download_percorso_in_corso.show();
-        }
         execute = new ServerConnection().execute();
     }
 
@@ -104,15 +87,14 @@ public class DownloadPercorsoNormaleTask extends AsyncTask<Void, Void, String> {
             }
             try {
 
-                Log.i("DownloadNormaleTask","Connesso al server");
+                Log.i("DownloadPercorsoEmer","Connesso al server");
 
                 //Create the request
                 JSONObject Data = new JSONObject();
                 Data.put("posUtente", MacPosU);
-                Data.put("destinazione", MacDest);
-                Data.put("piano", Piano);
+                Data.put("piano", piano);
 
-                URL url = new URL(PATH + "/FireExit/services/percorso/getPercorsoMinimoNormale");
+                URL url = new URL(PATH + "/FireExit/services/percorso/getPercorsoMinimo");
                 connection = (HttpURLConnection) url.openConnection();
                 // connection.setDoOutput(true);
                 connection.setDoInput(true);
@@ -166,21 +148,19 @@ public class DownloadPercorsoNormaleTask extends AsyncTask<Void, Void, String> {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onPostExecute(String dati_percorso) {
 
-        ArrayList<Arco> percorso;
+        ArrayList<Arco> percorso = null;
 
-        if(Enable)
-            download_percorso_in_corso.dismiss();
+        if(dati_percorso == null){
 
-        if (dati_percorso == null){
-
-            Log.i("DownloadNormaleTask", "Percorso normale in locale");
+            Log.i("DownloadPercorsoEmer", "Percorso emergenza in locale");
+            Mappa mappaAggiornata = MappaDAO.getInstance(context).find(piano);
 
             Percorso p = Percorso.getInstance();
-            percorso = p.calcolaPercorsoNormale(mappa, mappa.getNodoSpecifico(MacPosU), mappa.getNodoSpecifico(MacDest));
+            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getNodoSpecifico(MacPosU));
+
 
         }else{
 
@@ -190,13 +170,17 @@ public class DownloadPercorsoNormaleTask extends AsyncTask<Void, Void, String> {
             percorso = new Gson().fromJson(dati_percorso, type);
         }
 
-        if (percorso.size() == 0) {
-            Localizzatore.getInstance((Activity) context).stopFinderALWAYS();
-            mappaView.messaggio("Good!", "Hai raggiunto la destinazione indicata", false);
-        }
-
         mappaView.setPosUtente(mappa.getNodoSpecifico(MacPosU));
         mappaView.setPercorso(percorso);
+
+        //Nel caso in cui il percorso sia zero significa che
+        //l utente ha raggiunto l uscita
+        //per questo lo avvisiamo attraverso un messaggio
+        if (percorso.size() == 0) {
+            Localizzatore.getInstance((Activity) context);
+            CommunicationServer.getInstance(context).richiestaAggiornamenti(false , piano);
+            mappaView.messaggio("Sei al sicuro", "Hai raggiunto l uscita", false);
+        }
 
         mappaView.postInvalidate();
     }

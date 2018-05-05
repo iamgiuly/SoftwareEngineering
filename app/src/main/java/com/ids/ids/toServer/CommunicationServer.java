@@ -1,4 +1,4 @@
-package com.ids.ids.boundary;
+package com.ids.ids.toServer;
 
 import android.app.Activity;
 import android.support.annotation.RequiresApi;
@@ -15,13 +15,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import com.ids.ids.boundary.ServerTask.AggiornaDatiMappaTask;
-import com.ids.ids.boundary.ServerTask.DownloadPercorsoNormaleTask;
-import com.ids.ids.boundary.ServerTask.DownloadPercorsoEmergenzaTask;
-import com.ids.ids.boundary.ServerTask.DownloadInfoMappaTask;
-import com.ids.ids.boundary.ServerTask.InvioNodiTask;
+import com.ids.ids.toServer.ServerTask.AggiornaDatiMappaTask;
+import com.ids.ids.toServer.ServerTask.DownloadPercorsoNormaleTask;
+import com.ids.ids.toServer.ServerTask.DownloadPercorsoEmergenzaTask;
+import com.ids.ids.toServer.ServerTask.DownloadInfoMappaTask;
+import com.ids.ids.toServer.ServerTask.InvioNodiTask;
 
-import com.ids.ids.control.User;
+import com.ids.ids.User;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
 import com.ids.ids.ui.MappaView;

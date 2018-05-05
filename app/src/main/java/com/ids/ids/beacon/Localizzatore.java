@@ -1,4 +1,4 @@
-package com.ids.ids.control;
+package com.ids.ids.beacon;
 
 import android.annotation.TargetApi;
 import android.support.annotation.RequiresApi;
@@ -9,8 +9,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
-import com.ids.ids.boundary.BeaconScanner;
-import com.ids.ids.boundary.CommunicationServer;
+import com.ids.ids.User;
+import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.utils.Parametri;
 
 /**

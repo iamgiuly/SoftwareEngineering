@@ -1,18 +1,12 @@
-package com.ids.ids.control;
+package com.ids.ids;
 
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 
-import com.ids.ids.boundary.CommunicationServer;
-import com.ids.ids.boundary.IntCommunicationServer;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
-import com.ids.ids.ui.EmergenzaActivity;
-import com.ids.ids.ui.MainActivity;
 import com.ids.ids.ui.MappaView;
-import com.ids.ids.ui.NormaleActivity;
 
 public class User extends Application {
 
@@ -24,8 +18,6 @@ public class User extends Application {
     public static final int MODALITA_NORMALE = 2;
     public static final int MODALITA_NORMALEPERCORSO = 3;
 
-    private CommunicationServer communicationServer;
-    private Localizzatore localizzatore;
     private MappaView mappaView;
     private Activity context;
     private Mappa mappa;
@@ -37,7 +29,6 @@ public class User extends Application {
     public User(Activity contxt) {
 
         context = contxt;
-        communicationServer = CommunicationServer.getInstance(context.getApplicationContext());
     }
 
     public void DropDB() {
@@ -46,24 +37,6 @@ public class User extends Application {
             mappa.deletemappa(context);
     }
 
-    public void MandaEmergenzaActivity() {
-
-        Intent intent = new Intent(context, EmergenzaActivity.class);
-        context.startActivity(intent);
-    }
-
-    public void MandaMainActivity() {
-
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("AvviaTastoEmergenza", true);
-        context.startActivity(intent);
-    }
-
-    public void MandaNormaleActivity() {
-
-        Intent intent = new Intent(context, NormaleActivity.class);
-        context.startActivity(intent);
-    }
 
     //GETTERS
     public MappaView getMappaView() {
@@ -125,11 +98,6 @@ public class User extends Application {
     public void setPianoUtente(int piano) {
 
         PianoUtente = piano;
-    }
-
-    public void setLocalizzatore(Localizzatore loc) {
-
-        localizzatore = loc;
     }
 
     public void setMacAdrs(String mac) {

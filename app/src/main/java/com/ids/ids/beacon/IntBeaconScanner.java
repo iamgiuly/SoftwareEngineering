@@ -1,4 +1,4 @@
-package com.ids.ids.boundary;
+package com.ids.ids.beacon;
 
 /**
  * Interfaccia implementata dal Beacon scanner

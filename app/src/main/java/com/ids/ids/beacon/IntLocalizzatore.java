@@ -1,4 +1,4 @@
-package com.ids.ids.control;
+package com.ids.ids.beacon;
 
 /**
  * CInterfaccia implementata da Localizzatore

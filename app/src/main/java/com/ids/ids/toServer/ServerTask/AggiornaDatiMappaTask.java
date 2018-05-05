@@ -1,20 +1,7 @@
-package com.ids.ids.boundary.ServerTask;
+package com.ids.ids.toServer.ServerTask;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.ids.ids.DB.MappaDAO;
-import com.ids.ids.boundary.CommunicationServer;
-import com.ids.ids.control.Localizzatore;
-import com.ids.ids.entity.Arco;
-import com.ids.ids.entity.Mappa;
-import com.ids.ids.entity.Percorso;
-import com.ids.ids.ui.MappaView;
-import com.ids.ids.utils.Parametri;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,34 +11,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import com.ids.ids.utils.Parametri;
+
 /**
- * Task per l invio della richiesta di download del percorso in caso di emergenza
+ * Task per l invio della richiesta aggiornamento dati mappa
  */
-public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String> {
+public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
     private AsyncTask<Void, Void, Boolean> execute;
 
-    private Context context;
-    private String MacPosU;
-    private Mappa mappa;
-    private MappaView mappaView;
-    private int piano;
+    private int PianoUtente;
 
-    public DownloadPercorsoEmergenzaTask(Context contxt, String macU, int Piano, MappaView mV, Mappa map) {
+    public AggiornaDatiMappaTask(int pianoUtente) {
 
-        context = contxt;
-        piano = Piano;
-        MacPosU = macU;
-        mappaView = mV;
-        mappa = map;
+        PianoUtente = pianoUtente;
     }
 
     @Override
@@ -87,16 +66,16 @@ public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String>
             }
             try {
 
-                Log.i("DownloadPercorsoEmer","Connesso al server");
+                Log.i("AggiornamentiTask","Connesso al server");
+
+                //creo il JSON as a key value pair.
+                JSONObject Data = new JSONObject();
+                Data.put("PianoUtente", PianoUtente);
 
                 //Create the request
-                JSONObject Data = new JSONObject();
-                Data.put("posUtente", MacPosU);
-                Data.put("piano", piano);
-
-                URL url = new URL(PATH + "/FireExit/services/percorso/getPercorsoMinimo");
+                URL url = new URL(PATH + "/FireExit/services/maps/downloadAggiornamenti");
                 connection = (HttpURLConnection) url.openConnection();
-                // connection.setDoOutput(true);
+                connection.setDoOutput(true);
                 connection.setDoInput(true);
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json");
@@ -138,7 +117,6 @@ public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String>
                     }
                 }
             }
-
         }
         return null;
     }
@@ -149,39 +127,7 @@ public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String>
     }
 
     @Override
-    protected void onPostExecute(String dati_percorso) {
+    protected void onPostExecute(String result) {
 
-        ArrayList<Arco> percorso = null;
-
-        if(dati_percorso == null){
-
-            Log.i("DownloadPercorsoEmer", "Percorso emergenza in locale");
-            Mappa mappaAggiornata = MappaDAO.getInstance(context).find(piano);
-
-            Percorso p = Percorso.getInstance();
-            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getNodoSpecifico(MacPosU));
-
-
-        }else{
-
-            Type type = new TypeToken<ArrayList<Arco>>() {
-            }.getType();
-            // Estrazione dell ArrayList inviato dall app
-            percorso = new Gson().fromJson(dati_percorso, type);
-        }
-
-        mappaView.setPosUtente(mappa.getNodoSpecifico(MacPosU));
-        mappaView.setPercorso(percorso);
-
-        //Nel caso in cui il percorso sia zero significa che
-        //l utente ha raggiunto l uscita
-        //per questo lo avvisiamo attraverso un messaggio
-        if (percorso.size() == 0) {
-            Localizzatore.getInstance((Activity) context);
-            CommunicationServer.getInstance(context).richiestaAggiornamenti(false , piano);
-            mappaView.messaggio("Sei al sicuro", "Hai raggiunto l uscita", false);
-        }
-
-        mappaView.postInvalidate();
     }
 }

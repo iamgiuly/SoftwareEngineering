@@ -2,6 +2,7 @@ package com.ids.ids.ui;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 
 import android.os.Build;
@@ -15,10 +16,11 @@ import android.widget.Button;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import com.ids.ids.boundary.CommunicationServer;
-import com.ids.ids.control.Localizzatore;
-import com.ids.ids.control.User;
+import com.ids.ids.toServer.CommunicationServer;
+import com.ids.ids.beacon.Localizzatore;
+import com.ids.ids.User;
 import com.ids.ids.entity.Nodo;
+import com.ids.ids.utils.GestoreUI;
 
 
 /**
@@ -42,6 +44,8 @@ public class EmergenzaActivity extends AppCompatActivity {
 
     private Button inviaNodiButton;                 // invisibile all'inizio
     private Button cambiapianoButton;
+    private GestoreUI gestoreUI;
+    private Context context;
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
@@ -55,10 +59,12 @@ public class EmergenzaActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergenza);
+        context = this;
 
         user = User.getInstance(this);
         localizzatore = Localizzatore.getInstance(this);
         communicationServer = CommunicationServer.getInstance(this);
+        gestoreUI = GestoreUI.getInstance();
 
         nodiSelezionati = new ArrayList<>();
 
@@ -103,7 +109,6 @@ public class EmergenzaActivity extends AppCompatActivity {
                 localizzatore.startFinderALWAYS();                               //Avvio localizzazione
                 //Avvia aggiornamento db locale
                 communicationServer.richiestaAggiornamenti(true, user.getPianoUtente());
-                user.setLocalizzatore(localizzatore);
 
                 cambiapianoButton = findViewById(R.id.CambiaPianoButton);
                 cambiapianoButton.setVisibility(View.VISIBLE);
@@ -211,7 +216,7 @@ public class EmergenzaActivity extends AppCompatActivity {
                     localizzatore.stopFinderALWAYS();
                     communicationServer.richiestaAggiornamenti(false, user.getPianoUtente());
                     finish();
-                    user.MandaMainActivity();
+                    gestoreUI.MandaMainActivity(context);
                     break;
                 }
 

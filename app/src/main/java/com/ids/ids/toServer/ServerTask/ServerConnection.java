@@ -1,4 +1,4 @@
-package com.ids.ids.boundary.ServerTask;
+package com.ids.ids.toServer.ServerTask;
 
 import android.os.AsyncTask;
 import android.util.Log;
