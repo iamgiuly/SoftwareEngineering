@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ids.ids.ui">
+    package="com.ids.ids">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-feature android:name="android.hardware.wifi" android:required="true" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -16,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+
+        <activity android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -25,15 +29,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".EmergenzaActivity"
+            android:name=".ui.EmergenzaActivity"
             android:label="@string/title_activity_emergenza"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".NormaleActivity"
+            android:name=".ui.NormaleActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"/>
+
+        <service android:name=".backService.BackServicePostOreo"/>
+        <service android:name=".backService.BackServicePreOreo"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <receiver android:name=".backService.ReceiverCall" >
+            <intent-filter android:priority="1000">
+                <action android:name="backgroundservicetest" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

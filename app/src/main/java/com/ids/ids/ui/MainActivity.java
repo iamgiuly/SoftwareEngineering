@@ -16,6 +16,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.ids.ids.R;
+import com.ids.ids.backService.BackServicePostOreo;
+import com.ids.ids.backService.BackServicePreOreo;
 import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.beacon.Localizzatore;
 import com.ids.ids.User;
@@ -55,9 +58,15 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Attiva servizio in background
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){            // Per versioni Android pre-O
+            Intent intent = new Intent(this, BackServicePreOreo.class);
+            startService(intent);}
+        else                                                           // Per versioni Android post-O
+            BackServicePostOreo.enqueueWork(this, new Intent());
 
         initBluetooth();
 

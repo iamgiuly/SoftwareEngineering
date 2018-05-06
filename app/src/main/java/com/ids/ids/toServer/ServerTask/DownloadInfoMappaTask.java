@@ -24,9 +24,9 @@ import org.json.JSONObject;
 import com.google.gson.Gson;
 
 import com.google.gson.reflect.TypeToken;
+import com.ids.ids.R;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.ui.MainActivity;
-import com.ids.ids.ui.R;
 import com.ids.ids.utils.Parametri;
 
 /**
@@ -164,12 +164,9 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
             download_mappa_impossibile.setCanceledOnTouchOutside(false);
             download_mappa_impossibile.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                     new DialogInterface.OnClickListener() {
-
-
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
-
                     });
             download_mappa_impossibile.show();
             MainActivity m = (MainActivity) context;

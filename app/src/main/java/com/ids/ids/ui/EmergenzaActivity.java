@@ -16,6 +16,7 @@ import android.widget.Button;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import com.ids.ids.R;
 import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.beacon.Localizzatore;
 import com.ids.ids.User;

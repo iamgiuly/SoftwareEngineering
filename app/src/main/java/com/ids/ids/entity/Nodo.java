@@ -1,6 +1,6 @@
 package com.ids.ids.entity;
 
-import com.ids.ids.ui.R;
+import com.ids.ids.R;
 
 import java.util.ArrayList;
 

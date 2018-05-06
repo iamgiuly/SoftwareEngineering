@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/btnSendSimpleNotification"
+        android:layout_width="128dip"
+        android:layout_height="wrap_content"
+        android:text="Notifica semplice" >
+    </Button>
+
+    <Button
+        android:id="@+id/btnCancelNotification"
+        android:layout_width="128dip"
+        android:layout_height="wrap_content"
+        android:text="Elimina notifica" >
+    </Button>
+
+</LinearLayout>
