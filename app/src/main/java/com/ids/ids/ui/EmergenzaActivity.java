@@ -2,6 +2,7 @@ package com.ids.ids.ui;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 
 import android.os.Build;
@@ -13,32 +14,41 @@ import android.view.View;
 import android.widget.Button;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
-import com.ids.ids.boundary.CommunicationServer;
-import com.ids.ids.control.Localizzatore;
-import com.ids.ids.control.UserController;
+import com.ids.ids.toServer.CommunicationServer;
+import com.ids.ids.beacon.Localizzatore;
+import com.ids.ids.User;
 import com.ids.ids.entity.Nodo;
+import com.ids.ids.utils.GestoreUI;
 
 
 /**
- * Questa activity viene mostrata al tap sul bottone "Segnala Emergenza",
- * al suo avvio carica la mappa in cui si trova l'utente e la visualizza con i suoi nodi opportunamente contrassegnati,
- * ad essi vengono associati dei listener, che al tap richiamano il metodo listenerNodoSelezionato() il quale
- * chiede al Controller di aggiungere / rimuovere il nodo premuto alla / dalla lista dei nodi selezionati.
- * Al tap sul bottone "Invia Nodi" (visibile se almeno un nodo è selezionato),
- * viene chiesto al Controller di inviare al server i nodi selezionati
+ * Questa activity si comporta dinamicamente in base alla modalità dell applicazione.
+ * E' in grado di gestire le seguenti modalità:
+ *
+ * SEGNALAZIONE:  visualizza la piantina e i nodi, relativi asl piano in cui l utente si trova, in modo
+ *                tale che l utente può segnalare i nodi sottoIncendio.
+ *
+ * EMERGENZA:     visualizza la piantina i nodi e il percorso che l utente deve segiuire per raggiungere
+ *                l uscita di emergenza più vicina.
+ *                Inoltre è data all utente la possibilità di effettuare un cambio piano.
  */
 public class EmergenzaActivity extends AppCompatActivity {
 
-    private MappaView mappaView;
-    private UserController userController;
+    private User user;
+    private CommunicationServer communicationServer;
     private Localizzatore localizzatore;
+    private MappaView mappaView;
+    private ArrayList<Nodo> nodiSelezionati; // nodi di cui bisogna cambiare il flag "sotto incendio"
+
     private Button inviaNodiButton;                 // invisibile all'inizio
     private Button cambiapianoButton;
+    private GestoreUI gestoreUI;
+    private Context context;
 
     /**
      * Vengono visualizzati gli elementi della UI e settati i listener,
-     * viene caricata e visualizzata la mappa con i suoi nodi e settati i listener associati ad essi
      *
      * @param savedInstanceState
      */
@@ -46,13 +56,17 @@ public class EmergenzaActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergenza);
+        context = this;
 
-        userController = UserController.getInstance(this);
-        userController.clearNodiSelezionati();
+        user = User.getInstance(this);
         localizzatore = Localizzatore.getInstance(this);
-        CommunicationServer.getInstance(this);
+        communicationServer = CommunicationServer.getInstance(this);
+        gestoreUI = GestoreUI.getInstance();
+
+        nodiSelezionati = new ArrayList<>();
 
         inviaNodiButton = findViewById(R.id.inviaNodiButton);
         inviaNodiButton.setOnClickListener(new View.OnClickListener() {
@@ -64,15 +78,15 @@ public class EmergenzaActivity extends AppCompatActivity {
 
         // inizializza la View della mappa
         mappaView = findViewById(R.id.mappaView);
-        userController.setMappaView(mappaView);
+        user.setMappaView(mappaView);
 
         try {
 
             // CASO SEGNALAZIONE
-            if (userController.getModalita() == userController.MODALITA_SEGNALAZIONE) {
+            if (user.getModalita() == user.MODALITA_SEGNALAZIONE) {
 
-                mappaView.setMappa(userController.getMappa());
-               // mappaView.setPosUtente(userController.getMappa().getPosUtente(userController.getMacAdrs()));
+                mappaView.setMappa(user.getMappa());
+                // mappaView.setPosUtente(user.getMappa().getNodoSpecifico(user.getMacAdrs()));
                 mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -87,14 +101,14 @@ public class EmergenzaActivity extends AppCompatActivity {
 
                     }
                 });
+
             } else {
                 //CASO EMERGENZA
 
-                mappaView.setMappa(userController.getMappa(), true);
+                mappaView.setMappa(user.getMappa(), true);
                 localizzatore.startFinderALWAYS();                               //Avvio localizzazione
                 //Avvia aggiornamento db locale
-                userController.richiestaAggiornamento(true);             //Avvio richiesta aggiornamento
-                userController.setLocalizzatore(localizzatore);
+                communicationServer.richiestaAggiornamenti(true, user.getPianoUtente());
 
                 cambiapianoButton = findViewById(R.id.CambiaPianoButton);
                 cambiapianoButton.setVisibility(View.VISIBLE);
@@ -117,8 +131,8 @@ public class EmergenzaActivity extends AppCompatActivity {
         super.onDestroy();
         if (localizzatore != null)
             localizzatore.stopFinderALWAYS();
-        userController.richiestaAggiornamento(false);
-        userController.DropDB();
+        communicationServer.richiestaAggiornamenti(false, user.getPianoUtente());
+        user.DropDB();
         mappaView.deleteImagePiantina();
     }
 
@@ -136,11 +150,11 @@ public class EmergenzaActivity extends AppCompatActivity {
      * viene quindi controllato se c'è almeno un nodo selezionato in modo tale da
      * rendere visibile o invisibile il bottone "Invia Nodi"
      */
-    public void listenerNodoSelezionato(NodoView nodoView) {
+    private void listenerNodoSelezionato(NodoView nodoView) {
 
         Nodo nodo = nodoView.getNodo();
 
-        if (userController.selezionaNodo(nodo))
+        if (selezionaNodo(nodo))
             inviaNodiButton.setVisibility(View.VISIBLE);
         else
             inviaNodiButton.setVisibility(View.INVISIBLE);
@@ -148,17 +162,41 @@ public class EmergenzaActivity extends AppCompatActivity {
         nodoView.setImage(nodo.getImage());
     }
 
-    /**
-     * Richiamato dal listener associato al bottone "Invia Nodi", viene controllata la connessione:
-     * - se attiva viene chiesto al Controller di inviare al server i nodi selezionati
-     * e viene avviata l'activity MainActivity
-     * - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
-     */
-    public void listenerBottoneInvioNodi() {
 
-        userController.inviaNodiSelezionati(this);
+    /**
+     * Aggiunge o rimuove dalla lista dei nodi selezionati il nodo con l'id passato come parametro
+     *
+     * @param nodo nodo da selezionare o deselezionare
+     * @return true se c'è almeno un nodo selezionato
+     */
+
+    private boolean selezionaNodo(Nodo nodo) {
+        nodo.setIncendio();
+
+        if (nodo.isCambiato()) {
+            if (!nodiSelezionati.contains(nodo))
+                nodiSelezionati.add(nodo);
+        } else if (nodiSelezionati.contains(nodo))
+            nodiSelezionati.remove(nodo);
+
+        return !nodiSelezionati.isEmpty();
     }
 
+    /**
+     * Listener bottone inviaNodi.
+     * Permette di richiamare il metodo opportuno (InviaNodiSottoIncendio) del communicationServer
+     * per l invio della segnalazione.
+     */
+    private void listenerBottoneInvioNodi() {
+
+        communicationServer.inviaNodiSottoIncendio(nodiSelezionati/*, this*/);
+    }
+
+    /**
+     * Listener bottone CambioPiano.
+     * Permette di visualizzare un popup con pulsanti SI/NO in cui si chiede all utente se è sicuro o meno di cambiare piano.
+     * Al click sul si avvia nuovamernte la localizzazione
+     */
     private void listenerBottoneCambiaPiano() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -176,9 +214,9 @@ public class EmergenzaActivity extends AppCompatActivity {
                 case DialogInterface.BUTTON_POSITIVE: {
                     dialog.cancel();
                     localizzatore.stopFinderALWAYS();
-                    userController.richiestaAggiornamento(false);
+                    communicationServer.richiestaAggiornamenti(false, user.getPianoUtente());
                     finish();
-                    userController.MandaMainActivity();
+                    gestoreUI.MandaMainActivity(context);
                     break;
                 }
 

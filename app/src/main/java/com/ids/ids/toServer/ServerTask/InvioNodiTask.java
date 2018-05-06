@@ -1,4 +1,4 @@
-package com.ids.ids.boundary.ServerTask;
+package com.ids.ids.toServer.ServerTask;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,34 +20,33 @@ import java.util.concurrent.ExecutionException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.ids.ids.control.UserController;
+import com.ids.ids.User;
 import com.ids.ids.entity.Nodo;
+import com.ids.ids.utils.GestoreUI;
 import com.ids.ids.utils.Parametri;
 
 
-// AsyncTask consente di effettuare operazioni in background
-// in thread separati e poi restituire il risultato al thread dell'interfaccia utente.
-// Per richiamare questa classe basta creare un'istanza della stessa e chiamare il suo metodo execute.
-// < parametri, progresso , result >
-
-
+/**
+ * Task per l invio dei nodi sotto incendio segnalati dall utente
+ */
 public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
+    private AsyncTask<Void, Void, Boolean> execute;
 
     private ArrayList<Nodo> NodiSottoIncendio;
     private ProgressDialog loading_segnalazione;
     private Context context;
-    private UserController userController;
-    private AsyncTask<Void, Void, Boolean> execute;
+    private User user;
+    private GestoreUI gestoreUI;
 
     public InvioNodiTask(ArrayList<Nodo> nodi, Context contxt) {
 
         NodiSottoIncendio = nodi;
         context = contxt;
-        userController = UserController.getInstance((Activity)context);
-
+        user = User.getInstance((Activity)context);
+        gestoreUI = GestoreUI.getInstance();
     }
 
     @Override
@@ -88,6 +88,8 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
                 e.printStackTrace();
             }
             try {
+
+                Log.i("InvioNodiTask","Connesso al server");
 
                 //creo il JSON as a key value pair
                 Gson gson = new Gson();
@@ -149,9 +151,6 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
         super.onPostExecute(result);
 
-        System.out.println("ecco" + result);
-
-
         if (result == null) {
             loading_segnalazione.dismiss();
 
@@ -188,7 +187,7 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                userController.MandaMainActivity();
+                                gestoreUI.MandaMainActivity(context);
                             }
 
                         });

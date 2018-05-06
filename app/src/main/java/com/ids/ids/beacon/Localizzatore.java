@@ -1,24 +1,31 @@
-package com.ids.ids.control;
+package com.ids.ids.beacon;
 
 import android.annotation.TargetApi;
+import android.support.annotation.RequiresApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
-import com.ids.ids.boundary.BeaconScanner;
-import com.ids.ids.ui.MappaView;
+import com.ids.ids.User;
+import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.utils.Parametri;
 
 /**
- * La classe Localizzatore presenta i metodi per localizzare l utente grazie ai risultati (MAC address)
- * forniti dallo scanner
+ * Presenta i metodi per localizzare l utente grazie ai risultati (MAC address)
+ * forniti dal BeaconScanner
+ *
+ * Nota localizzazioni:
+ *
+ * ALWAYS: mantiene sempre attivo il BeaconScanner
+ *         mantiene sempre attivo il Runnable findMeAlways
+ *
+ * ONE:    appena trovato il Beacon più vicino il BeaconScanner e il Runnable findMeONE vengono fermati
  */
 
-public class Localizzatore {
+public class Localizzatore implements IntLocalizzatore {
 
     private static Localizzatore instance = null;
     private static final String TAG = "Localizzatore";
@@ -27,7 +34,8 @@ public class Localizzatore {
     private BeaconScanner scanner;
     private Handler finder;
     private ProgressDialog loading_localizzazione;
-    private UserController userController;
+    private User user;
+    private CommunicationServer communicationServer;
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -36,27 +44,15 @@ public class Localizzatore {
         context = contxt;
         scanner = BeaconScanner.getInstance(contxt);
         finder = new Handler();
-        userController = UserController.getInstance((Activity) context);
-
+        user = User.getInstance((Activity) contxt);
+        communicationServer = CommunicationServer.getInstance(contxt);
     }
 
+
     /*
-    =========================================================================================================
-
-      Nota localizzazioni:
-
-      ALWAYS: Utilizzata dalla mappa
-              tiene sempre attivo il BeaconScanner
-              tiene sempre attivo il Runnable findMeAlways
-
-      ONE:    Utilizzato al click del bottone SegnalaEmergenza
-              Appena trovato il Beacon più vicino il BeaconScanner e il Runnable findMeONE vengono fermati
-
-     ========================================================================================================
+     * FindMeONE viene è un Runnable utilizzato al click del bottone segnala emergenza
+     * Appena la posizione dell utente è stata trovata termina la scansione
      */
-
-    // FindMeONE viene è un Runnable utilizzato al click del bottone segnala emergenza
-    // Appena la posizione dell utente è stata trovata termina la scansione
     private final Runnable findMeONE = new Runnable() {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
@@ -72,13 +68,16 @@ public class Localizzatore {
             } else {
                 // E' stato trovato il beacon dallo scanner
                 loading_localizzazione.dismiss();               //  Tolgo il messaggio di localizzazione
-                userController.richiestaMappa(context, macAdrs);  //   Avvio l Activity passandogli il macAdrs
+                user.setMacAdrs(macAdrs);
+                communicationServer.richiestaMappa(macAdrs);  //   Avvio l Activity passandogli il macAdrs
                 stopFinderONE();                              //    Fermo questo Runnable
             }
         }
     };
 
-    // FindMeALWAYS è un Runnable utilizzato dalla mappa
+    /*
+     * FindMeALWAYS è un Runnable utilizzato dalla mappa
+     */
     private final Runnable findMeALWAYS = new Runnable() {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
@@ -94,7 +93,21 @@ public class Localizzatore {
             } else {
                 System.out.println("MAC: " + macAdrs);     // E' stato trovato il beacon dallo scanner
                 finder.postDelayed(findMeALWAYS, Parametri.T_POSIZIONE);
-                userController.richiediPercorso(macAdrs);
+
+                user.setMacAdrs(macAdrs);
+
+                if (user.getModalita() == User.MODALITA_EMERGENZA)
+                    communicationServer.richiediPercorsoEmergenza(macAdrs,
+                            user.getPianoUtente(),
+                            user.getMappaView(),
+                            user.getMappa());
+                else if (user.getModalita() == User.MODALITA_NORMALEPERCORSO)
+                    communicationServer.richiestaPercorsoNormale(macAdrs,
+                            user.getPianoUtente(),
+                            user.getMappaView(),
+                            user.getMappa(),
+                            user.getNodoDestinazione().getBeaconId()
+                            , false);
             }
         }
     };
@@ -102,11 +115,13 @@ public class Localizzatore {
     /*
     ========================================================================================================
      AVVIO RUNNABLE
-     =======================================================================================================
+    =======================================================================================================
      */
 
-
-    // Avvia la localizzazione ONE
+    /**
+     * Avvia la localizzazione ONE
+     *
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void startFinderONE() {
 
@@ -122,7 +137,9 @@ public class Localizzatore {
 
     }
 
-    // Avvia la localizzazione ALWAYS
+    /**
+     * Avvia la localizzazione ALWAYS
+     */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void startFinderALWAYS() {
 
@@ -137,7 +154,9 @@ public class Localizzatore {
      =======================================================================================================
      */
 
-    // Ferma la localizzazione ALWAYS
+    /**
+     * Ferma la localizzazione ALWAYS
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void stopFinderALWAYS() {
 
@@ -145,7 +164,9 @@ public class Localizzatore {
         finder.removeCallbacks(findMeALWAYS);
     }
 
-    // Ferma la localizzazione ONE
+    /**
+     * Ferma la localizzazione ONE
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void stopFinderONE() {
 
@@ -153,9 +174,16 @@ public class Localizzatore {
         finder.removeCallbacks(findMeONE);
     }
 
+    private void setContext(Context contxt) {
+
+        context = contxt;
+    }
+
     public static Localizzatore getInstance(Activity context) {
         if (instance == null)
             instance = new Localizzatore(context);
+        else
+            instance.setContext(context);
         return instance;
     }
 }

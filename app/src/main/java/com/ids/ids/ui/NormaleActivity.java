@@ -1,16 +1,10 @@
 package com.ids.ids.ui;
 
-/**
- * Created by User on 01/05/2018.
- */
-
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.support.annotation.RequiresApi;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,80 +12,73 @@ import android.widget.Button;
 
 import java.io.FileNotFoundException;
 
-import com.ids.ids.boundary.CommunicationServer;
-import com.ids.ids.control.Localizzatore;
-import com.ids.ids.control.UserController;
+import com.ids.ids.toServer.CommunicationServer;
+import com.ids.ids.beacon.Localizzatore;
+import com.ids.ids.User;
 import com.ids.ids.entity.Nodo;
 
-
 /**
- * Questa activity viene mostrata al tap sul bottone "Segnala Emergenza",
- * al suo avvio carica la mappa in cui si trova l'utente e la visualizza con i suoi nodi opportunamente contrassegnati,
- * ad essi vengono associati dei listener, che al tap richiamano il metodo listenerNodoSelezionato() il quale
- * chiede al Controller di aggiungere / rimuovere il nodo premuto alla / dalla lista dei nodi selezionati.
- * Al tap sul bottone "Invia Nodi" (visibile se almeno un nodo è selezionato),
- * viene chiesto al Controller di inviare al server i nodi selezionati
+ * Questa Activity consente all utente
+ * 1) di scegliele la destinazione
+ * 2) una volta scelta permette la visualizzazione del percorso per raggiungere il nodo scelto
  */
 public class NormaleActivity extends AppCompatActivity {
 
-    private MappaView mappaView;
-    private UserController userController;
+    private User user;
+    private CommunicationServer communicationServer;
     private Localizzatore localizzatore;
-    private Button inviaDestinazioneButton;                 // invisibile all'inizio
+    private MappaView mappaView;
     private Nodo nodoDestinazione;
-    private Nodo posUtente;
+    private Button RichiediPercorsoButton;
 
 
-    /**
-     * Vengono visualizzati gli elementi della UI e settati i listener,
-     * viene caricata e visualizzata la mappa con i suoi nodi e settati i listener associati ad essi
-     *
-     * @param savedInstanceState
-     */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normale);
 
-        userController = UserController.getInstance(this);
-        userController.clearNodiSelezionati();
+        user = User.getInstance(this);
         localizzatore = Localizzatore.getInstance(this);
-        CommunicationServer.getInstance(this);
+        communicationServer = CommunicationServer.getInstance(this);
 
-        inviaDestinazioneButton = findViewById(R.id.inviaDestinazioneButton);
-        inviaDestinazioneButton.setOnClickListener(new View.OnClickListener() {
+        RichiediPercorsoButton = findViewById(R.id.RichiediPercorsoButton);
+        RichiediPercorsoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listenerInviaDestinazione();
+                richiediPercorsoDestinazione();
             }
         });
 
         // inizializza la View della mappa
         mappaView = findViewById(R.id.mappaViewNormale);
-        userController.setMappaView(mappaView);
+        user.setMappaView(mappaView);
 
         try {
 
-            mappaView.setMappa(userController.getMappa());
-            posUtente = userController.getMappa().getPosUtente(userController.getMacAdrs());
-            mappaView.setPosUtente(posUtente);
-            mappaView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
+            //CASO SCELTA DESTINAZIONE
+            if (user.getModalita() == User.MODALITA_NORMALE) {
 
-                    if (motionEvent.getAction() != MotionEvent.ACTION_DOWN)
+                mappaView.setMappa(user.getMappa(), true);
+                mappaView.setPosUtente(user.getPosUtente());
+
+                mappaView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                        if (motionEvent.getAction() != MotionEvent.ACTION_DOWN)
+                            return true;
+                        NodoView nodoView = mappaView.getNodoPremuto((int) motionEvent.getX(), (int) motionEvent.getY());
+                        if (nodoView != null)
+                            listenerNodoSelezionato(nodoView);
+                        mappaView.invalidate();
                         return true;
-                    NodoView nodoView = mappaView.getNodoPremuto((int) motionEvent.getX(), (int) motionEvent.getY());
-                    if (nodoView != null)
-                        listenerNodoSelezionato(nodoView);
-                    mappaView.invalidate();
-                    return true;
 
-                }
-            });
-
+                    }
+                });
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -100,7 +87,11 @@ public class NormaleActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onDestroy() {
+
         super.onDestroy();
+        localizzatore.stopFinderALWAYS();
+        user.DropDB();
+        mappaView.deleteImagePiantina();
     }
 
     //per finish()
@@ -111,32 +102,47 @@ public class NormaleActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    /**
-     * Richiamato dal listener associato ad un nodo, tale nodo deve essere opportunamente contrassegnato
-     * oltre ad essere aggiunto alla / rimosso dalla lista dei nodi selezionati,
-     * viene quindi controllato se c'è almeno un nodo selezionato in modo tale da
-     * rendere visibile o invisibile il bottone "Invia Nodi"
+    /*
+     * Listener per i nodi selezionati.
+     * Dispone dei vari controlli
+     * 1) vede se la destinazione coincide con la posizione attuale dell utente
+     * 2) se si seleziona una sola destinazione
+     * 3) se è stata selezionata una sola destinazione
      */
-    public void listenerNodoSelezionato(NodoView nodoView) {
+    private void listenerNodoSelezionato(NodoView nodoView) {
 
         Nodo nodo = nodoView.getNodo();
 
-        if(nodo.getBeaconId() == posUtente.getBeaconId())
+        if (nodo.getBeaconId() == user.getPosUtente().getBeaconId())
             mappaView.messaggio("Attenzione!", "Si trova già nel posto segnalato", false);
-        else if(nodoDestinazione == null) {
+        else if (nodoDestinazione == null) {
             nodoDestinazione = nodo;
             nodoView.setImage(R.drawable.destinazione);
-            inviaDestinazioneButton.setVisibility(View.VISIBLE);
-        }else if(nodo.getBeaconId() == nodoDestinazione.getBeaconId()) {  //deselezione
+            RichiediPercorsoButton.setVisibility(View.VISIBLE);
+        } else if (nodo.getBeaconId() == nodoDestinazione.getBeaconId()) {  //deselezione
             nodoView.setImage(nodo.getImage());
             nodoDestinazione = null;
-            inviaDestinazioneButton.setVisibility(View.INVISIBLE);
+            RichiediPercorsoButton.setVisibility(View.INVISIBLE);
         } else if (nodoDestinazione != null)
-            mappaView.messaggio("Attenzione!","E' gia segnata una destinazione.\nDeselezionarla per cambiare", true);
+            mappaView.messaggio("Attenzione!", "E' gia segnata una destinazione.\nDeselezionarla per cambiare", true);
     }
 
-    public void listenerInviaDestinazione() {
+    /*
+     * Listener del bottone richiedi percorso.
+     * Si occupa di richiamare il metodo adatto del CommunicationServer per inviare la richiesta al server
+     * Attiva inoltre la ricerca Always del Localizzatore
+     */
+    private void richiediPercorsoDestinazione() {
 
-        //userController.inviaDestinazione(this);
+        user.setModalita(User.MODALITA_NORMALEPERCORSO);
+        user.setNodoDestinazione(nodoDestinazione);
+        communicationServer.richiestaPercorsoNormale(user.getMacAdrs(),
+                user.getPianoUtente(),
+                mappaView,
+                user.getMappa(),
+                nodoDestinazione.getBeaconId(),
+                true);
+        localizzatore.startFinderALWAYS();
+        RichiediPercorsoButton.setVisibility(View.INVISIBLE);
     }
 }

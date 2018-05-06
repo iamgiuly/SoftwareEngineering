@@ -16,22 +16,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.ids.ids.control.Localizzatore;
-import com.ids.ids.control.UserController;
+import com.ids.ids.toServer.CommunicationServer;
+import com.ids.ids.beacon.Localizzatore;
+import com.ids.ids.User;
 
 
 /**
- * Questa activity viene mostrata all'apertura dell'applicazione, visualizza il bottone "Segnala Emergenza",
- * a tale bottone viene associato un listener, che al tap su di esso richiama il metodo listenerBottoneSegnalazione() il quale:
- * - rimanda l'utente online alla EmergenzaActivity
- * - mostra un messaggio di errore all'utente offline
+ * Questa activity viene mostrata all'apertura dell'applicazione.
+ * Visualizza i bottoni:
+ *     - Normale
+ *     - SegnalaEmergenza
+ *     - Emergenza
  */
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 1; // il popup da mostrare è quello per l'attivazione del bluetooth
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
-    private UserController userController;
+    private User user;
     private Localizzatore localizzatore;
 
     private BluetoothManager btManager;             // utilizzata per ottenere una istanza di Adapter
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     // consente di eseguire attività Bluetooth fondamental
     // (es. avviare il rilevamento dei dispositivi)
     private BroadcastReceiver receiver;             // permette di ricevere notifice sullo stato del dispositivo
+
     private Button normaleButton;
     private Button segnalazioneButton;
     private Button emergenzaButton;
@@ -56,8 +59,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        userController = UserController.getInstance(this);
-        this.initBluetooth();
+        initBluetooth();
 
         normaleButton = findViewById(R.id.normaleButton);
         normaleButton.setOnClickListener(new View.OnClickListener() {
@@ -94,13 +96,16 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
     }
 
+    /*
+     * Si occupa di controllare se il device presenta o meno il Bluethooth attivato.
+     * In caso non lo fosse lancia un popup per l attivazione
+     */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void initBluetooth() {
 
         btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         btAdapter = btManager.getAdapter();
-        localizzatore = Localizzatore.getInstance(this);
         receiver = new BroadcastReceiver() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -136,46 +141,64 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(receiver, filter);
 
         Bundle datipassati = getIntent().getExtras();
-        if (datipassati != null) {
+        if (datipassati != null)
             listenerBottoneEmergenza();
-        }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void listenerBottoneNormale() {
-        userController.setModalita(userController.MODALITA_NORMALE);
-        if (abilitaBLE())
-            localizzatore.startFinderONE();
+    /*
+     * Inizializza le classi singleton della nostra applicazione passandogli l attuale context
+     */
+    private void initSingleton(){
+        user = User.getInstance(this);
+        localizzatore = Localizzatore.getInstance(this);
+        CommunicationServer.getInstance(this);
     }
 
     /**
-     * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
-     * - se attiva viene avviata l'activity EmergenzaActivity
-     * - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     * Listener bottone Normale.
+     * Inizializza i singleton.
+     * Setta la modalità normale della nostra applicazione.
+     * Effettua il controllo se il Bluethooth e attivo o meno
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void listenerBottoneSegnalazione() {
-        userController.setModalita(userController.MODALITA_SEGNALAZIONE);
+    private void listenerBottoneNormale() {
+        initSingleton();
+        user.setModalita(user.MODALITA_NORMALE);
         if (abilitaBLE())
             localizzatore.startFinderONE();
     }
 
     /**
-     * Richiamato dal listener associato al bottone "Segnala Emergenza", viene controllata la connessione:
-     * - se attiva viene avviata l'activity EmergenzaActivity
-     * - altrimenti viene mostrato un messaggio di errore rimanendo in questa activity
+     * Listener bottone SegnalazioneEmenrgenza.
+     * Inizializza i singleton.
+     * Setta la modalità segnalazione della nostra applicazione.
+     * Effettua il controllo se il Bluethooth e attivo o meno
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void listenerBottoneEmergenza() {
-        userController.setModalita(userController.MODALITA_EMERGENZA);
+    private void listenerBottoneSegnalazione() {
+        initSingleton();
+        user.setModalita(user.MODALITA_SEGNALAZIONE);
         if (abilitaBLE())
             localizzatore.startFinderONE();
     }
 
     /**
-     * Prova ad abilitare l'adapter del bluetooth
-     *
-     * @return true se l'adapter è stato abilitato
+     * Listener bottone Emergenza.
+     * Inizializza i singleton.
+     * Setta la modalità emergenza della nostra applicazione.
+     * Effettua il controllo se il Bluethooth e attivo o meno
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void listenerBottoneEmergenza() {
+        initSingleton();
+        user.setModalita(user.MODALITA_EMERGENZA);
+        if (abilitaBLE())
+            localizzatore.startFinderONE();
+    }
+
+    /*
+     * Controllo se il bluethooth è attivo.
+     * In casop contrario chiedo all utente di attivarlo mediante un popup
      */
     private boolean abilitaBLE() {
 

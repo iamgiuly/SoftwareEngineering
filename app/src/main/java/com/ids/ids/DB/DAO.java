@@ -4,10 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
-import com.ids.ids.DB.DBHelper;
-import com.ids.ids.control.UserController;
 
 import java.util.ArrayList;
 

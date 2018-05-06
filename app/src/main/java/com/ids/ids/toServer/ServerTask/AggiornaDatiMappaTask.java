@@ -1,8 +1,7 @@
-package com.ids.ids.boundary.ServerTask;
+package com.ids.ids.toServer.ServerTask;
 
 import android.os.AsyncTask;
-
-import com.ids.ids.utils.Parametri;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,21 +15,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
+import com.ids.ids.utils.Parametri;
+
 /**
- * Task che si preoccupa dell effetuare il download degli aggiornamenti tra DB Locale(App) e DB Server
+ * Task per l invio della richiesta aggiornamento dati mappa
  */
-public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
+public class AggiornaDatiMappaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
-    private String Mac;
-    private int piano;
     private AsyncTask<Void, Void, Boolean> execute;
 
-    public DownloadPercorsoTask(String mac, int Piano) {
+    private int PianoUtente;
 
-        piano = Piano;
-        Mac = mac;
+    public AggiornaDatiMappaTask(int pianoUtente) {
+
+        PianoUtente = pianoUtente;
     }
 
     @Override
@@ -38,8 +38,6 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
 
         super.onPreExecute();
         execute = new ServerConnection().execute();
-
-        System.out.println("onPreExecute");
     }
 
     // tutto il codice da eseguire in modo asincrono deve essere inserito nel metodo doInBackground
@@ -68,14 +66,16 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
             }
             try {
 
-                //Create the request
-                JSONObject Data = new JSONObject();
-                Data.put("posUtente", Mac);
-                Data.put("piano", piano);
+                Log.i("AggiornamentiTask","Connesso al server");
 
-                URL url = new URL(PATH + "/FireExit/services/percorso/getPercorsoMinimo");
+                //creo il JSON as a key value pair.
+                JSONObject Data = new JSONObject();
+                Data.put("PianoUtente", PianoUtente);
+
+                //Create the request
+                URL url = new URL(PATH + "/FireExit/services/maps/downloadAggiornamenti");
                 connection = (HttpURLConnection) url.openConnection();
-                // connection.setDoOutput(true);
+                connection.setDoOutput(true);
                 connection.setDoInput(true);
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json");
@@ -117,7 +117,6 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
                     }
                 }
             }
-
         }
         return null;
     }
@@ -130,6 +129,5 @@ public class DownloadPercorsoTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String result) {
 
-       //VUOTO LO PRENDO DAL CommunicationServer
     }
 }

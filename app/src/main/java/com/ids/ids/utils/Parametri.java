@@ -7,13 +7,13 @@ public class Parametri {
 
     // Filtro dispositivi BLE,
     // specificare il nome comune ai beacon a cui ci si vuole collegare
-    public  static  String FILTRO_BLE_DEVICE = "CC2650 SensorTag";
+    public static final  String FILTRO_BLE_DEVICE = "CC2650 SensorTag";
     //Periodo scansione dispositivi BLE
-    public static int T_SCAN_PERIOD = 1000;
+    public static final int T_SCAN_PERIOD = 2000;
     // periodo scansione localizzatore
-    public static int T_POSIZIONE = 2000;
+    public static final int T_POSIZIONE = 3000;
     // periodo di richiesta aggiornamenti al server
-    public static int T_AGGIORNAMENTI  = 60000; //ogni due minuti
+    public static final int T_AGGIORNAMENTI  = 60000; //ogni due minuti
     // Hosting Server
-    public static String PATH = "http://192.168.137.1:8080";
+    public static final String PATH = "http://192.168.137.1:8080";
 }

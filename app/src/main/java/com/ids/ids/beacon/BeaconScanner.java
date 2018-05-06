@@ -1,4 +1,4 @@
-package com.ids.ids.boundary;
+package com.ids.ids.beacon;
 
 import android.annotation.TargetApi;
 import android.support.annotation.RequiresApi;
@@ -23,7 +23,7 @@ import com.ids.ids.utils.Parametri;
  * La classe BeaconScanner presenta i metodi per effettuare la scansione periodica dei dispositivi
  * BLE (Bluetooth Low Energy) che si trovano nelle vicinanze
  */
-public class BeaconScanner {
+public class BeaconScanner implements IntBeaconScanner{
 
     private static BeaconScanner instance = null;
     private static final String TAG = "BeaconScanner";
@@ -67,6 +67,8 @@ public class BeaconScanner {
 
     /**
      * Questo metodo avvia e ferma la scansione periodica, in base al booleano in ingresso
+     *
+     * @param enable per attivare e disattivare la scansione
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void scansione(Boolean enable) {
@@ -83,7 +85,7 @@ public class BeaconScanner {
         }
     }
 
-    /**
+    /*
      * Aggiunge ciclicamente i nuovi disp. BLE senza ripetizioni
      * Si è posto un filtro per considerare solamente i Beacon
      */
@@ -115,7 +117,9 @@ public class BeaconScanner {
 
     ///AVVIO E STOP SCANNER////
 
-    // Codice task avvia scanner
+    /*
+     * Codice task avvia scanner
+     */
     private final Runnable start = new Runnable() {
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -123,7 +127,7 @@ public class BeaconScanner {
         public void run() {
 
             // ogni 2 scansioni si rinnova la lista
-            if (refresh == 1) {
+            if (refresh == 2) {
 
                 refresh = 0;
                 RaccogliDevice.clear();
@@ -138,7 +142,9 @@ public class BeaconScanner {
         }
     };
 
-    // Codice task ferma scanner
+    /*
+     * Codice task ferma scanner
+     */
     private final Runnable stop = new Runnable() {
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -164,7 +170,7 @@ public class BeaconScanner {
      * Per ogni Device viene considerato il valore RSSI e , tra tutti , viene preso il Device con il
      * valore RSSI più basso (cioè più vicino all utente)
      *
-     * @return
+     * @return  indirizzo MAC del Beacon più vicino all utente
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public String BeaconVicino() {

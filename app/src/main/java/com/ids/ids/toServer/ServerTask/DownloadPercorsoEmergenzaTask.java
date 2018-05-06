@@ -1,11 +1,23 @@
-package com.ids.ids.boundary.ServerTask;
+package com.ids.ids.toServer.ServerTask;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
-import android.view.View;
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.ids.ids.DB.MappaDAO;
+import com.ids.ids.toServer.CommunicationServer;
+import com.ids.ids.beacon.Localizzatore;
+import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.Percorso;
+import com.ids.ids.ui.MappaView;
+import com.ids.ids.utils.Parametri;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,37 +27,31 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.gson.Gson;
-
-import com.google.gson.reflect.TypeToken;
-import com.ids.ids.entity.Mappa;
-import com.ids.ids.ui.MainActivity;
-import com.ids.ids.ui.R;
-import com.ids.ids.utils.Parametri;
-
-// AsyncTask consente di effettuare operazioni in background
-// in thread separati e poi restituire il risultato al thread dell'interfaccia utente.
-// Per richiamare questa classe basta creare un'istanza della stessa e chiamare il suo metodo execute.
-// < parametri pasati al doBack, progresso , result passato al post >
-
-public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
+/**
+ * Task per l invio della richiesta di download del percorso in caso di emergenza
+ */
+public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;
     private final String PATH = Parametri.PATH;
-    private String PosizioneU;
-    private Context context;
-    private ProgressDialog download_mappa_in_corso;
     private AsyncTask<Void, Void, Boolean> execute;
 
-    public DownloadInfoMappaTask(Context contxt, String posizioneU) {
+    private Context context;
+    private String MacPosU;
+    private Mappa mappa;
+    private MappaView mappaView;
+    private int piano;
+
+    public DownloadPercorsoEmergenzaTask(Context contxt, String macU, int Piano, MappaView mV, Mappa map) {
 
         context = contxt;
-        PosizioneU = posizioneU;
+        piano = Piano;
+        MacPosU = macU;
+        mappaView = mV;
+        mappa = map;
     }
 
     @Override
@@ -53,14 +59,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
         super.onPreExecute();
         execute = new ServerConnection().execute();
-        download_mappa_in_corso = new ProgressDialog(context);
-        download_mappa_in_corso.setIndeterminate(true);
-        download_mappa_in_corso.setCancelable(false);
-        download_mappa_in_corso.setCanceledOnTouchOutside(false);
-        download_mappa_in_corso.setMessage("Download info mappa in corso..");
-        download_mappa_in_corso.show();
-
-        System.out.println("onPreExecute");
     }
 
     // tutto il codice da eseguire in modo asincrono deve essere inserito nel metodo doInBackground
@@ -72,7 +70,6 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
 
         try {
             connesso = execute.get();
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -90,14 +87,16 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
             }
             try {
 
-                //creo il JSON as a key value pair.
-                JSONObject Data = new JSONObject();
-                Data.put("mac_beacon", PosizioneU);
+                Log.i("DownloadPercorsoEmer","Connesso al server");
 
                 //Create the request
-                URL url = new URL(PATH + "/FireExit/services/maps/getMappa");
+                JSONObject Data = new JSONObject();
+                Data.put("posUtente", MacPosU);
+                Data.put("piano", piano);
+
+                URL url = new URL(PATH + "/FireExit/services/percorso/getPercorsoMinimo");
                 connection = (HttpURLConnection) url.openConnection();
-                connection.setDoOutput(true);
+                // connection.setDoOutput(true);
                 connection.setDoInput(true);
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json");
@@ -150,43 +149,39 @@ public class DownloadInfoMappaTask extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(String dati_percorso) {
 
-        super.onPostExecute(result);
+        ArrayList<Arco> percorso = null;
 
-        if (result == null) {
+        if(dati_percorso == null){
 
-            download_mappa_in_corso.dismiss();
-            AlertDialog download_mappa_impossibile = new AlertDialog.Builder(context).create();
-            download_mappa_impossibile.setTitle("Errore");
-            download_mappa_impossibile.setMessage("Controllare connessione WiFi e riprovare");
-            download_mappa_impossibile.setCanceledOnTouchOutside(false);
-            download_mappa_impossibile.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
+            Log.i("DownloadPercorsoEmer", "Percorso emergenza in locale");
+            Mappa mappaAggiornata = MappaDAO.getInstance(context).find(piano);
+
+            Percorso p = Percorso.getInstance();
+            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getNodoSpecifico(MacPosU));
 
 
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
+        }else{
 
-                    });
-            download_mappa_impossibile.show();
-            MainActivity m = (MainActivity) context;
-            m.findViewById(R.id.segnalazioneButton).setVisibility(View.VISIBLE);
-
-        } else {
-
-            System.out.println("ciao: " + result.toString());
-
-            Type type = new TypeToken<Mappa>() {
+            Type type = new TypeToken<ArrayList<Arco>>() {
             }.getType();
-
-            Mappa mappa_scaricata = new Gson().fromJson(result, type);
-
-            download_mappa_in_corso.dismiss();
-            new DownloadPiantinaTask(context, mappa_scaricata).execute();
-
+            // Estrazione dell ArrayList inviato dall app
+            percorso = new Gson().fromJson(dati_percorso, type);
         }
+
+        mappaView.setPosUtente(mappa.getNodoSpecifico(MacPosU));
+        mappaView.setPercorso(percorso);
+
+        //Nel caso in cui il percorso sia zero significa che
+        //l utente ha raggiunto l uscita
+        //per questo lo avvisiamo attraverso un messaggio
+        if (percorso.size() == 0) {
+            Localizzatore.getInstance((Activity) context);
+            CommunicationServer.getInstance(context).richiestaAggiornamenti(false , piano);
+            mappaView.messaggio("Sei al sicuro", "Hai raggiunto l uscita", false);
+        }
+
+        mappaView.postInvalidate();
     }
 }
-
