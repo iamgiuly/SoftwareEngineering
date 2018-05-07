@@ -12,6 +12,8 @@ public class User implements IntUser{
     private static User instance = null;
     private static final String TAG = "User";
 
+    private int notifica = 0;
+
     /*public static final int MODALITA_SEGNALAZIONE = 0;
     public static final int MODALITA_EMERGENZA = 1;
     public static final int MODALITA_NORMALE = 2;
@@ -38,6 +40,12 @@ public class User implements IntUser{
 
 
     //GETTERS
+    public int getNotifica(){
+        return notifica;
+    }
+    public void setNotifica(int n){
+        notifica = n;
+    }
     public MappaView getMappaView() {
 
         return mappaView;
@@ -71,6 +79,11 @@ public class User implements IntUser{
     public Nodo getNodoDestinazione(){
 
         return nodoDestinazione;
+    }
+
+    public Context getContext(){
+
+        return this.context;
     }
 
     //SETTERS
@@ -112,6 +125,8 @@ public class User implements IntUser{
     public static User getInstance(Activity context) {
         if (instance == null)
             instance = new User(context);
+        else if(context == null)
+            return instance;
         else
             instance.setContext(context);
         return instance;

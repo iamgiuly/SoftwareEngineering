@@ -39,6 +39,11 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".backService.Notifica"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"/>
 
         <service android:name=".backService.BackServicePostOreo"/>
         <service android:name=".backService.BackServicePreOreo"
