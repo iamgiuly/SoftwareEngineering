@@ -1,10 +1,10 @@
 package com.ids.ids.backService;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
 import com.ids.ids.User;
-import com.ids.ids.ui.EmergenzaActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,10 +17,10 @@ public class BackServiceThread {
     private FromToServer fromToServer;
     private Notifica notifica;
 
-    public BackServiceThread(){
+    public BackServiceThread(Context context){
 
         notifica = new Notifica();
-        fromToServer = new FromToServer();
+        fromToServer = new FromToServer(context);
         timer = new Timer();
 
     }
@@ -48,9 +48,9 @@ public class BackServiceThread {
         }, 0, 2000);    //Periodo 2 secondi
     }
 
-    public static BackServiceThread getInstance() {
+    public static BackServiceThread getInstance(Context context) {
         if (instance == null)
-            instance = new BackServiceThread();
+            instance = new BackServiceThread(context);
         return instance;
     }
 }

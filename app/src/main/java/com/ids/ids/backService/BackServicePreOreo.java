@@ -1,7 +1,6 @@
 package com.ids.ids.backService;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
@@ -16,7 +15,7 @@ public class BackServicePreOreo extends Service {
     @Override
     public void onCreate(){
         super.onCreate();
-        BackServiceThread.getInstance().init();
+        BackServiceThread.getInstance(this).init();
     }
 
     //metodo per far partire il service, viene richiamato dalla MainActivity al primo avvio

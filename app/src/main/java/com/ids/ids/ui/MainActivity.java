@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ids.ids.R;
+import com.ids.ids.backService.BackServicePostOreo;
 import com.ids.ids.backService.BackServicePreOreo;
 import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.beacon.Localizzatore;
@@ -88,6 +89,18 @@ public class MainActivity extends AppCompatActivity {
                 listenerBottoneEmergenza();
             }
         });
+
+
+        /*ATTIVAZIONE SERVIZIO IN BACKGROUND CON CHECK VERSIONE ANDROID*/
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+            //Attivazione bgservice per versioni pre-0
+            Intent intent = new Intent(this, BackServicePreOreo.class);
+            startService(intent);}
+        else{
+
+            //Attivazione BackServPostO per versioni post-0
+            BackServicePostOreo.enqueueWork(this, new Intent());}
     }
 
     @Override

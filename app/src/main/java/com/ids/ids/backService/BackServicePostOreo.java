@@ -13,7 +13,7 @@ public class BackServicePostOreo extends JobIntentService {
     @Override
     public void onCreate(){
         super.onCreate();
-        BackServiceThread.getInstance().init();
+        BackServiceThread.getInstance(this).init();
     }
 
     public static void enqueueWork(Context context, Intent work) {
