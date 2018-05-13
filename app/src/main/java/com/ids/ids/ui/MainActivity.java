@@ -17,8 +17,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ids.ids.R;
-import com.ids.ids.backService.BackServicePostOreo;
-import com.ids.ids.backService.BackServicePreOreo;
+import com.ids.ids.RegistrationTokenService;
 import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.beacon.Localizzatore;
 import com.ids.ids.User;
@@ -44,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     // consente di eseguire attività Bluetooth fondamental
     // (es. avviare il rilevamento dei dispositivi)
     private BroadcastReceiver receiver;             // permette di ricevere notifice sullo stato del dispositivo
+    private CommunicationServer communicationServer;
 
     private Button normaleButton;
     private Button segnalazioneButton;
@@ -89,18 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 listenerBottoneEmergenza();
             }
         });
-
-
-        /*ATTIVAZIONE SERVIZIO IN BACKGROUND CON CHECK VERSIONE ANDROID*/
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-
-            //Attivazione bgservice per versioni pre-0
-            Intent intent = new Intent(this, BackServicePreOreo.class);
-            startService(intent);}
-        else{
-
-            //Attivazione BackServPostO per versioni post-0
-            BackServicePostOreo.enqueueWork(this, new Intent());}
     }
 
     @Override
@@ -158,14 +146,8 @@ public class MainActivity extends AppCompatActivity {
         if (datipassati != null)
             listenerBottoneEmergenza();
 
-        User.getInstance(this);
-        // Attiva servizio in background
-        //  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){            // Per versioni Android pre-O
-
-
-        //}
-        //  else                                                           // Per versioni Android post-O
-        //    BackServicePostOreo.enqueueWork(this, new Intent());
+        Intent intent = new Intent(this, RegistrationTokenService.class);
+        startService(intent);
     }
 
     /*
@@ -174,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
     private void initSingleton(){
         user = User.getInstance(this);
         localizzatore = Localizzatore.getInstance(this);
-        CommunicationServer.getInstance(this);
+        communicationServer = CommunicationServer.getInstance(this);
     }
 
     /**
@@ -203,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
         user.setModalita(user.MODALITA_SEGNALAZIONE);
         if (abilitaBLE())
             localizzatore.startFinderONE();
+
+        communicationServer.ottieniTokens();
     }
 
     /**
@@ -217,10 +201,6 @@ public class MainActivity extends AppCompatActivity {
         user.setModalita(user.MODALITA_EMERGENZA);
         if (abilitaBLE())
             localizzatore.startFinderONE();
-
-        Intent intent = new Intent(this, BackServicePreOreo.class);
-        startService(intent);
-
     }
 
     /*

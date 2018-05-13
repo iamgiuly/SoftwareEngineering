@@ -13,7 +13,7 @@ public class Parametri {
     // periodo scansione localizzatore
     public static final int T_POSIZIONE = 3000;
     // periodo di richiesta aggiornamenti al server
-    public static final int T_AGGIORNAMENTI  = 60000; //ogni due minuti
+    public static final int T_AGGIORNAMENTI  = 60000; //ogni 1 minuti
     // Hosting Server
-    public static final String PATH = "http://192.168.137.1:8080";
+    public static final String PATH = "http://192.168.1.13:8080";
 }

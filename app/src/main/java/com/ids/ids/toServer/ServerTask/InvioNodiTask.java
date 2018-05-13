@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ids.ids.User;
 import com.ids.ids.entity.Nodo;
+import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.utils.GestoreUI;
 import com.ids.ids.utils.Parametri;
 
@@ -171,9 +172,9 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
 
         } else {
             JsonObject jobj = new Gson().fromJson(result, JsonObject.class);
-            String esito = jobj.get("esito").getAsString();
+            Boolean esito = jobj.get("esito").getAsBoolean();
 
-            if (esito.equals("true")) {
+            if (esito) {
 
                 loading_segnalazione.dismiss();
 
@@ -193,6 +194,12 @@ public class InvioNodiTask extends AsyncTask<Void, Void, String> {
                         });
                 segnalazione_avvenuta.show();
             }
+
+            ArrayList<String> ListTokens;
+            ListTokens = CommunicationServer.getInstance(context).getListTokens();
+            System.out.println("Size list token:"+ListTokens.size());
+            if(ListTokens != null)
+              new inviaAlert(ListTokens).execute();
         }
     }
 }

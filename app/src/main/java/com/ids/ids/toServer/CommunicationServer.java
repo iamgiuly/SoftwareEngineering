@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -24,6 +25,8 @@ import com.ids.ids.toServer.ServerTask.InvioNodiTask;
 import com.ids.ids.User;
 import com.ids.ids.entity.Mappa;
 import com.ids.ids.entity.Nodo;
+import com.ids.ids.toServer.ServerTask.OttieniTokens;
+import com.ids.ids.toServer.ServerTask.RegistrationTokenTask;
 import com.ids.ids.ui.MappaView;
 import com.ids.ids.utils.Parametri;
 
@@ -36,9 +39,11 @@ public class CommunicationServer implements IntCommunicationServer{
     private static final String TAG = "CommunicationServer";
 
     private final Handler handler = new Handler();
+    private final Handler handler1 = new Handler();
     private User user;
     private Context context;
     private int Piano;
+    private ArrayList<String> ListTokens = new ArrayList<>();
 
     private CommunicationServer(Context contxt) {
 
@@ -153,6 +158,21 @@ public class CommunicationServer implements IntCommunicationServer{
             }
         }
     };
+
+    public void ottieniTokens() {
+
+        new OttieniTokens(ListTokens).execute();
+    }
+
+    public void registrationTokenTask(String recent_token) throws IOException {
+
+        new RegistrationTokenTask(recent_token).execute();
+    }
+
+    public ArrayList<String> getListTokens(){
+
+        return ListTokens;
+    }
 
     private void setContext(Context contxt) {
 

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "57781812924",
+    "firebase_url": "https://fireexit-7701c.firebaseio.com",
+    "project_id": "fireexit-7701c",
+    "storage_bucket": "fireexit-7701c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:57781812924:android:b4eb5b3ec9534d71",
+        "android_client_info": {
+          "package_name": "com.ids.ids"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "57781812924-0gd0dac1t8n9bb92f08doopduge6cqu9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2LYTg6UNR3qvvwRDECcbLGr792yqbPBQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
