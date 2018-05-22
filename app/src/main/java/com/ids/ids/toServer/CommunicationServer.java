@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import com.ids.ids.toServer.ServerTask.AggiornaDatiMappaTask;
+import com.ids.ids.toServer.ServerTask.Discover;
 import com.ids.ids.toServer.ServerTask.DownloadPercorsoNormaleTask;
 import com.ids.ids.toServer.ServerTask.DownloadPercorsoEmergenzaTask;
 import com.ids.ids.toServer.ServerTask.DownloadInfoMappaTask;
@@ -172,6 +173,11 @@ public class CommunicationServer implements IntCommunicationServer{
     public ArrayList<String> getListTokens(){
 
         return ListTokens;
+    }
+
+    public void DiscoverIPServerAddress(){
+
+           new Discover(context).execute();
     }
 
     private void setContext(Context contxt) {

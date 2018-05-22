@@ -1,11 +1,8 @@
 package com.ids.ids.entity;
 
-import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.Map;
 
-public class Arco {
+public class Arco implements IntArco{
 
     private int id;
     private Nodo nodoPartenza;
@@ -21,32 +18,25 @@ public class Arco {
         this.mappaId = nodoPartenza.getMappaId();
     }
 
+    //Getters
     public int getId(){
-        return this.id;
-    }
-    public void setId(int id){
-        this.id = id;
+
+        return id;
     }
 
     public Nodo getNodoPartenza() {
+
         return nodoPartenza;
-    }
-    public void setNodoPartenza(Nodo nodoPartenza) {
-        this.nodoPartenza = nodoPartenza;
     }
 
     public Nodo getNodoArrivo() {
+
         return nodoArrivo;
-    }
-    public void setNodoArrivo(Nodo nodoArrivo) {
-        this.nodoArrivo = nodoArrivo;
     }
 
     public ArrayList<PesoArco> getPesi() {
+
         return pesi;
-    }
-    public void setPesi(ArrayList<PesoArco> pesi) {
-        this.pesi = pesi;
     }
 
     public int getCosto(){
@@ -57,10 +47,14 @@ public class Arco {
     }
 
     public int getMappaId() {
+
         return mappaId;
     }
-    public void setMappaId(int mappaId){
-        this.mappaId = mappaId;
+
+    //setters
+    public void setId(int id){
+
+        this.id = id;
     }
 
     @Override
@@ -75,6 +69,7 @@ public class Arco {
 
     @Override
     public int hashCode() {
+
         return id;
     }
 }

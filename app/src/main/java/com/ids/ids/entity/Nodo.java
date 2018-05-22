@@ -44,37 +44,52 @@ public class Nodo {
     }
 
     public int getId(){
+
         return this.Id;
     }
+
     public void setId(int id){
+
         this.Id = id;
     }
 
     public String getBeaconId(){
+
         return this.BeaconId;
     }
+
     public void setId(String beaconId){
+
         this.BeaconId = beaconId;
     }
 
     public int getX(){
+
         return this.X;
     }
+
     public void setX(int x){
+
         this.X = x;
     }
 
     public int getY(){
+
         return this.Y;
     }
+
     public void setY(int y){
+
         this.Y = y;
     }
 
     public int getMappaId() {
+
         return mappaId;
     }
+
     public void setMappaId(int mappaId){
+
         this.mappaId = mappaId;
     }
 
@@ -84,13 +99,17 @@ public class Nodo {
     }
 
     public boolean isCambiato() {
+
         return cambiato;
     }
 
     public boolean isTipoUscita() {
+
         return tipoUscita;
     }
+
     public boolean isTipoIncendio() {
+
         return tipoIncendio;
     }
 

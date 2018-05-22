@@ -159,7 +159,7 @@ public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String>
             Mappa mappaAggiornata = MappaDAO.getInstance(context).find(piano);
 
             Percorso p = Percorso.getInstance();
-            percorso = p.calcolaPercorso(mappaAggiornata, mappaAggiornata.getNodoSpecifico(MacPosU));
+            percorso = p.calcolaPercorsoEmergenza(mappaAggiornata, mappaAggiornata.getNodoSpecifico(MacPosU));
 
 
         }else{

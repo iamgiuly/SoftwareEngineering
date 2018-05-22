@@ -62,7 +62,7 @@ public class RegistrationTokenService extends IntentService {
             // If an exception happens while fetching the new token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(SENT_TOKEN_TO_SERVER, false).apply();
-            sendNotifica("Registrazione prodotto fallita","Mancata connessione al server dell'università");
+            sendNotifica("Registrazione prodotto fallita","Siamo spiacenti");
         }
 
     }

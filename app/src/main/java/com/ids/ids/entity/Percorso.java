@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Percorso {
+public class Percorso implements IntPercorso{
 
     private static Percorso instance = null;
 
@@ -12,7 +12,7 @@ public class Percorso {
 
     }
 
-    public ArrayList<Arco> calcolaPercorso(Mappa mappa, Nodo posUtente) {
+    public ArrayList<Arco> calcolaPercorsoEmergenza(Mappa mappa, Nodo posUtente) {
 
         ArrayList<Nodo> uscite = mappa.getNodiUscita();
         ArrayList<Nodo> nodi = mappa.getNodi();
