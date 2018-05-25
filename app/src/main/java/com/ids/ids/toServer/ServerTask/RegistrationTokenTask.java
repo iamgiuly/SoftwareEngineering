@@ -3,6 +3,9 @@ package com.ids.ids.toServer.ServerTask;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.ids.ids.entity.Mappa;
 import com.ids.ids.utils.Parametri;
 
 import org.json.JSONException;
@@ -13,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
@@ -31,7 +35,7 @@ public class RegistrationTokenTask {
 
     }
 
-    public void execute() throws IOException {
+    public boolean execute() throws IOException {
 
         Log.d("il token è: ", token);
         // parte code for send
@@ -61,7 +65,22 @@ public class RegistrationTokenTask {
             writer.write(Data.toString()); //codifica in UTF-8
             writer.flush();
             writer.close();
-            connection.getInputStream();
+           // connection.getInputStream();
+
+            StringBuilder sb = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+            String inputLine;
+
+            while ((inputLine = br.readLine()) != null) {
+                sb.append(inputLine + "\n");
+            }
+
+            br.close();
+
+            Type type = new TypeToken<Boolean>() {
+            }.getType();
+
+            return new Gson().fromJson(sb.toString(), type);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -76,5 +95,7 @@ public class RegistrationTokenTask {
                 }
             }
         }
+
+        return false;
     }
 }

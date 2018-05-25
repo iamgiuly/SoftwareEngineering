@@ -165,9 +165,9 @@ public class CommunicationServer implements IntCommunicationServer{
         new OttieniTokens(ListTokens).execute();
     }
 
-    public void registrationTokenTask(String recent_token) throws IOException {
+    public Boolean registrationTokenTask(String recent_token) throws IOException {
 
-        new RegistrationTokenTask(recent_token).execute();
+       return new RegistrationTokenTask(recent_token).execute();
     }
 
     public ArrayList<String> getListTokens(){

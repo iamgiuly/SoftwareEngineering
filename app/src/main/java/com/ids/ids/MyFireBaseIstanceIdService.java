@@ -25,8 +25,8 @@ public class MyFireBaseIstanceIdService extends FirebaseInstanceIdService {
         Log.i("MyFireBaseId","Ricezione token from FireBase");
         String recent_token = FirebaseInstanceId.getInstance().getToken();
         Log.i(REG_TOKEN,recent_token);
-       // Intent intent = new Intent(this, RegistrationTokenService.class);
-       // startService(intent);
+        Intent intent = new Intent(this, RegistrationTokenService.class);
+        startService(intent);
        // CommunicationServer.getInstance(this).DiscoverIPServerAddress();
     }
 }

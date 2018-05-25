@@ -67,7 +67,7 @@ public class Discover  extends AsyncTask<Void, Void, String> {
 
             //Try the 255.255.255.255 first
             try {
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), 7070);
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), 4849);
                 c.send(sendPacket);
                 System.out.println(getClass().getName() + ">>> Request packet sent to: 255.255.255.255 (DEFAULT)");
             } catch (Exception e) {
@@ -142,6 +142,7 @@ public class Discover  extends AsyncTask<Void, Void, String> {
             configurazione_ip.dismiss();
             System.out.println(result);
             Parametri.setPath(result);
+
             Intent intent = new Intent(context, RegistrationTokenService.class);
             context.startService(intent);
         }

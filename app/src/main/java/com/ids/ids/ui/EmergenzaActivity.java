@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import com.ids.ids.R;
+import com.ids.ids.entity.Mappa;
 import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.beacon.Localizzatore;
 import com.ids.ids.User;
@@ -86,7 +87,15 @@ public class EmergenzaActivity extends AppCompatActivity {
             // CASO SEGNALAZIONE
             if (user.getModalita() == user.MODALITA_SEGNALAZIONE) {
 
-                mappaView.setMappa(user.getMappa());
+                //vengono tolti i nodi uscita
+                Mappa mappa = user.getMappa();
+                ArrayList nodi = new ArrayList<Nodo>();
+                for(Nodo nodo : mappa.getNodi())
+                    if(!nodo.isTipoUscita())
+                        nodi.add(nodo);
+                mappa.setNodi(nodi);
+
+                mappaView.setMappa(mappa);
                 // mappaView.setPosUtente(user.getMappa().getNodoSpecifico(user.getMacAdrs()));
                 mappaView.setOnTouchListener(new View.OnTouchListener() {
                     @Override

@@ -48,13 +48,12 @@ public class RegistrationTokenService extends IntentService {
                 Log.i(TAG, "Firebase Registration Token: " + token);
 
 
-                sendRegistrationToServer(token);
-                sharedPreferences.edit().putBoolean(SENT_TOKEN_TO_SERVER, true).apply();
-                sendNotifica("Registrazione prodotto avvenuta","La registrazione è avvenuta correttamente");
-
-            }/*else
-                throw new Exception("La registrazione del prodotto è fallita.\nCausa mancata connessione al server");*/
-
+                if(sendRegistrationToServer(token)) {
+                    sharedPreferences.edit().putBoolean(SENT_TOKEN_TO_SERVER, true).apply();
+                    sendNotifica("Registrazione prodotto avvenuta", "La registrazione è avvenuta correttamente");
+                }else
+                    throw new Exception();
+            }
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -75,9 +74,9 @@ public class RegistrationTokenService extends IntentService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token) throws IOException {
+    private Boolean sendRegistrationToServer(String token) throws IOException {
 
-        CommunicationServer.getInstance(this).registrationTokenTask(token);
+       return CommunicationServer.getInstance(this).registrationTokenTask(token);
     }
 
     public void sendNotifica(String Titolo,String messaggio){

@@ -3,6 +3,8 @@ package com.ids.ids.toServer.ServerTask;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -148,6 +150,7 @@ public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String>
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onPostExecute(String dati_percorso) {
 
@@ -177,7 +180,7 @@ public class DownloadPercorsoEmergenzaTask extends AsyncTask<Void, Void, String>
         //l utente ha raggiunto l uscita
         //per questo lo avvisiamo attraverso un messaggio
         if (percorso.size() == 0) {
-            Localizzatore.getInstance((Activity) context);
+            Localizzatore.getInstance((Activity) context).stopFinderALWAYS();
             CommunicationServer.getInstance(context).richiestaAggiornamenti(false , piano);
             mappaView.messaggio("Sei al sicuro", "Hai raggiunto l uscita", false);
         }
