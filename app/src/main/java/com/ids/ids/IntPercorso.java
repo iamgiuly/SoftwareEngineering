@@ -1,4 +1,8 @@
-package com.ids.ids.entity;
+package com.ids.ids;
+
+import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.Nodo;
 
 import java.util.ArrayList;
 

@@ -25,6 +25,9 @@ public class User implements IntUser{
         context = contxt;
     }
 
+    /**
+     * Permette di cancellare le info presenti nel DB locale
+     */
     public void DropDB() {
 
         if (modalita == User.MODALITA_EMERGENZA || modalita == User.MODALITA_NORMALEPERCORSO)

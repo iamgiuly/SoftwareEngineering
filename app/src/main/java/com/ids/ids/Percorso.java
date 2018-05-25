@@ -1,10 +1,14 @@
-package com.ids.ids.entity;
+package com.ids.ids;
+
+import com.ids.ids.entity.Arco;
+import com.ids.ids.entity.Mappa;
+import com.ids.ids.entity.Nodo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Percorso implements IntPercorso{
+public class Percorso implements IntPercorso {
 
     private static Percorso instance = null;
 
@@ -12,6 +16,13 @@ public class Percorso implements IntPercorso{
 
     }
 
+    /**
+     * Calcola il percorso di emergenza
+     *
+     * @param mappa  la mappa relativa al piano dell utente
+     * @param posUtente il nodo relativo alla posizione dell utente
+     * @return il percorso calcolato
+     */
     public ArrayList<Arco> calcolaPercorsoEmergenza(Mappa mappa, Nodo posUtente) {
 
         ArrayList<Nodo> uscite = mappa.getNodiUscita();
@@ -82,6 +93,14 @@ public class Percorso implements IntPercorso{
         return percorso;
     }
 
+    /**
+     * Calcola il percorso normale
+     *
+     * @param mappa  relativa al piano dell untente
+     * @param posUtente il nodo relativo alla posizione dell utente
+     * @param destinazione il nodo relativo alla destinazione scelta dall utente
+     * @return il percorso calcolato
+     */
     public ArrayList<Arco> calcolaPercorsoNormale(Mappa mappa, Nodo posUtente, Nodo destinazione) {
 
         ArrayList<Nodo> nodi = mappa.getNodi();

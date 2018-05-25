@@ -1,5 +1,9 @@
 package com.ids.ids.entity;
 
+/**
+ * 	Un peso è caratterizzato da una descrizione e dal valore di quel peso.
+ *  Il valore è espresso da un nmumro intero
+ */
 public class Peso {
 
     private int id;
@@ -13,23 +17,32 @@ public class Peso {
     }
 
     public int getId(){
+
         return this.id;
     }
+
     public void setId(int id){
+
         this.id = id;
     }
 
     public String getDescrizione() {
+
         return descrizione;
     }
+
     public void setDescrizione(String descrizione) {
+
         this.descrizione = descrizione;
     }
 
     public int getPeso() {
+
         return peso;
     }
+
     public void setPeso(int peso) {
+
         this.peso = peso;
     }
 

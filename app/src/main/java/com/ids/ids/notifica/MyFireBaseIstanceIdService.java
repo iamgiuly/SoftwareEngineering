@@ -1,14 +1,13 @@
-package com.ids.ids;
+package com.ids.ids.notifica;
 
 import android.content.Intent;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.ids.ids.toServer.CommunicationServer;
 
 /**
- * Created by User on 08/05/2018.
+ * Riceve il token appena il prodotto è registrato
  */
 public class MyFireBaseIstanceIdService extends FirebaseInstanceIdService {
 

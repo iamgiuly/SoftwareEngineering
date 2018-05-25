@@ -16,12 +16,12 @@ import com.ids.ids.utils.Parametri;
 /**
  * Presenta i metodi per localizzare l utente grazie ai risultati (MAC address)
  * forniti dal BeaconScanner
- *
+ * <br>
  * Nota localizzazioni:
- *
+ * <br>
  * ALWAYS: mantiene sempre attivo il BeaconScanner
  *         mantiene sempre attivo il Runnable findMeAlways
- *
+ * <br>
  * ONE:    appena trovato il Beacon più vicino il BeaconScanner e il Runnable findMeONE vengono fermati
  */
 

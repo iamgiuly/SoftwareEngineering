@@ -34,9 +34,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by User on 09/05/2018.
+ * Task per l invio della notifica di emergenza
  */
-
 public class inviaAlert  extends AsyncTask<Void, Void, String> {
 
     private HttpURLConnection connection;

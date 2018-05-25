@@ -165,6 +165,12 @@ public class CommunicationServer implements IntCommunicationServer{
         new OttieniTokens(ListTokens).execute();
     }
 
+    /**
+     * Richiama il task per l invio del token al server
+     * @param recent_token token dell utente
+     * @return se il token è stato registrato o meno dal server
+     * @throws IOException qualora la connessione Wi-Fi non fosse attiva
+     */
     public Boolean registrationTokenTask(String recent_token) throws IOException {
 
        return new RegistrationTokenTask(recent_token).execute();
@@ -175,6 +181,9 @@ public class CommunicationServer implements IntCommunicationServer{
         return ListTokens;
     }
 
+    /**
+     * richiama il Discover per il controllo dell ip del server
+     */
     public void DiscoverIPServerAddress(){
 
            new Discover(context).execute();

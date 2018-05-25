@@ -6,29 +6,20 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.ids.ids.RegistrationTokenService;
+import com.ids.ids.notifica.RegistrationTokenService;
 import com.ids.ids.utils.Parametri;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
-import java.net.MalformedURLException;
 import java.net.NetworkInterface;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Enumeration;
 
 /**
- * Created by User on 22/05/2018.
+ * Task per l invio del broadcast al server in ascolto
  */
-
 public class Discover  extends AsyncTask<Void, Void, String> {
 
     private ProgressDialog configurazione_ip;
@@ -47,7 +38,7 @@ public class Discover  extends AsyncTask<Void, Void, String> {
         configurazione_ip.setIndeterminate(true);
         configurazione_ip.setCancelable(false);
         configurazione_ip.setCanceledOnTouchOutside(false);
-        configurazione_ip.setMessage("Download ricerca ip server in corso..");
+        configurazione_ip.setMessage("Ricerca ip server in corso..");
         configurazione_ip.show();
 
     }

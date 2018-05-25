@@ -1,4 +1,4 @@
-package com.ids.ids;
+package com.ids.ids.notifica;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -13,10 +13,11 @@ import android.util.Log;
 import java.io.IOException;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.ids.ids.R;
 import com.ids.ids.toServer.CommunicationServer;
 
 /**
- * Created by User on 12/05/2018.
+ * Servizio per controllare se il token è stato omeno inviato al server
  */
 
 public class RegistrationTokenService extends IntentService {
@@ -79,6 +80,12 @@ public class RegistrationTokenService extends IntentService {
        return CommunicationServer.getInstance(this).registrationTokenTask(token);
     }
 
+    /**
+     * Notifica l utente di avvenuta o meno registrazione del prodotto
+     *
+     * @param Titolo    il titolo della notifica
+     * @param messaggio il messaggio della notifica
+     */
     public void sendNotifica(String Titolo,String messaggio){
 
         //Creazione notifica

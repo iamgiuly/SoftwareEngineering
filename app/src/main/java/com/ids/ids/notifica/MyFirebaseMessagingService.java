@@ -1,4 +1,4 @@
-package com.ids.ids;
+package com.ids.ids.notifica;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.ids.ids.R;
 import com.ids.ids.ui.MainActivity;
 
 /**

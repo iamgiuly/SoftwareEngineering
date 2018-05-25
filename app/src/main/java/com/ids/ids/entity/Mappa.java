@@ -6,7 +6,10 @@ import com.ids.ids.DB.MappaDAO;
 
 import java.util.ArrayList;
 
-public class Mappa {
+/**
+ * Una mappa è formata da una serie di Nodi e archi, e viene caratterizzata da una piantina e un piano.
+ */
+public class Mappa implements IntMappa {
 
     private int Piano;
     private String Piantina;        //nome dell'immagine
@@ -21,47 +24,38 @@ public class Mappa {
     }
 
     public int getPiano(){
+
         return Piano;
     }
+
     public void setPiano(int piano){
+
         Piano = piano;
     }
 
     public String getPiantina(){
+
         return Piantina;
     }
     public void setPiantina(String piantina){
+
         Piantina = piantina;
     }
 
     public ArrayList<Nodo> getNodi(){
+
         return Nodi;
     }
+
     public void setNodi(ArrayList<Nodo> nodi){
+
         Nodi = nodi;
     }
 
-    public ArrayList<Nodo> getNodiFromArchi(){
-        ArrayList<Nodo> nodi = new ArrayList<>();
-        for(Arco arco : Archi){
-            Nodo nodoPartenza = arco.getNodoPartenza();
-            if(!isNodoInArrayList(nodoPartenza, nodi))
-                nodi.add(nodoPartenza);
-            Nodo nodoArrivo = arco.getNodoArrivo();
-            if(!isNodoInArrayList(nodoArrivo, nodi))
-                nodi.add(nodoArrivo);
-            nodi.add(arco.getNodoArrivo());
-        }
-        return Nodi;
-    }
-
-    private boolean isNodoInArrayList(Nodo nodo, ArrayList<Nodo> nodi){
-        for(Nodo n : nodi)
-            if(n.getId() == nodo.getId())
-                return true;
-        return false;
-    }
-
+    /**
+     * Ottiene i nodi uscita relativi alla mappa
+     * @return
+     */
     public ArrayList<Nodo> getNodiUscita() {
         ArrayList<Nodo> uscite = new ArrayList<>();
         for(Nodo nodo : Nodi)
@@ -90,6 +84,10 @@ public class Mappa {
         return Piano == mappa.Piano;
     }
 
+    /**
+	 * Permette di ottenere un determinato nodo dalla lista dei nodi associata alla mappa
+     * @param macAdrs MACAdress del nodo che si intende avere
+	 */
     public Nodo getNodoSpecifico(String macAdrs){
 
         Nodo result = null;
@@ -101,6 +99,10 @@ public class Mappa {
         return result;
     }
 
+    /**
+     * Permette di salvare le informazioni relative alla mappa sul DB
+     * @param contxt
+     */
     public void salvataggioLocale(Context contxt){
 
         ArrayList<Mappa>  esito;
@@ -118,6 +120,10 @@ public class Mappa {
         }
     }
 
+    /**
+     * Pemette di eleminare le info della mappa dal DB
+     * @param contxt
+     */
     public void deletemappa(Context contxt){
 
         MappaDAO m = MappaDAO.getInstance(contxt);

@@ -14,7 +14,7 @@ import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.beacon.Localizzatore;
 import com.ids.ids.entity.Arco;
 import com.ids.ids.entity.Mappa;
-import com.ids.ids.entity.Percorso;
+import com.ids.ids.Percorso;
 import com.ids.ids.ui.MappaView;
 import com.ids.ids.utils.Parametri;
 

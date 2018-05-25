@@ -1,5 +1,9 @@
 package com.ids.ids.entity;
 
+/**
+ * Un pesoArco è caratterizzato dall id dell arco a cui è associato, un peso, e il valore di quanto quest ultimo
+ * incide sull arco
+ */
 public class PesoArco {
 
     private int id;
@@ -15,34 +19,44 @@ public class PesoArco {
     }
 
     public int getId(){
+
         return this.id;
     }
+
     public void setId(int id){
+
         this.id = id;
     }
 
     public int getIdArco() {
+
         return idArco;
     }
+
     public void setIdArco(int idArco) {
+
         this.idArco = idArco;
     }
 
     public Peso getPeso() {
+
         return peso;
     }
+
     public void setPeso(Peso peso) {
+
         this.peso = peso;
     }
 
     public int getValore() {
+
         return valore;
     }
+
     public void setValore(int valore) {
+
         this.valore = valore;
     }
-
-
 
     @Override
     public boolean equals(Object o) {

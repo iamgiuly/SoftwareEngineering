@@ -42,16 +42,16 @@
             android:screenOrientation="portrait" />
 
         <service
-        android:name=".RegistrationTokenService"
+        android:name=".notifica.RegistrationTokenService"
         android:exported="false"/>
         <service
-            android:name=".MyFirebaseMessagingService">
+            android:name=".notifica.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
         <service
-            android:name=".MyFireBaseIstanceIdService">
+            android:name=".notifica.MyFireBaseIstanceIdService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>

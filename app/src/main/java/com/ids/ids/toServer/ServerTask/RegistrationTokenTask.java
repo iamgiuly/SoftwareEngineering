@@ -22,9 +22,8 @@ import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by User on 09/05/2018.
+ * task per la registrazione del token
  */
-
 public class RegistrationTokenTask {
 
     private String token;

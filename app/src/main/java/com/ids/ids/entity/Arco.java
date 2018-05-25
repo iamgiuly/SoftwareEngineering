@@ -2,6 +2,10 @@ package com.ids.ids.entity;
 
 import java.util.ArrayList;
 
+/**
+ * Un arco è formato da un id, da un nodo di partenza e arrivo, da una lista di pesi e
+ * dal piano relativo alla mappa a cui è associato
+ */
 public class Arco implements IntArco{
 
     private int id;
@@ -39,6 +43,9 @@ public class Arco implements IntArco{
         return pesi;
     }
 
+    /**
+	 * Permette di calcolare il costo relativo all arco considerando tutti i pesi ad esso associati
+	 */
     public int getCosto(){
         int costo = 0;
         for (PesoArco pesoArco : this.pesi)

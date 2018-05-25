@@ -13,27 +13,13 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.ids.ids.R;
-import com.ids.ids.RegistrationTokenService;
 import com.ids.ids.toServer.CommunicationServer;
 import com.ids.ids.beacon.Localizzatore;
 import com.ids.ids.User;
-import com.ids.ids.toServer.ServerTask.TEST;
-
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InterfaceAddress;
-
-import java.net.NetworkInterface;
-import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**

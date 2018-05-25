@@ -4,7 +4,11 @@ import com.ids.ids.R;
 
 import java.util.ArrayList;
 
-public class Nodo {
+/**
+ * Un nodo è formato da un id, dal suo MACAdress, da posizioni x e y sulla piantina.
+ * Inoltre e caratterizzato dal suo tipo: Incendio o Base
+ */
+public class Nodo implements IntNodo {
 
     public static final int IMG_BASE = R.drawable.nodo_base;
     public static final int IMG_UTENTE = R.drawable.posizione;
@@ -113,9 +117,6 @@ public class Nodo {
         return tipoIncendio;
     }
 
-    // L'ordine in cui vengono associate le immagini è importante per le priorità
-    // (più valori possono essere true contemporaneamente)
-    // TODO gestire anche posizione utente
     public int getImage(){
 
         if(this.tipoIncendio)
@@ -127,6 +128,11 @@ public class Nodo {
         return IMG_BASE;
     }
 
+    /**
+	 * Pemette di ottenere la stella (archi associati al nodo)
+	 *
+	 * @param archi lista degli archi in cui bisogna cercare
+	 */
     public ArrayList<Arco> getStella(ArrayList<Arco> archi) {
         ArrayList<Arco> stella = new ArrayList<>();
         for(Arco arco : archi)
